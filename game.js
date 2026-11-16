@@ -943,6 +943,7 @@ function playUpdate(dt) {
   g.ac = M.max(0, g.ac - dt * 0.4);
   if (mode != 'play') return;
   checkAttacks();
+  updateDoom(dt);
   if (mode != 'play') return;
   audioCues(dt);
   updateThoughts(dt);
@@ -1369,17 +1370,37 @@ function updateGhost(dt) {
 }
 
 // ---- Attacks ----
+// When a threat reaches you it does NOT scream right away: it waits, silent,
+// behind you. The scare lands when you lower the camera, close the board or
+// turn your head... or whenever it feels like it. Time keeps running.
+function doom(why, e) {
+  const g = G;
+  if (g.doom) return;
+  g.doom = { why, e, t: 0, max: rnd(3, 8) };
+  e.st = 'DOOM'; e.mv = 0; e.snd = 1e9;
+}
+function updateDoom(dt) {
+  const g = G, d = g.doom;
+  if (!d) { g.lastView = g.view; return; }
+  d.t += dt;
+  const ready = d.t > 0.35;
+  const lowered = g.lastView != 'office' && g.view == 'office';
+  const turned = g.view == 'office' && (pr('L') || pr('R'));
+  g.lastView = g.view;
+  if ((ready && (lowered || turned)) || d.t > d.max) { g.view = 'office'; lose(d.why); }
+}
 function checkAttacks() {
   const g = G, E = g.E;
-  if (E.pitcher.st == 'SEARCH' && !g.suit && atYou(E.pitcher)) return lose('pitcher');
-  if (E.sleeper.st == 'ANGRY' && atYou(E.sleeper)) return lose('sleeper');
+  if (g.doom) return;
+  if (E.pitcher.st == 'SEARCH' && !g.suit && atYou(E.pitcher)) return doom('pitcher', E.pitcher);
+  if (E.sleeper.st == 'ANGRY' && atYou(E.sleeper)) return doom('sleeper', E.sleeper);
   const c = E.chef;
   if (c.st == 'DELIVER' && atYou(c)) {
-    if (g.suit) return lose('chef');
+    if (g.suit) return doom('chef', c);
     g.sueno += 28; SFX.eat(); setMsg('"¡COME, COME! ¡TE VES FLACO!"  +SUEÑO', 2.2); think('Ugh... después de comer me da sueño.', 'ate'); c.st = 'RETURN';
     if (g.sueno >= 100) return lose('sleep');
   }
-  if (E.coder.st == 'COMPLAIN' && atYou(E.coder)) return lose('coder');
+  if (E.coder.st == 'COMPLAIN' && atYou(E.coder)) return doom('coder', E.coder);
 }
 
 // =====================================================================
@@ -1402,6 +1423,7 @@ function audioCues(dt) {
   const s = E.sleeper; if (s.st == 'ANGRY') d = M.max(d, 1 - gdist(s.r, CTRL) * 0.25); else if (s.st == 'WANDER') d = M.max(d, s.shake * 0.8, blindDoor(s) ? 0.45 : 0);
   const c = E.coder; if (c.st == 'COMPLAIN' || c.st == 'HUNT') d = M.max(d, 0.95 - gdist(c.r, CTRL) * 0.3);
   if (E.chef.st == 'DELIVER') d = M.max(d, 0.5 - gdist(E.chef.r, CTRL) * 0.15);
+  d = M.min(d, 0.6); // tension, never a 'drop': the scare itself comes without build-up
   if (g.sueno > 80) d = M.max(d, (g.sueno - 80) / 25);
   g.dread = lerp(g.dread, clamp(d, 0, 1), 1 - M.pow(0.2, dt));
   g.flick -= dt;
@@ -1563,7 +1585,7 @@ function renderOffice(dt) {
   for (const k in E) {
     const e = E[k], im = oImg[k];
     im.setVisible(false);
-    if (k == 'mentora' && !g.cf.mentora) continue;
+    if ((k == 'mentora' && !g.cf.mentora) || e.st == 'DOOM') continue;
     let sx, sy, sc, tint;
     const bd = blindDoor(e);
     if (e.r == CTRL) {
@@ -1774,22 +1796,22 @@ function lose(why) {
   g.why = why; g.loseT = g.t;
   mode = 'scream'; modeT = 0;
   hideHud();
-  if (why == 'sleep') { ui.fade.setAlpha(1); g.scrDelay = 1.6; } else g.scrDelay = 0.55; // a beat of silence first
+  if (why != 'sleep') { g.view = 'office'; g.va = 0; rC.setVisible(false); oC.setVisible(true); renderOffice(0); } // the tablet drops: it is right there
+  if (why == 'sleep') { ui.fade.setAlpha(1); g.scrDelay = 1.6; } else g.scrDelay = 0; // no warning beat: it just happens
   ui.scr.setTexture(SCREAM[why][0] + 'H').setVisible(false);
   ui.scrT.setText('');
   ui.scrTxt = SCREAM[why][1];
-  if (AC) { ambG.gain.setTargetAtTime(0, AC.currentTime, 0.02); droneG.gain.setTargetAtTime(0, AC.currentTime, 0.02); }
 }
 function screamUpdate(dt) {
   const g = G;
   modeT += dt;
   if (modeT < g.scrDelay) { if (FX) { FX.no = 0.02; FX.ab = 0; } return; }
   const t = modeT - g.scrDelay;
-  if (!g.scrOn) { g.scrOn = 1; SFX.scream(); S.cameras.main.shake(900, 0.03); uiCam.shake(900, 0.02); ui.fade.setAlpha(0); }
+  if (!g.scrOn) { g.scrOn = 1; if (AC) { ambG.gain.setTargetAtTime(0, AC.currentTime, 0.02); droneG.gain.setTargetAtTime(0, AC.currentTime, 0.02); } SFX.scream(); S.cameras.main.shake(900, 0.03); uiCam.shake(900, 0.02); ui.fade.setAlpha(0); }
   ui.scr.setVisible(t < 1.4).setScale(20 + t * 30 + M.random() * 3).setPosition(400 + rnd(-12, 12), 330 + rnd(-12, 12)).setTint(M.random() < 0.3 ? 0xff5555 : 0xffffff).setAngle(rnd(-4, 4));
   ui.scrT.setText(t < 1.4 ? ui.scrTxt : '').setPosition(400 + rnd(-6, 6), 520 + rnd(-6, 6));
   ui.stat.setAlpha(t > 1.4 ? 1 : 0.2).setTilePosition(rnd(0, 200), rnd(0, 150));
-  if (FX) { FX.ab = 3; FX.no = 0.4; FX.dk = 0.2; }
+  if (FX) { FX.ab = 3; FX.no = 0.4; FX.dk = 0.2; FX.nv = 0; }
   if (t > 2.1) goLose();
 }
 function goLose() {
