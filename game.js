@@ -294,6 +294,7 @@ function buildSprites() {
     SPRF[role] = fr.map((s, i) => { spriteTex(role + i, parseCSEF(s, 24)); return role + i; });
     const rows = parseCSEF(fr[0], 24);
     let top = 0; while (rows[top].every((c) => c == '.')) top++;
+    SPRF[role].top = top; // empty rows above the head
     spriteTex(role + 'H', rows.slice(top, top + 14)); // the face, for scares and the lens
   }
 }
@@ -310,15 +311,7 @@ function buildFxTex() {
     return [255, v * 255];
   });
   pix('noise', 200, 150, () => [M.random() * 255, 255]);
-  // the title mascot: an overripe banana with hollow eyes and a grin
-  canvasTex('banana', 300, 540, (c) => {
-    const st = (col, w, x, y0, y1) => { c.strokeStyle = col; c.lineWidth = w; c.lineCap = 'round'; c.beginPath(); c.moveTo(x, y0); c.quadraticCurveTo(x - 110, 270, x, y1); c.stroke(); };
-    const el = (col, x, y, rx, ry, e) => { c.fillStyle = col; c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, e || PI * 2); c.fill(); };
-    st('#3a2608', 30, 185, 20, 70); st('#6a5208', 170, 190, 110, 440); st('#d8b414', 120, 168, 108, 430);
-    for (const [x, y] of [[80, 330], [150, 120], [100, 400], [60, 220], [140, 380]]) el('#4a3008', x, y, 9, 7); // overripe spots
-    el('#000', 90, 200, 24, 34); el('#000', 160, 196, 24, 34); el('#fff', 95, 210, 4, 4); el('#fff', 156, 206, 4, 4);
-    el('#000', 120, 285, 58, 36, PI); c.fillStyle = '#ccb'; for (let i = 0; i < 6; i++) c.fillRect(70 + i * 17, 285, 11, 10 + (i % 2) * 6);
-  });
+
 }
 
 // ---- Camera shots: each camera is a fixed, high-corner perspective view of
@@ -587,16 +580,17 @@ const writeSave = () => storage().set(SAVE_KEY, { night: saved.night }).catch(()
 function screen(m) { mode = m; modeT = 0; wC.setVisible(false); hideHud(); clearScreen(); }
 function goTitle() {
   screen('title');
-  uTitleBan = sAdd(S.add.image(190, 340, 'banana').setScale(1.15));
+  const r = pick(ROLES); // a random opponent stares at you, close up
+  uTitleBan = sAdd(S.add.image(200, 50 - SPRF[r].top * 18, r + '0').setScale(18).setOrigin(0.5, 0));
   uTitleStat = sAdd(S.add.tileSprite(0, 0, W, H, 'noise').setOrigin(0));
   uT1 = sText(440, 70, 'Five\nNights\nat\nPlatanus', 52, '#eee', 0, 0, { lineSpacing: -6 });
   sText(442, 350, 'La hackathon terminó. Ellos no.', 14, '#889', 0, 0.5);
   uTMenu = sText(440, 430, '', 22, '#fff', 0, 0.5);
 }
 function titleUpdate() {
-  // the banana stares out of the static, flickers and twitches now and then
+  // the opponent stares out of the static, flickers and twitches now and then
   const tw = M.random() < 0.04;
-  uTitleBan.setAlpha(M.random() < 0.06 ? 0.2 : 0.75).setAngle(tw ? rnd(-7, 7) : uTitleBan.angle * 0.9).setX(tw ? rnd(175, 205) : 190).setTint(tw ? 0xff8080 : 0x909090);
+  uTitleBan.setAlpha(M.random() < 0.06 ? 0.2 : 0.75).setAngle(tw ? rnd(-7, 7) : uTitleBan.angle * 0.9).setX(tw ? rnd(185, 215) : 200).setTint(tw ? 0xff8080 : 0x909090);
   uTitleStat.setTilePosition(rnd(0, 200), rnd(0, 150)).setAlpha(tw ? 0.4 : rnd(0.08, 0.16));
   uT1.setAlpha(M.random() < 0.03 ? 0.3 : 1);
   if (saved.night > 1) {
@@ -619,14 +613,11 @@ function goPaper(end) {
   R(78, 92, 644, 3, 0x151515);
   T(110, (end ? 'SÁBADO 28' : 'DOMINGO 22') + ' DE NOVIEMBRE, 2026  ·  SANTIAGO', 11);
   T(156, end ? 'HACKATHON CONCLUYE SIN INCIDENTES' : '¡GANADORES VIAJAN A SAN FRANCISCO!', 31);
-  R(78, 226, 340, 260, 0x77746a);
-  ROLES.forEach((r, i) => sAdd(S.add.image(i * 64 - 258, 170, r + '0').setScale(2.8).setOrigin(0.5, 1).setTint(end ? 0x5e5b52 : 0x2a2a2a).setAlpha(end ? 0.5 : 1), pc));
-  if (end) T(502, 'Foto: el recinto, vacío. (¿quiénes son esos del fondo?)', 11, { fontStyle: 'italic' }, 248);
-  T(228, end
-    ? 'Tras cinco noches de turno, el recinto fue entregado a sus dueños sin daños. El guardia no quiso dar declaraciones, pero testigos aseguran que pidió "un café, el más grande que tengan".'
+  T(212, end
+    ? 'Tras cinco noches de turno, el recinto fue entregado a sus dueños sin daños. El guardia no quiso dar declaraciones, pero testigos aseguran que pidió "un café, el más grande que tengan".\n\nVecinos insisten en que, de noche, todavía se escuchan pasos adentro.'
     : 'Tras 36 horas sin dormir, el equipo ganador viaja a San Francisco junto a los organizadores. El recinto quedará cerrado cinco noches antes de ser devuelto.\n\nSE BUSCA GUARDIA NOCTURNO. Turno de 12 a 6 AM. Café ilimitado. No abandonar la sala de control. Llamar a Rafa.',
-  16, { wordWrap: { width: 286 }, lineSpacing: 5 }, 436, 0);
-  if (end) T(540, 'FIN', 48, 0, 580);
+  20, { wordWrap: { width: 600 }, lineSpacing: 8 }, 100, 0);
+  if (end) T(530, 'FIN', 48);
   pc.setScale(3).setAngle(-540).setAlpha(0);
   S.tweens.add({ targets: pc, scale: 1, angle: end ? 1.5 : -1.5, alpha: 1, duration: 1100, ease: 'Cubic.easeOut', onComplete: () => { sfxDoor(0); uiCam.shake(180, 0.008); } });
   uPPress = sText(400, 592, 'START · CONTINUAR', 12, '#888');
