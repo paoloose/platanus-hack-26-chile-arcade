@@ -207,7 +207,7 @@ const SPOTS = [
   [[400, 250]],
   [[400, 300], [320, 220], [600, 330], [400, 500]],
 ];
-const PITCH_HOME = [400, 172], SLEEP_HOME = [210, 330], CHEF_HOME = [200, 200], CODER_HOME = [600, 222], LAPTOP = [600, 196];
+const PITCH_HOME = [400, 172], SLEEP_HOME = [210, 330], CHEF_HOME = [200, 200], CODER_HOME = [600, 222];
 // the blind spot right outside each of your doors (no camera sees it)
 const blindPt = (d) => { const c = CDOOR[d], p = DP[c.ad]; return [p[0] + (c.ad == 'W' ? 55 : c.ad == 'E' ? -55 : 0), p[1] + (c.ad == 'S' ? -45 : 0)]; };
 const blindDoor = (e) => ADOOR.find((d) => { const c = CDOOR[d], p = DP[c.ad]; return e.r == c.adj && dist(e.x, e.y, p[0], p[1]) < 125; });
@@ -242,7 +242,7 @@ let night, hl, grace, pitchOn, patience, pfast, wakeH, drain, cookOn, mentoraOn,
   blink, blinkT, blinkDur, dread, heartT, msgT, flick, scareT, breathT, phone, thought, thOnce, vigQ, vigOn, doomed, clicking, clickT, yawn1, yawn2,
   usage, lastView, lostTo, loseT, scrOn, scrDelay, E;
 // how many times each control has been used: prompts fade once learned
-const HINT = { look: 0, light: 0, door: 0, cams: 0, slide: 0 };
+const HINT = { light: 0, door: 0, cams: 0, slide: 0 };
 const learned = (k, n) => HINT[k] >= (n || 3);
 
 class HorrorPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline {
@@ -310,6 +310,15 @@ function buildFxTex() {
     return [255, v * 255];
   });
   pix('noise', 200, 150, () => [M.random() * 255, 255]);
+  // the title mascot: an overripe banana with hollow eyes and a grin
+  canvasTex('banana', 300, 540, (c) => {
+    const st = (col, w, x, y0, y1) => { c.strokeStyle = col; c.lineWidth = w; c.lineCap = 'round'; c.beginPath(); c.moveTo(x, y0); c.quadraticCurveTo(x - 110, 270, x, y1); c.stroke(); };
+    const el = (col, x, y, rx, ry, e) => { c.fillStyle = col; c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, e || PI * 2); c.fill(); };
+    st('#3a2608', 30, 185, 20, 70); st('#6a5208', 170, 190, 110, 440); st('#d8b414', 120, 168, 108, 430);
+    for (const [x, y] of [[80, 330], [150, 120], [100, 400], [60, 220], [140, 380]]) el('#4a3008', x, y, 9, 7); // overripe spots
+    el('#000', 90, 200, 24, 34); el('#000', 160, 196, 24, 34); el('#fff', 95, 210, 4, 4); el('#fff', 156, 206, 4, 4);
+    el('#000', 120, 285, 58, 36, PI); c.fillStyle = '#ccb'; for (let i = 0; i < 6; i++) c.fillRect(70 + i * 17, 285, 11, 10 + (i % 2) * 6);
+  });
 }
 
 // ---- Camera shots: each camera is a fixed, high-corner perspective view of
@@ -461,7 +470,7 @@ let wC, rC, oC, uC, uiCam;
 let bgImg, dynG, emG, projTxt, askTxt, lensImg, oBg, oG, oBeam, oDim, oLamp, oTop;
 const eImg = {}, oImg = {}, oDoors = {};
 // UI objects (u*) live in the uC layer, which the post-FX camera ignores
-let uArr, uC1, uC2, uCall, uCallName, uCallTxt, uCam, uCamBar, uCardN, uG, uHour, uHud, uLPress, uLStat, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTMenu, uTSub, uTab, uTh, uTitleBeam, uTitleFaces, uVig, uVigCap, uVigImg, uVigIn, uW1, uW2, uWDone, uWarn;
+let uC1, uC2, uCall, uCallName, uCallTxt, uCam, uCamBar, uCardN, uG, uHour, uHud, uLPress, uLStat, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uVig, uVigCap, uVigImg, uVigIn, uW1, uW2, uWDone, uWarn;
 let zR, zO; // the sleeper's z's (or !! when angry)
 const TS = (sz, col, extra) => Object.assign({ fontFamily: 'monospace', fontSize: sz + 'px', color: col || '#fff', fontStyle: 'bold' }, extra);
 const add = (c, o) => { c.add(o); return o; };
@@ -524,7 +533,6 @@ function buildUI() {
   uPr = [0, 1, 2].map(() => T(0, 0, '', 13, '#fff', 0.5, 0.5, { backgroundColor: '#000000cc', padding: { x: 6, y: 3 } }));
   uCamBar = T(400, 580, '▲  CÁMARAS', 14, '#cfe', 0.5, 0.5, { backgroundColor: '#1f3b2acc', padding: { x: 70, y: 4 } });
   uWarn = T(560, 580, '⚠', 34, '#ffd400'); // FNAF2-style warning next to the camera bar
-  uArr = [T(16, 300, '◄', 30), T(784, 300, '►', 30)];
   uMsg = T(400, 140, '', 22, '#fff', 0.5, 0.5, { stroke: '#000', strokeThickness: 5, align: 'center' });
   uTh = T(400, 530, '', 14, '#1a1a22', 0.5, 1, { backgroundColor: '#e9e6f2', padding: { x: 10, y: 6 }, wordWrap: { width: 420 }, align: 'center', fontStyle: 'italic bold' });
   // "MIENTRAS TANTO..." comic panel
@@ -579,29 +587,22 @@ const writeSave = () => storage().set(SAVE_KEY, { night: saved.night }).catch(()
 function screen(m) { mode = m; modeT = 0; wC.setVisible(false); hideHud(); clearScreen(); }
 function goTitle() {
   screen('title');
-  uTitleFaces = ROLES.map((r, i) => sAdd(S.add.image(140 + i * 130, 360, r + '0').setScale(4.5).setOrigin(0.5, 1)));
-  uTitleBeam = sAdd(S.add.image(400, 620, 'cone').setOrigin(0, 0.5).setBlendMode(1).setScale(2.4, 2).setTint(0xfff0c0));
-  uT1 = sText(400, 92, '5 NOCHES', 64, '#f2f2f2', 0.5, 0.5, { stroke: '#300', strokeThickness: 8 });
-  sText(400, 152, 'EN PLATANUS', 40, '#ffd400', 0.5, 0.5, { stroke: '#300', strokeThickness: 6 });
-  sText(400, 196, 'La hackathon terminó. Ellos no.', 15, '#99a');
-  uTMenu = sText(400, 450, '', 20);
-  uTSub = sText(400, 484, '', 14, '#889');
-  sText(400, 580, 'PLATANUS HACK 26 · SANTIAGO', 11, '#444');
+  uTitleBan = sAdd(S.add.image(190, 340, 'banana').setScale(1.15));
+  uTitleStat = sAdd(S.add.tileSprite(0, 0, W, H, 'noise').setOrigin(0));
+  uT1 = sText(440, 70, 'Five\nNights\nat\nPlatanus', 52, '#eee', 0, 0, { lineSpacing: -6 });
+  sText(442, 350, 'La hackathon terminó. Ellos no.', 14, '#889', 0, 0.5);
+  uTMenu = sText(440, 430, '', 22, '#fff', 0, 0.5);
 }
 function titleUpdate() {
-  const lx = 400 + M.sin(modeT * 0.7) * 330, ang = M.atan2(-370, lx - 400);
-  uTitleBeam.setRotation(ang).setAlpha(M.random() < 0.05 ? 0.05 : 0.3);
-  uTitleFaces.forEach((im, i) => {
-    const d = M.abs(M.atan2(-290, im.x - 400) - ang);
-    im.setTint(d < 0.12 ? 0xffffff : d < 0.22 ? 0x777777 : 0x161616);
-    im.y = 360 + M.sin(modeT * 3 + i) * 2;
-  });
+  // the banana stares out of the static, flickers and twitches now and then
+  const tw = M.random() < 0.04;
+  uTitleBan.setAlpha(M.random() < 0.06 ? 0.2 : 0.75).setAngle(tw ? rnd(-7, 7) : uTitleBan.angle * 0.9).setX(tw ? rnd(175, 205) : 190).setTint(tw ? 0xff8080 : 0x909090);
+  uTitleStat.setTilePosition(rnd(0, 200), rnd(0, 150)).setAlpha(tw ? 0.4 : rnd(0.08, 0.16));
   uT1.setAlpha(M.random() < 0.03 ? 0.3 : 1);
   if (saved.night > 1) {
     if (pr('L')) menuNight = M.max(1, menuNight - 1), sfxBlip(1, 0, 400);
     if (pr('R')) menuNight = M.min(saved.night, menuNight + 1), sfxBlip(1, 0, 500);
-    uTMenu.setText('◄  NOCHE ' + menuNight + '  ►');
-    uTSub.setText(menuNight == 1 ? 'START · NUEVA PARTIDA' : 'START · CONTINUAR');
+    uTMenu.setText('◄ NOCHE ' + menuNight + ' ►  START');
   } else uTMenu.setText('PRESIONA START');
   uTMenu.setAlpha(0.6 + M.sin(modeT * 4) * 0.4);
   if (pr('S') || pr('1')) { sfxClick(); if (menuNight == 1) goPaper(0); else goCard(menuNight); }
@@ -618,7 +619,6 @@ function goPaper(end) {
   R(78, 92, 644, 3, 0x151515);
   T(110, (end ? 'SÁBADO 28' : 'DOMINGO 22') + ' DE NOVIEMBRE, 2026  ·  SANTIAGO', 11);
   T(156, end ? 'HACKATHON CONCLUYE SIN INCIDENTES' : '¡GANADORES VIAJAN A SAN FRANCISCO!', 31);
-  T(190, end ? 'Recinto devuelto impecable tras cinco noches de guardia' : 'Rafa y Nacho acompañan al equipo campeón', 15, { fontStyle: 'italic' });
   R(78, 226, 340, 260, 0x77746a);
   ROLES.forEach((r, i) => sAdd(S.add.image(i * 64 - 258, 170, r + '0').setScale(2.8).setOrigin(0.5, 1).setTint(end ? 0x5e5b52 : 0x2a2a2a).setAlpha(end ? 0.5 : 1), pc));
   if (end) T(502, 'Foto: el recinto, vacío. (¿quiénes son esos del fondo?)', 11, { fontStyle: 'italic' }, 248);
@@ -766,7 +766,6 @@ function input(dt) {
   const dir = hd('R') - hd('L');
   panV = lerp(panV, office ? dir * 820 : 0, 1 - M.pow(0.0008, dt));
   pan = clamp(pan + panV * dt, 0, PW - W);
-  if (dir && office) HINT.look += dt / 1.5;
   let best = null, bd = 260;
   for (const d of ADOOR) { const dd = M.abs(OCENTER[d] - pan - 400); if (dd < bd) { bd = dd; best = d; } }
   if (M.abs(COFFEE_X - pan - 400) < 80) best = 'C';
@@ -1129,10 +1128,9 @@ function renderCam(r) {
     const q = doorPts(CDOOR[d].ad), f = doorP[d];
     dynG.fillStyle(0x5a5f66).fillPoints(pts([q[3], q[2], [q[2][0], q[2][1] + (q[1][1] - q[2][1]) * f], [q[3][0], q[3][1] + (q[0][1] - q[3][1]) * f]]), true);
   }
-  // the coder's extension cord, from his laptop to the outlet
+  // the coder's outlet blinks while he is plugged in
   if (plug == r) {
-    const a = P(LAPTOP[0], LAPTOP[1] + 20), m = P(660, 380), b = P(745, 470, 30);
-    dynG.lineStyle(4, 0x111111).strokePoints(pts([a, m, b]));
+    const b = P(745, 470, 30);
     emG.fillStyle(tick(4) ? 0x44ff66 : 0x117722).fillRect(b[0] - 5, b[1] - 5, 10, 10);
   }
   if (r == 1) {
@@ -1289,7 +1287,6 @@ function renderHud(dt) {
   // warning sign next to the camera bar when the pitcher is about to lose it
   const mr = E.mentora.st == 'RUSH' && E.mentora.kd; // she is running to that door
   uWarn.setVisible(office && (mr || (pitchOn && p.st == 'PITCH' && p.bar < 0.35))).setAlpha(tick(3) ? 1 : 0.3).setColor(mr ? '#c77dff' : '#ffd400').setPosition(mr ? { W: 40, N: 400, E: 760 }[mr] : 560, mr ? (mr == 'N' ? 110 : 300) : 580);
-  uArr.forEach((t, i) => t.setVisible(office && !learned('look', 2) && (i ? pan < PW - W - 40 : pan > 40)).setAlpha(0.4 + M.sin(now * 5) * 0.4));
   if (office && !blackout && drink <= 0) {
     if (CDOOR[focus]) {
       // FNAF-style: the hints live inside the doorway you are looking at
