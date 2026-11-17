@@ -34,8 +34,8 @@ const anyPr = () => ['1', '2', '3', '4', '5', '6', 'S'].some(pr);
 // =====================================================================
 // SPRITES (PCSEF) — temporary art reused from previous editions
 // =====================================================================
-const P_PAL=[3358093,13880807,0,16086621,1313921,7217408,13702935,571626,16235291,12554783,10755100,24722,16737792,2444435,102400,10442257,16762810,16711166,8091278,11248833,9527041,3548160,14593170,11239785,8153122,19773,5983488,6172160,12693639,11907,2368042,5131099,3737600,2121984,8307775,16147101];
-const SPR={"Cumbiambera":["9.1.1I9.4.9.1I1U1I3V9.8.2A1I5V8.8.1A1I1A2V3W8.8.1G1A2V2W1C1W8.7.1G1I1G2X2W1C1W8.8.1G2V1I4W8.9.1.1V1X3W9.9.2.1X1W1G9.1.9.1.3G2R9.9.1W5R1W8.8.2W5R2W7.7.2W1.2T4R2W6.6.2W9R3W4.5.4I4R2I3A2W4.4.1R3A6I2A2G1R5.4.2R2G6A2G3R5.4.1T2R7G3R2I1R4.5.1T9R3I1A1G1R3.6.4T1X3R2I2A2G1R3.9.3X1.2R2A2G2R3.8.3W3.5R5.7.2W5.1W1X8.7.3W2.>","8.1I9.6.7.1I1U1I9.5.6.2A1I4V9.2.6.1A1I1A5V9.1.6.1G1A2V4W9.1.5.1G1I1G1V1W1C1W1C1W9.1.6.1G2V1W1C1W1C1W9.1.8.1I5W1I9.9.1.3W6.2W3.2.2W5.1G3X1G3.3W1R3.2.1R4W3R3G3R3W1I1R3.2.1R1I1.3W7R3W1.1I1R3.1.1R1G1A1I3.2T3R2T3.1R1I1A1R2.1.1R1G1A1I2R2.5T3.1R2I1A1R2.1.1R1G2A1I9R3R1I2A1R2.1.1R2G2A1I9R2I2A1G1R2.1.2R1G2A2I7R2I2A1G2R2.2.2R1G2A3I3R3I2A1G2R3.3.1R2G3A5I3A2G1R4.3.2R3G7A3G1R5.4.3R9G2R6.6.9R1R8.9.2W1.2W9.1.8.3W1.3W9.","8.1I9.6.7.1I1U1I3V9.2.6.2A1I5V9.1.6.1A1I1A2V3W9.1.6.1G1A2V2W1C1W9.1.5.1G1I1G2X2W1C1W9.1.6.1G2V1I4W4.2W4.8.1V1X3W4.3W1R3.9.1X1W1G4.2W1I1A1G1R2.6.2R3G2R2.2W1.1I1A1G1R2.5.8R3W2.1I1A1G1R2.5.3W5R2W3.1I1A1G1R2.4.2W2.4T2R3.2I1A1G1R2.4.2W3.1T5R1.2I1A1G2R2.3.1I3W8R2I1A1G1R4.2.1R2A3I6R2I1A2G1R4.2.1R2G2A2I4R2I1A2G1R5.2.2R2G2A6I2A1G1R6.3.2R2G7A2G1R7.4.3R8G2R7.5.9R1R9.7.2W3.2W9.1.7.2W3.1W1X9.1.7.3W2.3W9.","~~8.1I9.6.7.1I1U1I9.5.6.2A1I4V9.2.6.1A1I1A5V9.1.6.1G1A2V4W9.1.5.1G1I1G1V1W1C1W1C1W9.1.6.1G2V1W1C1W1C1W9.1.8.1I5W1I9.9.1G3W1G9.1.7.2R5G2R4W4.6.9R1R6W2.6.1X2W4R1T5.1I3W1.7.3W3T5R1I2A1R2.5.1A1I1R3W5R2I2A1G1R2.4.2A2I1R3W3R2I2A1G2R2.3.1R1G2A3I2X1R3I2A1G2R3.3.1R2G3A5I3A2G1R4.3.2R3G7A3G1R5.4.3R9G2R6.5.1W9R1R8.4.4W4.2W9.1.3.3W6.3W9."],"KeMonito":["~~~~~~~9.1.5H9.9.1.6H8.9.3H4I8.9.3H1I2C1I8.9.3H3I1C8.9.4H1I2J8.9.4H3I1.2K5.9.3H2K2H3L5.9.1H2L1H1L2I2L6.9.4H1L2I8.9.4L3I8.9.5H2I8.^9.1.1L5H8.9.2L2H1.1L1H8.9.1L2H2.1L1H8.9.3K2.2K8.","~~~~~~~~~~~~~~9.5.5H5.9.4.7H4.9.7H4I4.7.1H1L7H1I2C1I4.6.1H1L8H3I1C4.3.1K3H1L5H2L2H1I2J4.3.1K3L2H3I3H2L3I4.3.1K5H4I3H3L5.3.1K5H3I2.1L4H1K4.3.1K2H9.2L1H2K4.","~~~~~9.2.5H8.9.2.6H7.9.1.3H4I7.9.1.3H1I2C1I7.9.1.3H3I1C1.2L1K3.9.1.4H1I2J3L1K3.9.1.4H3I2L5.9.3H2K2H2L6.9.1H2L1H1L2I1L7.9.4H1L2I8.9.4L3I8.9.5H2I8.^9.1.1L5H8.9.2L2H1.1L1H8.9.1L2H2.1L1H8.9.3K2.2K8.~~"],"La Palenquera":["8.2h4.1h2.1h6.9.1h1J1I1J3K2i6.8.1h1.1I1J1I1J3K2M1h4.9.1.1J1I1J1I3K3M4.9.1.9X5.9.2.7X6.9.3.5G7.9.2.1G1I5G6.9.1.1G1I1A1G1b2P1G6.9.1.1G1I1A1b4P6.9.2.1I1A1b1C2P1C6.9.2.2A2P2K1P6.9.3.1b5P6.9.1.2I1.2P2.2I5.9.1P2A6I1A1P4.7.3P2G6A3P3.6.3P3.5G2.2P3.4.3P5.5I2.2P3.3.1R2G6.5I1.3P3.4.1R3G2A8I2P4.4.2R3G2A1I5A1I1A5.5.2R3G1A1I5A1I2G4.6.2R4G5I2G1R4.5.2P3R8G1R5.4.4P1.9R6.4.2P9.2P7.5.1P9.2P7.9.6.3P6.","~~~8.2h4.1h2.1h6.9.1h1J1I1J3K2i6.8.1h1.1I1J1I1J3K2M1h4.9.1.1J1I1J1I3K3M4.9.1.9X5.9.2.7X6.9.3.5G7.9.2.1G1I5G6.9.1.1G1I1A1G1b2P1G6.9.1.1G1I1A1b4P4.1h1.9.2.1I1A1b1C2P1C3.3K9.2.2A2P2K1P3.3K9.3.1b5P4.2P4.2G2.2P2I1.2P2.2I2.2P1.3.1R1G1.4P2A6I1A1P1.2P1.3.1R1G3P2.2G6A5P1.3.1R2G6.5G2.3P2.3.1R2G6.5I7.4.1R2G3A8I6.4.2R2G3A1I5A1I1A5.5.2R3G1A1I5A1I2G4.6.2R4G5I2G1R4.7.3R8G1R1P4.9.9R3P3.9.1.3P6.3P2.","5.2h4.1h2.1h9.6.1h1J1I1J3K2i9.5.1h1.1I1J1I1J3K2M1h7.7.1J1I1J1I3K3M7.7.9X8.8.7X9.9.5G9.1.8.1G1I3G1I9.1.7.1G2I1b3P1I9.7.1G1I1b4P1I9.8.1I1P1C2P1C9.1.8.1A2P2K1P9.1.9.1b4P9.1.7.2I1.2P2.2I8.1.1P2.3P2A6I1A2P6.1.6P2G6A6P3.1R2G1I5.5G5.3P2.1R1G2A2I3.1J5I6.1I2.1R2G2A2I3J9I2A1G2.1.1R2G2A9I1I4A1G1R2.1.2R2G3A1I5A1I3A2G2R2.2.2R2G2A1I5A1I2A2G2R3.3.2R4G5I3G3R4.4.3R8G3R6.6.9R1R8.8.2P2.2P9.1.7.3P2.2P9.1.7.3P2.3P9."],"Psycho Clown":["9.3.1M9.2.9.2.1M>9.2.3M9.1.9.1.1B3M1B9.9.2B1N1B1N2B8.8.3B3N2B8.8.2B2N1C2N1B8.8.2B2N2C1N2G7.8.2B4N1B1C8.8.3B1N1B1N1C1G8.8.3B1N1B1C2G8.8.1C5B1F2G7.8.5C2D1C1G7.7.3D1C2D1C1D1C8.7.3D1N2D3C1D7.8.2D1N5C1D1N6.9.7C2N6.9.7N2D6.9.8N7.8.4N1.4N7.8.4N2.2O8.9.2O3.2O8.9.2O3.4G6.9.4G9.2.","~9.3.1M9.2.9.2.1M>9.2.3M9.1.9.1.1B3M1B9.9.2B1N1B1N2B8.9.2B3N2B8.8.2B2N1C2N1B8.8.2B2N2C1N2G7.8.2B4N1B1C8.8.3B1N1B1N1C1G8.8.3B1N1B1C2G8.9.5B1.2G7.8.2D2C2D2.1G7.5.5D2C2D9.1.4.5D4C1D9.1.3.4D1F6C9.1.3.3N2F5C7.2G2.3.3D1F7C6.2G2.3.2D2.2N5C2.1N3O2G2.7.9N1N3O2G2.7.9N1N1O6.7.5N>8.7N9.","9.5.1M9.9.4.2M9.9.4.3M8.9.3.1B3M1B7.9.2.2B1N1B1N2B6.9.1.3B3N2B6.9.1.2B2N1C2N1B6.9.1.2B2N2C1N2G5.9.1.2B4N1B1C6.9.1.3B1N1B1N1C1G3D1N2.9.1.3B1N1B1C2G2D2N1D1.9.1.1C5B3G1D1N2D1.9.1D5C2D1C1G2.2D1.8.3D5C1D7.8.4D5C7.9.2D2N1D3C7.9.1.2N2D3C7.9.1.1N3D3N7.9.1.8N6.9.4N1.4N6.^9.1.2O3.2O7.9.1.2O3.4G5.9.1.2G>"],"La Parka":["~9.3C2G2C8.9.2C1G4B1C7.8.3C1G3B2G7.8.3C1G4B1G7.8.3C1G2B2C1B7.8.3C1G1C3B1C7.8.2C2G3B2C7.8.3G2C3B8.8.2G5C9.9.4C2B1C8.8.1C1B2C>7.1C1B2C5B8.6.2C1B5C1B2C7.6.2C1B2C5B2C6.6.1C1B6C1B3C6.6.1C1B4C4B8.6.1C1B1.5C1B1C8.8.9C7.8.2C1B1C1.2C1B1C7.^8.2C1B1C1.4C7.8.2C1B1C1.5C6.8.5C9.2.","~7.3C2G2C9.1.7.2C1G4B1C9.6.3C1G3B2G9.6.3C1G4B1G9.6.3C1G2B2C1B9.3.2C1.3C1G1C3B1C9.3.1C1B3C2G3B2C9.3.2C1B2C1G2C3B9.1.4.1C2B7C9.1.5.2C2B3C1B2C9.7.1C1B3C1B3C8.8.2C5B1C8.8.4C1B3C8.9.2C4B1C8.9.4C1B2C8.9.1.2C4B8.9.1.3C1B3C7.9.2.7C6.9.2.2C1B3C1B6.9.3.2C1B2C1B1C5.9.3.2C1B4C5.9.3.8C4.9.4.3C8.","~~9.1.3C2G2C7.9.1.2C1G4B1C6.9.3C1G3B2G6.9.3C1G4B1G6.9.3C1G2B2C1B6.9.3C1G1C3B1C6.9.2C2G3B2C6.9.3G2C3B4C3.9.2G7C3B1C2.8.1C1B4C1B1C2B3C1B1C1.7.1C1B2C5B2C2.3C1.7.1C1B5C1B1C8.7.1C2B1C5B8.7.3C1B3C1B1C8.8.4C4B8.9.5C1B1C8.9.9C6.9.2C1B1C1.2C1B1C6.^9.2C1B1C1.4C6.9.2C1B1C1.5C5.9.5C9.1."]};
+const P_PAL=[0x333d8d,0xd3cde7,0x000000,0xf5765d,0x6e2100,0xd11717,0x08b8ea,0xf7bb1b,0xbf921f,0xa41c1c,0x006092,0xff6600,0x254c93,0x019000,0x9f5611,0xfefdfe,0xaba4c1,0x915f01,0x362400,0xdeac92,0xab8169,0x5e2e00,0x206100,0x7ec43f];
+const SPR={"Cumbiambera":["9.1.1H9.4.9.1H1R1H3S9.8.2A1H5S8.8.1A1H1A2S3T8.8.1F1A2S2T1C1T8.7.1F1H1F2U2T1C1T8.8.1F2S1H4T8.9.1.1S1U3T9.9.2.1U1T1F9.1.9.1.3F2P9.9.1T5P1T8.8.2T5P2T7.7.2T1.2Q4P2T6.6.2T9P3T4.5.4H4P2H3A2T4.4.1P3A6H2A2F1P5.4.2P2F6A2F3P5.4.1Q2P7F3P2H1P4.5.1Q9P3H1A1F1P3.6.4Q1U3P2H2A2F1P3.9.3U1.2P2A2F2P3.8.3T3.5P5.7.2T5.1T1U8.7.3T2.>","8.1H9.6.7.1H1R1H9.5.6.2A1H4S9.2.6.1A1H1A5S9.1.6.1F1A2S4T9.1.5.1F1H1F1S1T1C1T1C1T9.1.6.1F2S1T1C1T1C1T9.1.8.1H5T1H9.9.1.3T6.2T3.2.2T5.1F3U1F3.3T1P3.2.1P4T3P3F3P3T1H1P3.2.1P1H1.3T7P3T1.1H1P3.1.1P1F1A1H3.2Q3P2Q3.1P1H1A1P2.1.1P1F1A1H2P2.5Q3.1P2H1A1P2.1.1P1F2A1H9P3P1H2A1P2.1.1P2F2A1H9P2H2A1F1P2.1.2P1F2A2H7P2H2A1F2P2.2.2P1F2A3H3P3H2A1F2P3.3.1P2F3A5H3A2F1P4.3.2P3F7A3F1P5.4.3P9F2P6.6.9P1P8.9.2T1.2T9.1.8.3T1.3T9.","8.1H9.6.7.1H1R1H3S9.2.6.2A1H5S9.1.6.1A1H1A2S3T9.1.6.1F1A2S2T1C1T9.1.5.1F1H1F2U2T1C1T9.1.6.1F2S1H4T4.2T4.8.1S1U3T4.3T1P3.9.1U1T1F4.2T1H1A1F1P2.6.2P3F2P2.2T1.1H1A1F1P2.5.8P3T2.1H1A1F1P2.5.3T5P2T3.1H1A1F1P2.4.2T2.4Q2P3.2H1A1F1P2.4.2T3.1Q5P1.2H1A1F2P2.3.1H3T8P2H1A1F1P4.2.1P2A3H6P2H1A2F1P4.2.1P2F2A2H4P2H1A2F1P5.2.2P2F2A6H2A1F1P6.3.2P2F7A2F1P7.4.3P8F2P7.5.9P1P9.7.2T3.2T9.1.7.2T3.1T1U9.1.7.3T2.3T9.","~~8.1H9.6.7.1H1R1H9.5.6.2A1H4S9.2.6.1A1H1A5S9.1.6.1F1A2S4T9.1.5.1F1H1F1S1T1C1T1C1T9.1.6.1F2S1T1C1T1C1T9.1.8.1H5T1H9.9.1F3T1F9.1.7.2P5F2P4T4.6.9P1P6T2.6.1U2T4P1Q5.1H3T1.7.3T3Q5P1H2A1P2.5.1A1H1P3T5P2H2A1F1P2.4.2A2H1P3T3P2H2A1F2P2.3.1P1F2A3H2U1P3H2A1F2P3.3.1P2F3A5H3A2F1P4.3.2P3F7A3F1P5.4.3P9F2P6.5.1T9P1P8.4.4T4.2T9.1.3.3T6.3T9."],"KeMonito":["~~~~~~~9.1.5G9.9.1.6G8.9.3G4H8.9.3G1H2C1H8.9.3G3H1C8.9.4G1H2I8.9.4G3H1.2J5.9.3G2J2G3K5.9.1G2K1G1K2H2K6.9.4G1K2H8.9.4K3H8.9.5G2H8.^9.1.1K5G8.9.2K2G1.1K1G8.9.1K2G2.1K1G8.9.3J2.2J8.","~~~~~~~~~~~~~~9.5.5G5.9.4.7G4.9.7G4H4.7.1G1K7G1H2C1H4.6.1G1K8G3H1C4.3.1J3G1K5G2K2G1H2I4.3.1J3K2G3H3G2K3H4.3.1J5G4H3G3K5.3.1J5G3H2.1K4G1J4.3.1J2G9.2K1G2J4.","~~~~~9.2.5G8.9.2.6G7.9.1.3G4H7.9.1.3G1H2C1H7.9.1.3G3H1C1.2K1J3.9.1.4G1H2I3K1J3.9.1.4G3H2K5.9.3G2J2G2K6.9.1G2K1G1K2H1K7.9.4G1K2H8.9.4K3H8.9.5G2H8.^9.1.1K5G8.9.2K2G1.1K1G8.9.1K2G2.1K1G8.9.3J2.2J8.~~"],"La Palenquera":["8.2W4.1W2.1W6.9.1W1I1H1I3J2X6.8.1W1.1H1I1H1I3J2L1W4.9.1.1I1H1I1H3J3L4.9.1.9U5.9.2.7U6.9.3.5F7.9.2.1F1H5F6.9.1.1F1H1A1F1V2O1F6.9.1.1F1H1A1V4O6.9.2.1H1A1V1C2O1C6.9.2.2A2O2J1O6.9.3.1V5O6.9.1.2H1.2O2.2H5.9.1O2A6H1A1O4.7.3O2F6A3O3.6.3O3.5F2.2O3.4.3O5.5H2.2O3.3.1P2F6.5H1.3O3.4.1P3F2A8H2O4.4.2P3F2A1H5A1H1A5.5.2P3F1A1H5A1H2F4.6.2P4F5H2F1P4.5.2O3P8F1P5.4.4O1.9P6.4.2O9.2O7.5.1O9.2O7.9.6.3O6.","~~~8.2W4.1W2.1W6.9.1W1I1H1I3J2X6.8.1W1.1H1I1H1I3J2L1W4.9.1.1I1H1I1H3J3L4.9.1.9U5.9.2.7U6.9.3.5F7.9.2.1F1H5F6.9.1.1F1H1A1F1V2O1F6.9.1.1F1H1A1V4O4.1W1.9.2.1H1A1V1C2O1C3.3J9.2.2A2O2J1O3.3J9.3.1V5O4.2O4.2F2.2O2H1.2O2.2H2.2O1.3.1P1F1.4O2A6H1A1O1.2O1.3.1P1F3O2.2F6A5O1.3.1P2F6.5F2.3O2.3.1P2F6.5H7.4.1P2F3A8H6.4.2P2F3A1H5A1H1A5.5.2P3F1A1H5A1H2F4.6.2P4F5H2F1P4.7.3P8F1P1O4.9.9P3O3.9.1.3O6.3O2.","5.2W4.1W2.1W9.6.1W1I1H1I3J2X9.5.1W1.1H1I1H1I3J2L1W7.7.1I1H1I1H3J3L7.7.9U8.8.7U9.9.5F9.1.8.1F1H3F1H9.1.7.1F2H1V3O1H9.7.1F1H1V4O1H9.8.1H1O1C2O1C9.1.8.1A2O2J1O9.1.9.1V4O9.1.7.2H1.2O2.2H8.1.1O2.3O2A6H1A2O6.1.6O2F6A6O3.1P2F1H5.5F5.3O2.1P1F2A2H3.1I5H6.1H2.1P2F2A2H3I9H2A1F2.1.1P2F2A9H1H4A1F1P2.1.2P2F3A1H5A1H3A2F2P2.2.2P2F2A1H5A1H2A2F2P3.3.2P4F5H3F3P4.4.3P8F3P6.6.9P1P8.8.2O2.2O9.1.7.3O2.2O9.1.7.3O2.3O9."],"Psycho Clown":["9.3.1L9.2.9.2.1L>9.2.3L9.1.9.1.1B3L1B9.9.2B1M1B1M2B8.8.3B3M2B8.8.2B2M1C2M1B8.8.2B2M2C1M2F7.8.2B4M1B1C8.8.3B1M1B1M1C1F8.8.3B1M1B1C2F8.8.1C5B1E2F7.8.5C2D1C1F7.7.3D1C2D1C1D1C8.7.3D1M2D3C1D7.8.2D1M5C1D1M6.9.7C2M6.9.7M2D6.9.8M7.8.4M1.4M7.8.4M2.2N8.9.2N3.2N8.9.2N3.4F6.9.4F9.2.","~9.3.1L9.2.9.2.1L>9.2.3L9.1.9.1.1B3L1B9.9.2B1M1B1M2B8.9.2B3M2B8.8.2B2M1C2M1B8.8.2B2M2C1M2F7.8.2B4M1B1C8.8.3B1M1B1M1C1F8.8.3B1M1B1C2F8.9.5B1.2F7.8.2D2C2D2.1F7.5.5D2C2D9.1.4.5D4C1D9.1.3.4D1E6C9.1.3.3M2E5C7.2F2.3.3D1E7C6.2F2.3.2D2.2M5C2.1M3N2F2.7.9M1M3N2F2.7.9M1M1N6.7.5M>8.7M9.","9.5.1L9.9.4.2L9.9.4.3L8.9.3.1B3L1B7.9.2.2B1M1B1M2B6.9.1.3B3M2B6.9.1.2B2M1C2M1B6.9.1.2B2M2C1M2F5.9.1.2B4M1B1C6.9.1.3B1M1B1M1C1F3D1M2.9.1.3B1M1B1C2F2D2M1D1.9.1.1C5B3F1D1M2D1.9.1D5C2D1C1F2.2D1.8.3D5C1D7.8.4D5C7.9.2D2M1D3C7.9.1.2M2D3C7.9.1.1M3D3M7.9.1.8M6.9.4M1.4M6.^9.1.2N3.2N7.9.1.2N3.4F5.9.1.2F>"],"La Parka":["~9.3C2F2C8.9.2C1F4B1C7.8.3C1F3B2F7.8.3C1F4B1F7.8.3C1F2B2C1B7.8.3C1F1C3B1C7.8.2C2F3B2C7.8.3F2C3B8.8.2F5C9.9.4C2B1C8.8.1C1B2C>7.1C1B2C5B8.6.2C1B5C1B2C7.6.2C1B2C5B2C6.6.1C1B6C1B3C6.6.1C1B4C4B8.6.1C1B1.5C1B1C8.8.9C7.8.2C1B1C1.2C1B1C7.^8.2C1B1C1.4C7.8.2C1B1C1.5C6.8.5C9.2.","~7.3C2F2C9.1.7.2C1F4B1C9.6.3C1F3B2F9.6.3C1F4B1F9.6.3C1F2B2C1B9.3.2C1.3C1F1C3B1C9.3.1C1B3C2F3B2C9.3.2C1B2C1F2C3B9.1.4.1C2B7C9.1.5.2C2B3C1B2C9.7.1C1B3C1B3C8.8.2C5B1C8.8.4C1B3C8.9.2C4B1C8.9.4C1B2C8.9.1.2C4B8.9.1.3C1B3C7.9.2.7C6.9.2.2C1B3C1B6.9.3.2C1B2C1B1C5.9.3.2C1B4C5.9.3.8C4.9.4.3C8.","~~9.1.3C2F2C7.9.1.2C1F4B1C6.9.3C1F3B2F6.9.3C1F4B1F6.9.3C1F2B2C1B6.9.3C1F1C3B1C6.9.2C2F3B2C6.9.3F2C3B4C3.9.2F7C3B1C2.8.1C1B4C1B1C2B3C1B1C1.7.1C1B2C5B2C2.3C1.7.1C1B5C1B1C8.7.1C2B1C5B8.7.3C1B3C1B1C8.8.4C4B8.9.5C1B1C8.9.9C6.9.2C1B1C1.2C1B1C6.^9.2C1B1C1.4C6.9.2C1B1C1.5C5.9.5C9.1."]};
 const CH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%&*()_+-=[]{};:,/<?`"';
 const CLR = {};
 P_PAL.forEach((c, i) => (CLR[CH[i]] = c));
@@ -238,7 +238,7 @@ const CALLS = [
 // =====================================================================
 let S, mode = 'title', modeT = 0, saved = { night: 1 }, menuNight = 1, FX = null;
 // the night in progress (reset by startNight)
-let night, hl, grace, pitchOn, patience, pfast, wakeH, drain, cookOn, mentoraOn, coderOn, mspd, sueRate, nightLen, now, power, sueno, blackout, view, va, pan, panV, focus, camR, statA, light, doors, doorP, plug, cutH, cofT, cofHold, drink, lidY,
+let night, hl, grace, pitchOn, patience, pfast, wakeH, drain, cookOn, mentoraOn, coderOn, mspd, sueRate, nightLen, now, power, sueno, blackout, view, va, pan, panV, focus, camR, statA, light, doors, doorP, plug, cutH, cof, cofT, cofHold, drink, lidY,
   blink, blinkT, blinkDur, dread, heartT, msgT, flick, scareT, breathT, phone, thought, thOnce, vigQ, vigOn, doomed, clicking, clickT, yawn1, yawn2,
   usage, lastView, lostTo, loseT, scrOn, scrDelay, E;
 // how many times each control has been used: prompts fade once learned
@@ -407,7 +407,7 @@ const PW = 1600, PCX = 800;
 const ODOOR = { W: [150, 140, 180, 300], N: [710, 150, 180, 255], E: [1270, 140, 180, 300] };
 const OPANEL = { W: [348, 250], N: [906, 238], E: [1212, 250] };
 const OCENTER = { W: 240, N: 800, E: 1360 };
-const COFFEE_X = 1000, COF_CD = 20; // coffee maker on the desk: look at it, it is focusable like a door
+const COFFEE_X = 1000, BREW = 5, SIP = 1.8; // coffee maker on the desk: look at it, it is focusable like a door
 function buildOffice() {
   canvasTex('office', PW, H, (c) => {
     const R = (col, x, y, w, h) => { c.fillStyle = col; c.fillRect(x, y, w, h); };
@@ -523,7 +523,7 @@ function buildUI() {
   uMapT = [0, 1, 2, 3, 4, 5].map((i) => T(0, 0, i == CTRL ? 'TÚ' : 'CAM ' + (i + 1 - (i > CTRL)), 11, '#bfffcf'));
   uPr = [0, 1, 2].map(() => T(0, 0, '', 13, '#fff', 0.5, 0.5, { backgroundColor: '#000000cc', padding: { x: 6, y: 3 } }));
   uCamBar = T(400, 580, '▲  CÁMARAS', 14, '#cfe', 0.5, 0.5, { backgroundColor: '#1f3b2acc', padding: { x: 70, y: 4 } });
-  uWarn = T(560, 580, '⚠', 22, '#ffd400'); // FNAF2-style warning next to the camera bar
+  uWarn = T(560, 580, '⚠', 34, '#ffd400'); // FNAF2-style warning next to the camera bar
   uArr = [T(16, 300, '◄', 30), T(784, 300, '►', 30)];
   uMsg = T(400, 140, '', 22, '#fff', 0.5, 0.5, { stroke: '#000', strokeThickness: 5, align: 'center' });
   uTh = T(400, 530, '', 14, '#1a1a22', 0.5, 1, { backgroundColor: '#e9e6f2', padding: { x: 10, y: 6 }, wordWrap: { width: 420 }, align: 'center', fontStyle: 'italic bold' });
@@ -655,7 +655,7 @@ const mkE = (role, r, [x, y], st, o) => Object.assign({ role, r, x, y, st, fx: 1
 function startNight(n) {
   clearScreen();
   night = n; [hl, grace, pitchOn, patience, pfast, wakeH, drain, cookOn, mentoraOn, coderOn, mspd, sueRate] = NIGHTS[n - 1]; nightLen = hl * 6; now = 0; power = 100; sueno = n == 1 ? 0 : 8; blackout = 0;
-  view = 'office'; va = 0; pan = 400; panV = 0; focus = 'N'; camR = 1; statA = light = plug = cutH = cofT = cofHold = drink = lidY = 0;
+  view = 'office'; va = 0; pan = 400; panV = 0; focus = 'N'; camR = 1; statA = light = plug = cutH = cof = cofT = cofHold = drink = lidY = 0;
   doors = { W: 0, N: 0, E: 0 }; doorP = { W: 0, N: 0, E: 0 }; plug = -1;
   blink = 0; blinkT = rnd(8, 14); dread = heartT = msgT = flick = 0; scareT = rnd(14, 24); breathT = 3;
   const [nm, ...ln] = CALLS[n - 1];
@@ -688,7 +688,6 @@ const VIG = {
   chef_go: ['chef', 0, 'COCINA: ¡el bajón está listo! Va en camino...'],
   coder_plug: ['coder', 2, 'SALA DE CÓDIGO: "solo necesito un enchufe más..."'],
   coder_go: ['coder', 2, 'SALA DE CÓDIGO: "¿quién me desenchufó?"'],
-  ment_see: ['mentora', -1, 'LA MENTORA se pegó a la cámara: "¡te vi!" Ahora viene por ti.'],
 };
 function vignette(k) {
   if (view == 'cams' && camR == VIG[k][1]) return; // you are already watching it
@@ -778,9 +777,10 @@ function input(dt) {
     if (drink > 0) return; // drinking: cup in front of your face
     if (pr('U') && !blackout) { view = 'cams'; statA = 0.9; sfxCam(); HINT.cams++; return; }
     if (focus == 'C') {
-      // coffee: hold B1 to drink, then the machine needs time to brew again
-      if (cofT <= 0 && !blackout && hd('1')) { if ((cofHold += dt) > 0.6) { cofHold = 0; cofT = COF_CD; drink = 1.3; power -= 1.5; sfxCoffee(); } }
+      // coffee: hold B1 to brew a cup, wait for it, press B1 to drink it
+      if (!cof && !blackout && hd('1')) { if ((cofHold += dt) > 0.6) { cofHold = 0; cof = 1; cofT = BREW; sfxCoffee(); } }
       else cofHold = 0;
+      if (cof > 1 && pr('1')) { cof = 0; drink = SIP; sfxEat(); }
       return;
     }
     light = hd('1') && !blackout && focus ? 1 : 0;
@@ -814,13 +814,13 @@ const doorClosed = (d) => doorP[d] > 0.5;
 // ---- Resources ----
 function updateResources(dt) {
   for (const d of ADOOR) doorP[d] = clamp(doorP[d] + (doors[d] ? dt : -dt) / (d == 'N' ? 1.2 : 0.45), 0, 1);
-  cofT -= dt;
+  if (cof == 1 && (cofT -= dt) <= 0) { cof = 2; tone(880, 0.25, 's', 0.12, 0.3); } // ding
   if (drink > 0 && (drink -= dt) <= 0) { sueno = M.max(0, sueno - 60); setMsg('☕  -SUEÑO', 1.2); }
   if (!blackout) {
     // FNAF-style power: doors, door light, cameras and the coder's extension cord all drain
-    let u = drain + (doorP.W > 0) * 0.14 + (doorP.E > 0) * 0.14 + (doorP.N > 0) * 0.18 + light * 0.18 + (view == 'cams') * 0.07;
+    let u = drain + (doorP.W > 0) * 0.14 + (doorP.E > 0) * 0.14 + (doorP.N > 0) * 0.18 + light * 0.18 + (view == 'cams') * 0.07 + (cof == 1) * 0.1;
     if (plug >= 0) u += night >= 5 ? 0.3 : 0.25;
-    usage = u;
+    usage = 1 + (doorP.W > 0) + (doorP.E > 0) + (doorP.N > 0) + light + (view == 'cams') + (cof == 1) + (plug >= 0); // one bar per device
     if ((power -= u * dt) <= 0) powerOut();
   }
   sueno += dt * 100 / sueRate;
@@ -830,7 +830,7 @@ function updateResources(dt) {
   if (sueno >= 100) lose('sleep');
 }
 function powerOut() {
-  power = light = 0; blackout = 1; doors = { W: 0, N: 0, E: 0 }; view = 'office';
+  power = light = cof = 0; blackout = 1; doors = { W: 0, N: 0, E: 0 }; view = 'office';
   sfxErr(); noise(2, 0.4, 'l', 200, 0, 60);
   Object.assign(E.coder, { st: 'HUNT', huntT: 0, strike: rnd(8, 16) });
   think('No... no, no, no. Se cortó la luz.', 0, 3);
@@ -896,7 +896,7 @@ function walk(e, x, y, sp, dt) {
 function hunt(e, sp, dt) {
   if (!e.kd) {
     let bd = 99;
-    for (const d of ADOOR) { const p = bfs(e.r, CDOOR[d].adj, blocked(1)); if (p && p.length + M.random() * 0.5 < bd) { bd = p.length; e.kd = d; } }
+    for (const d of ADOOR) { const p = bfs(e.r, CDOOR[d].adj, blocked(1)); if (p && p.length < bd) { bd = p.length; e.kd = d; } }
     e.kd = e.kd || 'N'; e.at = e.kt = 0; e.kn = 0.3; e.stay = rnd(10, 18); // how long they wait at a closed door
   }
   const b = blindPt(e.kd);
@@ -963,35 +963,33 @@ function aiSleeper(dt) {
     if (s.t <= 0) { leaveDoor(s); s.st = 'SLEEP'; s.anger = 0; s.wakeAt = now + rnd(1, 2) * hl; } // passes out wherever he is
   }
 }
-// LA MENTORA: if you watch her on camera she walks up to the lens until her
-// face is pressed against it (~2 s). Then she runs for one of your doors.
-// You can follow her run through the cameras; close that door in time.
+// LA MENTORA: she only comes closer while you watch her. Keep her on camera
+// and she walks up to the lens; look away and she backs off. Once her face
+// is pressed against the lens (LENS_T s of watching) she runs for the door
+// nearest to her room. Follow her on the cameras (purple flag) or by ear.
+const LENS_T = 2.2;
 function aiMentora(dt) {
-  const m = E.mentora, active = mentoraOn;
+  const m = E.mentora, watched = view == 'cams' && va >= 1 && camR == m.r && !blindDoor(m) && !blinking();
   m.anim += dt;
   if (m.st == 'DOOM') return;
   if (m.st == 'COOL' && (m.cool -= dt) <= 0) m.st = 'WANDER';
-  const watched = view == 'cams' && va >= 1 && camR == m.r && !blindDoor(m) && !blinking();
-  if (active && m.st == 'WANDER') {
-    m.eye = watched ? (m.eye || 0) + dt : M.max(0, (m.eye || 0) - dt * 0.5);
-    if (m.eye > 1.6) { m.st = 'LENS'; m.lt = 0; m.fx = 1; sfxMurmur(1, 0); }
-  }
+  if (mentoraOn && watched && m.st == 'WANDER') { m.st = 'LENS'; m.lt = 0; sfxMurmur(1, 0); }
   if (m.st == 'LENS') {
+    m.mv = watched;
+    if (!watched) { if ((m.lt -= dt * 0.6) <= 0) m.st = 'WANDER'; return; }
     // she comes straight at the camera until her face fills it
-    m.lt += dt; m.mv = 1;
+    m.lt += dt; m.fx = 1;
     m.x = lerp(m.x, 400, M.min(1, dt * 2));
-    if (watched) statA = M.max(statA, 0.1 + m.lt * 0.2);
-    if (m.lt > 2) {
-      m.st = 'RUSH'; m.eye = 0; leaveDoor(m);
-      if (watched) { sfxStatic(0.6); statA = 1; } else vignette('ment_see');
+    statA = M.max(statA, 0.1 + m.lt * 0.2);
+    if (m.lt > LENS_T) {
+      m.st = 'RUSH'; leaveDoor(m); sfxStatic(0.6); statA = 1; setMsg('"¡TE VI!"', 2);
       m.x = 400; m.y = 560; // she leaves the shot under the camera
     }
   } else if (m.st == 'RUSH') {
-    const h = hunt(m, 175, dt);
+    const h = hunt(m, 130, dt);
     if (h == 'in') return doom('mentora', m);
     if (h == 'shut') { if (m.kt > 0.4) think('"¿Puedo pasar? Es un feedback cortito..."', 'mknock', 3); if (m.kt > m.stay) { m.st = 'COOL'; m.cool = 14; leaveDoor(m); m.goal = null; } }
-  } else if ((m.shake = m.eye > 0.5 && active ? 0.4 : 0)) m.mv = 0; // she noticed the camera: stops and stares
-  else wander(m, mspd, dt, ROOMS5, (r) => (r == 1 ? rnd(12, 22) : rnd(5, 10)));
+  } else wander(m, mspd, dt, ROOMS5, (r) => (r == 1 ? rnd(12, 22) : rnd(5, 10)));
 }
 // THE CHEF: every so often the food is ready and he brings it to you. Open
 // door = he makes you eat (+sueño). Closed door = he knocks and leaves.
@@ -1158,7 +1156,7 @@ function renderCam(r) {
   const mm = E.mentora;
   if (mm.st == 'LENS' && mm.r == r) {
     eImg.mentora.setVisible(false);
-    const k = clamp(mm.lt / 2, 0, 1), [sx, sy, s] = P(400, 300);
+    const k = clamp(mm.lt / LENS_T, 0, 1), [sx, sy, s] = P(400, 300);
     lensImg.setVisible(true).setTexture(frameOf(mm)).setScale(lerp(3.3 * s, 30, k * k)).setPosition(lerp(sx, W / 2 - rC.x, k) + (M.random() - 0.5) * k * 10, lerp(sy - lensImg.height * 2.6 * s, H * 0.3, k) + (M.random() - 0.5) * k * 10);
     order.push(lensImg); lensImg.depth = 1e4;
   }
@@ -1222,12 +1220,12 @@ function renderOffice() {
     if (focus == d) oTop.lineStyle(2, 0xffd400, pulse()).strokeRect(bx - 6, by - 6, 52, 108).strokeRect(x - 4, y - 4, w + 8, h + 8);
   }
   if (callOn() && tick(3)) oTop.fillStyle(0x33ff55).fillRect(842, 438, 8, 8);
-  // coffee maker: LED (green = ready), the cup filling up again, steam when ready
-  const ready = cofT <= 0, fill = ready ? 1 : 1 - cofT / COF_CD;
-  oTop.fillStyle(ready ? 0x33ff55 : 0xff3322).fillRect(COFFEE_X + 16, 412, 6, 6);
+  // coffee maker: LED (red = brewing, green = ready), the cup filling up, steam when ready
+  const fill = cof == 1 ? 1 - cofT / BREW : cof / 2;
+  oTop.fillStyle([0x331111, 0xff3322, 0x33ff55][cof]).fillRect(COFFEE_X + 16, 412, 6, 6);
   if (drink <= 0) oTop.fillStyle(0xe8e2c8).fillRect(COFFEE_X - 12, 448, 24, 22).fillStyle(0x5a3416).fillRect(COFFEE_X - 10, 468 - 18 * fill, 20, 18 * fill);
-  if (!ready) oTop.fillRect(COFFEE_X - 1, 446, 2, 20 - 18 * fill);
-  else for (let i = 0; i < 3; i++) oTop.fillStyle(0xdddddd, 0.3).fillCircle(COFFEE_X + M.sin(now * 3 + i) * 6, 440 - ((now * 30 + i * 12) % 40), 5);
+  if (cof == 1) oTop.fillRect(COFFEE_X - 1, 446, 2, 20 - 18 * fill);
+  if (cof > 1) for (let i = 0; i < 3; i++) oTop.fillStyle(0xdddddd, 0.3).fillCircle(COFFEE_X + M.sin(now * 3 + i) * 6, 440 - ((now * 30 + i * 12) % 40), 5);
   if (focus == 'C') oTop.lineStyle(2, 0xffd400, pulse()).strokeRect(COFFEE_X - 36, 396, 72, 80);
   oBeam.setVisible(!!light);
   if (light) {
@@ -1258,7 +1256,7 @@ function renderHud(dt) {
   uHour.setText((hourOf(now) || 12) + ' AM').setVisible(!cm);
   uNight.setText('NOCHE ' + night).setVisible(!cm);
   uPow.setText(blackout ? 'SIN ENERGÍA' : 'ENERGÍA ' + M.ceil(power) + '%').setColor(power < 20 ? '#ff5555' : '#fff');
-  if (!blackout) { const u = clamp(M.round(usage / 0.16), 1, 5); for (let i = 0; i < 5; i++) gr.fillStyle(i < u ? (i < 2 ? 0x44dd66 : i < 4 ? 0xeecc33 : 0xee4444) : 0x222222).fillRect(668 + i * 22, 46, 18, 12); }
+  if (!blackout) { const u = M.min(usage, 5); for (let i = 0; i < 5; i++) gr.fillStyle(i < u ? (i < 2 ? 0x44dd66 : i < 4 ? 0xeecc33 : 0xee4444) : 0x222222).fillRect(668 + i * 22, 46, 18, 12); }
   gr.fillStyle(0x1a1430).fillRect(626, 88, 150, 10).fillStyle(sueno > 70 ? 0xb44dff : 0x7a5cff).fillRect(626, 88, 150 * clamp(sueno / 100, 0, 1), 10);
   uSue.setText(sueno > 70 ? 'SUEÑO ¡¡CAFÉ!!' : 'SUEÑO').setColor(sueno > 70 && M.sin(now * 8) > 0 ? '#ff77ff' : '#c9b6ff');
   uTab.setVisible(!office && va < 1).y = H * (1 - (office ? 0 : va)); // the tablet flipping up
@@ -1289,7 +1287,8 @@ function renderHud(dt) {
   }
   uCamBar.setVisible(office).setAlpha(blackout ? 0.35 : 1);
   // warning sign next to the camera bar when the pitcher is about to lose it
-  uWarn.setVisible(office && pitchOn && p.st == 'PITCH' && p.bar < 0.35).setAlpha(tick(3) ? 1 : 0.3);
+  const mr = E.mentora.st == 'RUSH' && E.mentora.kd; // she is running to that door
+  uWarn.setVisible(office && (mr || (pitchOn && p.st == 'PITCH' && p.bar < 0.35))).setAlpha(tick(3) ? 1 : 0.3).setColor(mr ? '#c77dff' : '#ffd400').setPosition(mr ? { W: 40, N: 400, E: 760 }[mr] : 560, mr ? (mr == 'N' ? 110 : 300) : 580);
   uArr.forEach((t, i) => t.setVisible(office && !learned('look', 2) && (i ? pan < PW - W - 40 : pan > 40)).setAlpha(0.4 + M.sin(now * 5) * 0.4));
   if (office && !blackout && drink <= 0) {
     if (CDOOR[focus]) {
@@ -1299,9 +1298,9 @@ function renderHud(dt) {
       if (!closed) prompt(1, cx, y + h * 0.35 + 34, 'B1 · LUZ', '#ffe9a0', a);
     } else if (focus == 'C') {
       const cx = COFFEE_X - pan;
-      prompt(0, cx, 372, cofT > 0 ? 'PREPARANDO... ' + M.ceil(cofT) : 'MANTÉN B1 · TOMAR CAFÉ', cofT > 0 ? '#c9b6ff' : '#7f7');
+      prompt(0, cx, 372, ['MANTÉN B1 · PREPARAR CAFÉ', 'PREPARANDO... ' + M.ceil(cofT), 'B1 · TOMAR CAFÉ'][cof], cof > 1 ? '#7f7' : '#c9b6ff');
       gr.fillStyle(0xc9b6ff).fillRect(cx - 50, 386, 100 * cofHold / 0.6, 5);
-    } else if (sueno > 45) prompt(2, COFFEE_X - pan, 372, '☕ CAFÉ', sueno > 70 ? '#ff77ff' : '#c9b6ff', 0.75);
+    } else if (sueno > 45 || cof > 1) prompt(2, COFFEE_X - pan, 372, cof > 1 ? '☕ LISTO' : '☕ CAFÉ', sueno > 70 ? '#ff77ff' : '#c9b6ff', 0.75);
   }
   // static flickers when someone moves on the camera you are watching
   if (cm && Object.values(E).some((e) => e.r == camR && e.mv && !blindDoor(e))) statA = M.max(statA, 0.16);
@@ -1321,7 +1320,7 @@ function renderHud(dt) {
   const lh = M.max(lidY, bl * 310);
   uLid.height = uLid2.height = lh; uLid2.y = H - lh;
   uMug.setVisible(drink > 0);
-  if (drink > 0) { const k = 1 - drink / 1.3; uMug.setY(H + 40 - M.sin(k * PI) * 330).setAngle(-k * 40); }
+  if (drink > 0) { const k = 1 - drink / SIP, h = M.min(1, k * 5, drink * 3), e = h * h * (3 - 2 * h); uMug.setY(H + 250 - e * 330).setAngle(-28 * clamp(k * 2 - 0.4, 0, 1) * e); }
 }
 
 // =====================================================================
