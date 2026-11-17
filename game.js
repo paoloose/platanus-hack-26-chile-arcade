@@ -284,11 +284,11 @@ function blindDoor(e) {
 // =====================================================================
 const NIGHTS = [
   // N1: sleeper + coffee + board · N2: + pitcher · N3: + mentora (and the suit) · N4: + chef · N5: + coder
-  { hl: 30, pitch: 0, ask: [0, 0], pat: 0, pfast: 105, wake: [2, 3], sw: 14, drain: 0.07, cook: 0, mentora: 0, coder: 0, mspd: 50, sue: 100 },
-  { hl: 34, pitch: 1, ask: [0, 0], pat: 55, pfast: 115, wake: [2, 3], sw: 12, drain: 0.07, cook: 0, mentora: 0, coder: 0, mspd: 55, sue: 105 },
-  { hl: 38, pitch: 1, ask: [0, 0], pat: 48, pfast: 125, wake: [2, 3], sw: 11, drain: 0.075, cook: 0, mentora: 1, coder: 0, mspd: 58, sue: 105 },
-  { hl: 42, pitch: 1, ask: [0, 0], pat: 42, pfast: 135, wake: [2, 3], sw: 10, drain: 0.075, cook: 34, mentora: 1, coder: 0, mspd: 62, sue: 100 },
-  { hl: 46, pitch: 1, ask: [0, 0], pat: 36, pfast: 148, wake: [1, 2], sw: 9, drain: 0.08, cook: 30, mentora: 1, coder: 20, mspd: 68, sue: 95 },
+  { hl: 30, grace: 2.4, pitch: 0, ask: [0, 0], pat: 0, pfast: 105, wake: [2, 3], sw: 14, drain: 0.07, cook: 0, mentora: 0, coder: 0, mspd: 50, sue: 100 },
+  { hl: 34, grace: 2.2, pitch: 1, ask: [0, 0], pat: 55, pfast: 115, wake: [2, 3], sw: 12, drain: 0.07, cook: 0, mentora: 0, coder: 0, mspd: 55, sue: 105 },
+  { hl: 38, grace: 2.0, pitch: 1, ask: [0, 0], pat: 48, pfast: 125, wake: [2, 3], sw: 11, drain: 0.075, cook: 0, mentora: 1, coder: 0, mspd: 58, sue: 105 },
+  { hl: 42, grace: 1.8, pitch: 1, ask: [0, 0], pat: 42, pfast: 135, wake: [2, 3], sw: 10, drain: 0.075, cook: 34, mentora: 1, coder: 0, mspd: 62, sue: 100 },
+  { hl: 46, grace: 1.6, pitch: 1, ask: [0, 0], pat: 36, pfast: 148, wake: [1, 2], sw: 9, drain: 0.08, cook: 30, mentora: 1, coder: 20, mspd: 68, sue: 95 },
 ];
 const CALLS = [
   ['RAFA', 'rafa', [
@@ -300,11 +300,11 @@ const CALLS = [
   ['RAFA', 'rafa', [
     '¡Hola de nuevo! Sobreviviste. Te dije que era fácil.',
     'Oye, hay un cabro en la sala de pitch que todavía no termina de presentar. No le gusta presentar solo.',
-    'Tiene que ir pasando diapositivas, si no se pone nervioso. El clicker funciona desde la cámara de esa sala... mantenlo apretado.',
+    'Tiene que ir pasando diapositivas, si no se pone nervioso. El clicker funciona desde la cámara de esa sala: mantén el botón 1.',
   ]],
   ['RAFA', 'rafa', [
     'Hola, ya casi embarcamos. Oye, la mentora se quedó. Dice que nadie le pidió feedback en todo el fin de semana.',
-    'Anda buscando a alguien que esté trabajando. Si te ve... va a querer darte feedback. Mucho feedback. Le encantan los aplausos.',
+    'Anda buscando a alguien que esté trabajando. No te quedes mirándola por la cámara... si te ve, va a ir a darte feedback. Corriendo.',
     'Ah, y en el casillero hay un traje de plátano. Por si acaso.',
   ]],
   ['RAFA', 'rafa', [
@@ -610,7 +610,7 @@ function buildOffice() {
 // =====================================================================
 let wC, rC, oC, uC;
 let bgImg, dynG, emG, projTxt, askTxt;
-let eImg = {}, oImg = {}, ghostImg, oGhost;
+let eImg = {}, oImg = {}, ghostImg, oGhost, lensImg;
 let oBg, oDoors = {}, oG, oBeam, oDim, oLamp, oTop;
 let ui = {};
 let zPoolR = [], zPoolO = [];
@@ -644,6 +644,7 @@ function create() {
   for (const role of ROLES) { eImg[role] = S.add.image(0, 0, role + '0').setOrigin(0.5, 1).setScale(2.6); rC.add(eImg[role]); }
   askTxt = S.add.text(0, 0, '', { fontFamily: 'monospace', fontSize: '15px', color: '#111', fontStyle: 'bold' }).setOrigin(0.5).setVisible(false);
   ghostImg = S.add.image(0, 0, 'ghost0').setOrigin(0.5, 1).setScale(2.6).setVisible(false); rC.add(ghostImg);
+  lensImg = S.add.image(0, 0, 'mentoraH').setVisible(false); rC.add(lensImg);
   emG = S.add.graphics(); rC.add(emG);
   for (let i = 0; i < 14; i++) { const t = S.add.text(0, 0, 'z', { fontFamily: 'monospace', fontSize: '16px', color: '#9fd8ff', fontStyle: 'bold' }).setVisible(false); rC.add(t); zPoolR.push(t); }
 
@@ -897,7 +898,7 @@ const VIG = {
   pile: ['chef', -1, 'Te dejaron platos en la puerta...'],
   coder_plug: ['coder', 2, 'SALA DE CÓDIGO: "solo necesito un enchufe más..."'],
   coder_go: ['coder', 2, 'SALA DE CÓDIGO: "¿quién me desenchufó?"'],
-  ment_see: ['mentora', -1, 'LA MENTORA miró a la cámara... "¡te vi! tengo un feedback"'],
+  ment_see: ['mentora', -1, 'LA MENTORA se pegó a la cámara... "¡te vi!" Ahora viene por ti.'],
   power: ['coder', 4, 'QUEDA POCA ENERGÍA...'],
 };
 function vignette(k, skip) {
@@ -1041,14 +1042,10 @@ function input(dt) {
     let n = nr * 3 + nc;
     if (n == CTRL) n = pr('L') ? 3 : pr('R') ? 5 : g.camR;
     if (n != g.camR) { g.camR = n; SFX.cam(); g.statA = 0.85; HINT.camnav++; }
-    if (pr('1')) {
-      if (g.paCd <= 0 && g.power > 3) { g.paCd = 10; g.power -= 2; addNoise(g.camR, 400, 300, 1.2, 'pa'); SFX.pa(); SFX.applause(0.25, 0); setMsg('ALTAVOZ: ¡APLAUSOS EN ' + RNAME[g.camR] + '!', 1.6); HINT.pa++; think('Aplausos grabados... quien los escuche va a ir para allá.', 'pa1', 3.5); }
-      else SFX.err();
-    }
     // the remote clicker only works through the pitch room camera, with power
-    g.clicking = hd('2') && g.camR == 1 && g.cf.pitch;
+    g.clicking = hd('1') && g.camR == 1 && g.cf.pitch;
     // the coder's outlet can be switched off remotely from his camera (he won't like it)
-    if (g.camR == 2 && g.plug >= 0 && hd('2')) { g.cutH += dt; if (g.cutH > 1.2) { g.cutH = 0; g.plug = -1; SFX.breaker(0); setMsg('ENCHUFE CORTADO', 1.4); coderAngry(); } } else g.cutH = 0;
+    if (g.camR == 2 && g.plug >= 0 && hd('1')) { g.cutH += dt; if (g.cutH > 1.2) { g.cutH = 0; g.plug = -1; SFX.breaker(0); setMsg('ENCHUFE CORTADO', 1.4); coderAngry(); } } else g.cutH = 0;
     if (g.clicking) {
       const p = g.E.pitcher;
       p.bar = M.min(1, p.bar + dt / 2.4); HINT.slide += dt / 2;
@@ -1127,13 +1124,13 @@ function updateThoughts(dt) {
   if (g.th) { g.th.t -= dt; if (g.th.t <= 0) g.th = null; }
   const s = g.E.sleeper, p = g.E.pitcher;
   if (callOn()) return;
-  if (g.cf.pitch && p.st == 'PITCH' && p.bar < 0.35 && !(g.view == 'cams' && g.camR == 1)) think('El de pitch se está poniendo nervioso... (cámara 2, mantén B2)', 'pask', 4);
+  if (g.cf.pitch && p.st == 'PITCH' && p.bar < 0.35 && !(g.view == 'cams' && g.camR == 1)) think('El de pitch se está poniendo nervioso... (cámara 2, mantén B1)', 'pask', 4);
   if (g.view == 'office') {
     const bd = blindDoor(s);
     if (bd && s.st == 'WANDER' && !doorClosed(bd)) think('Escucho ronquidos en la puerta... no prendas la luz. Ya se irá.', 'sleepdoor', 3.6);
   }
   if (g.view == 'cams' && g.camR == 3 && s.st == 'SLEEP') think('Está durmiendo. Cualquier ruido fuerte lo puede despertar...', 'sleepcam', 4);
-  if (g.plug >= 0) think('La energía baja muy rápido... el de código se enchufó a algo. (cámara 3, mantén B2)', 'plugthink', 4);
+  if (g.plug >= 0) think('La energía baja muy rápido... el de código se enchufó a algo. (cámara 3, mantén B1)', 'plugthink', 4);
 }
 
 // ---- Perception ----
@@ -1189,14 +1186,30 @@ function walk(e, x, y, sp, dt) {
   return 0;
 }
 // everyone who hunts you heads for the seat in front of your desk
-const goYou = (e, sp, dt) => go(e, CTRL, SEAT[0], SEAT[1], sp, dt);
-const atYou = (e) => e.r == CTRL && dist(e.x, e.y, SEAT[0], SEAT[1]) < 44;
 // wait at the nearest closed door when every way in is shut
-function waitAtDoor(e, sp, dt) {
-  if (!e.kd) { let best = null, bd = 99; for (const d of ADOOR) { const p = bfs(e.r, CDOOR[d].adj, blockedSet(e)); if (p && p.length < bd) { bd = p.length; best = d; } } e.kd = best || 'N'; }
+// Hunters walk (never through your office) to the nearest of your doors and
+// stop in the doorway. If the door is still open after a short beat, they are
+// in: the scare happens right there, nobody strolls up to your desk.
+// Returns 'go' (on the way), 'wait' (in the doorway), 'in' (got in), 'shut' (door closed).
+function hunt(e, sp, dt) {
+  const g = G;
+  if (!e.kd) {
+    let best = null, bd = 99;
+    for (const d of ADOOR) { const p = bfs(e.r, CDOOR[d].adj, wb(e)); if (p && p.length + M.random() * 0.5 < bd) { bd = p.length; best = d; } }
+    e.kd = best || 'N'; e.at = 0; e.kt = 0; e.knocked = 0;
+  }
   const b = blindPt(e.kd);
-  return go(e, CDOOR[e.kd].adj, b[0], b[1], sp, dt) == 1;
+  if (go(e, CDOOR[e.kd].adj, b[0], b[1], sp, dt, wb(e)) != 1) { e.at = 0; return 'go'; }
+  e.mv = 0;
+  if (doorClosed(e.kd)) {
+    e.kt += dt;
+    if (!e.knocked && e.kt > 0.3) { e.knocked = 1; SFX.knock(e.kd == 'W' ? -0.8 : e.kd == 'E' ? 0.8 : 0); }
+    return 'shut';
+  }
+  e.at += dt;
+  return e.at > g.cf.grace ? 'in' : 'wait';
 }
+function leaveDoor(e) { e.kd = null; e.at = 0; e.kt = 0; e.knocked = 0; }
 
 // =====================================================================
 // AI
@@ -1215,16 +1228,14 @@ function aiPitcher(dt) {
     p.shake = p.bar < 0.35 ? (0.35 - p.bar) * 4 : 0;
     if (p.bar <= 0) { p.bar = 0; p.st = 'SEARCH'; p.shake = 0; p.kd = null; vignette('pitch_out'); }
   } else if (p.st == 'SEARCH') {
-    if (g.clicking && p.bar > 0.3) { p.st = 'RETURN'; setMsg('"¡AH! ¡SIGUIENTE DIAPOSITIVA!"', 1.4); }
-    if (p.lure) { p.lure.t -= dt; go(p, p.lure.r, 400, 320, g.cf.pfast * 0.7, dt); if (p.lure.t <= 0) p.lure = null; return; }
+    if (g.clicking && p.bar > 0.3) { p.st = 'RETURN'; leaveDoor(p); setMsg('"¡AH! ¡SIGUIENTE DIAPOSITIVA!"', 1.4); }
     if (g.suit) { p.mv = 0; return; } // a mascot is not an audience
     const sp = seen(p) ? 30 : g.cf.pfast;
-    if (goYou(p, sp, dt) == -1) waitAtDoor(p, sp, dt); else p.kd = null;
-    if (audience) p.st = 'RETURN';
+    if (hunt(p, sp, dt) == 'in') return doom('pitcher', p);
+    if (audience) { p.st = 'RETURN'; leaveDoor(p); }
   } else if (p.st == 'RETURN') {
-    if (go(p, 1, PITCH_HOME[0], PITCH_HOME[1], 95, dt, p.r == CTRL ? null : wb(p)) == 1) { p.st = 'PITCH'; p.bar = M.max(p.bar, 0.5); }
+    if (go(p, 1, PITCH_HOME[0], PITCH_HOME[1], 95, dt, wb(p)) == 1) { p.st = 'PITCH'; p.bar = M.max(p.bar, 0.5); }
   }
-  for (const n of g.noises) if (n.kind == 'pa' && !n.pd && p.st == 'SEARCH' && gdist(n.r, p.r) <= 2) { n.pd = 1; p.lure = { r: n.r, t: 7 }; } // applause = an audience
 }
 function aiSleeper(dt) {
   const g = G, s = g.E.sleeper;
@@ -1244,7 +1255,7 @@ function aiSleeper(dt) {
   if (s.st == 'WANDER') {
     if (sv == 2) s.anger += dt; else s.anger = M.max(0, s.anger - dt * 0.6);
     s.shake = s.anger / 1.5;
-    if (s.anger >= 1.5) { s.st = 'ANGRY'; s.t = 11; s.kd = null; tone(140, 0.5, 'sawtooth', 0.2, panOf(s), 70); vignette('sleep_mad'); return; }
+    if (s.anger >= 1.5) { s.st = 'ANGRY'; s.t = 11; leaveDoor(s); tone(140, 0.5, 'sawtooth', 0.2, panOf(s), 70); vignette('sleep_mad'); return; }
     const nz = g.noises.filter((n) => g.t - n.t < 5 && gdist(n.r, s.r) <= 2).sort((a, b) => b.t - a.t)[0];
     if (nz && nz !== s.lastN) { s.lastN = nz; s.goal = nz.r == CTRL ? [CDOOR.W.adj, ...blindPt('W')] : [nz.r, nz.x, nz.y]; s.wait = rnd(3, 6); }
     if (!s.goal) {
@@ -1257,8 +1268,10 @@ function aiSleeper(dt) {
   }
   if (s.st == 'ANGRY') {
     s.t -= dt; s.shake = 1.4;
-    if (goYou(s, 165, dt) == -1) { if (waitAtDoor(s, 165, dt)) s.t -= dt * 2; }
-    if (s.t <= 0) fallAsleep(s);
+    const h = hunt(s, 165, dt);
+    if (h == 'in') return doom('sleeper', s);
+    if (h == 'shut') s.t -= dt * 2;
+    if (s.t <= 0) { leaveDoor(s); fallAsleep(s); }
   }
 }
 function wakeSleeper(s) { s.st = 'WANDER'; s.goal = null; s.anger = 0.3; s.door = null; s.wm = 0; s.shake = 0; tone(300, 0.3, 'triangle', 0.1, panOf(s), 500); vignette('sleep_wake'); }
@@ -1266,37 +1279,41 @@ function fallAsleep(s) {
   s.st = 'SLEEP'; s.anger = 0; s.shake = 0; s.door = null; s.wm = 0; s.sleptAt = G.t; s.slept = 1;
   for (const d of DIRS) { const p = DP[d], n = nb(s.r, d); if (n >= 0 && dist(s.x, s.y, p[0], p[1]) < 90) s.door = ek(s.r, n); }
 }
-// LA MENTORA: she wants to give feedback to whoever is working. If you watch
-// her on camera (or light her at your door) she notices you and comes for your
-// office. Don't stare; lure her away with applause on the speaker.
+// LA MENTORA: if you watch her on camera she walks up to the lens until her
+// face is pressed against it (~2 s). Then she runs for one of your doors.
+// You can follow her run through the cameras; close that door in time.
 function aiMentora(dt) {
   const g = G, m = g.E.mentora;
   m.anim += dt;
   const active = g.cf.mentora;
   if (m.st == 'DOOM') return;
   if (m.st == 'COOL') { m.cool -= dt; if (m.cool <= 0) m.st = 'WANDER'; }
-  if (active && !g.suit) {
-    const watched = (g.view == 'cams' && g.va >= 1 && g.camR == m.r && powered(m.r) && !blindDoor(m) && !blinking()) || seen(m) == 2;
-    m.eye = watched ? M.min(1.6, (m.eye || 0) + dt) : M.max(0, (m.eye || 0) - dt * 0.25);
-    if (m.st == 'WANDER' && m.eye > 1.2) { m.st = 'STALK'; m.kd = null; m.kt = 0; m.knocked = 0; vignette('ment_see'); SFX.murmur(1, panOf(m)); }
-    for (const n of g.noises) if (n.kind == 'pa' && !n.md && gdist(n.r, m.r) <= 2) { n.md = 1; m.st = 'WANDER'; m.eye = 0; m.goal = [n.r, 400, 330]; m.wait = rnd(10, 15); }
+  const watched = g.view == 'cams' && g.va >= 1 && g.camR == m.r && !blindDoor(m) && !blinking();
+  if (active && !g.suit && m.st == 'WANDER') {
+    m.eye = watched ? (m.eye || 0) + dt : M.max(0, (m.eye || 0) - dt * 0.5);
+    if (m.eye > 0.6) { m.st = 'LENS'; m.lt = 0; m.fx = 1; SFX.murmur(1, 0); }
   }
-  if (m.st == 'STALK') {
-    if (g.suit) { m.st = 'COOL'; m.cool = 8; return; }
-    if (goYou(m, g.cf.mspd * 1.25, dt) == -1) {
-      if (waitAtDoor(m, g.cf.mspd, dt)) {
-        m.kt += dt;
-        if (m.kt > 0.1 && !m.knocked) { m.knocked = 1; SFX.knock(panOf(m)); think('"¿Puedo pasar? Es un feedback cortito..."', 0, 3); }
-        if (m.kt > 12) { m.st = 'COOL'; m.cool = 12; m.knocked = 0; m.goal = null; }
-      }
-    } else { m.kd = null; m.kt = 0; m.knocked = 0; }
+  if (m.st == 'LENS') {
+    // she comes straight at the camera until her face fills it
+    m.lt += dt; m.mv = 1;
+    m.x = lerp(m.x, 400, M.min(1, dt * 2));
+    if (watched) g.statA = M.max(g.statA, 0.1 + m.lt * 0.2);
+    if (m.lt > 2) {
+      m.st = 'RUSH'; m.eye = 0; leaveDoor(m);
+      if (watched) { SFX.static(0.6); g.statA = 1; } else vignette('ment_see');
+      // she leaves the shot through the nearest doorway
+      m.y = 560; m.x = 400;
+    }
     return;
   }
-  if (!m.goal) {
-    const lit = ROOMS5.filter((r) => powered(r));
-    const r = lit.length && M.random() < 0.8 ? pick(lit) : pick(ROOMS5), sp = pick(SPOTS[r]);
-    m.goal = [r, sp[0], sp[1]]; m.wait = r == 1 ? rnd(12, 22) : rnd(5, 10);
+  if (m.st == 'RUSH') {
+    if (g.suit) { m.st = 'COOL'; m.cool = 10; leaveDoor(m); return; }
+    const h = hunt(m, 175, dt);
+    if (h == 'in') return doom('mentora', m);
+    if (h == 'shut') { if (m.kt > 0.4) think('"¿Puedo pasar? Es un feedback cortito..."', 'mknock', 3); if (m.kt > 4) { m.st = 'COOL'; m.cool = 14; leaveDoor(m); m.goal = null; } }
+    return;
   }
+  if (!m.goal) { const r = pick(ROOMS5), sp = pick(SPOTS[r]); m.goal = [r, sp[0], sp[1]]; m.wait = r == 1 ? rnd(12, 22) : rnd(5, 10); }
   const res = go(m, m.goal[0], m.goal[1], m.goal[2], g.cf.mspd, dt, wb(m));
   if (res == 1) { m.mv = 0; m.wait = (m.wait || 3) - dt; if (m.wait <= 0) m.goal = null; }
   if (res == -1 || m.stuck) m.goal = null;
@@ -1313,15 +1330,19 @@ function aiChef(dt) {
     c.cookT -= dt;
     if (c.cookT <= 0) { c.st = 'DELIVER'; c.kd = null; c.kt = 0; c.knocked = 0; SFX.bell(0.5, panOf(c)); vignette('chef_go'); }
   } else if (c.st == 'DELIVER') {
-    for (const n of g.noises) if (n.kind == 'pa' && !n.cd && gdist(n.r, c.r) <= 2) { n.cd = 1; c.lure = n.r; }
-    if (c.lure != null) { if (go(c, c.lure, 400, 320, 70, dt) == 1) { c.lure = null; c.st = 'RETURN'; SFX.plates(0.5, panOf(c)); } return; }
-    if (goYou(c, 62, dt) == -1) {
-      if (waitAtDoor(c, 62, dt)) {
-        c.kt = (c.kt || 0) + dt;
-        if (c.kt > 0.1 && !c.knocked) { c.knocked = 1; SFX.knock(panOf(c)); think('Están golpeando la puerta...', 'knock'); }
-        if (c.kt > 3) { g.piles[c.kd] = M.min(3, g.piles[c.kd] + 1); SFX.plates(0.8, panOf(c)); vignette('pile'); if (g.piles[c.kd] >= 3) think('Platos atascando la puerta... no cierra. Si mantengo B2 me los como.', 'jam', 4); c.st = 'RETURN'; }
+    const h = hunt(c, 62, dt);
+    if (h == 'in') {
+      if (g.suit) return doom('chef', c);
+      g.sueno += 28; SFX.eat(); setMsg('"¡COME, COME! ¡TE VES FLACO!"  +SUEÑO', 2.2); think('Ugh... después de comer me da sueño.', 'ate'); c.st = 'RETURN'; leaveDoor(c);
+      if (g.sueno >= 100) lose('sleep');
+      return;
+    }
+    if (h == 'shut') {
+      {
+        if (c.kt > 0.4) think('Están golpeando la puerta...', 'knock');
+        if (c.kt > 3) { g.piles[c.kd] = M.min(3, g.piles[c.kd] + 1); SFX.plates(0.8, panOf(c)); vignette('pile'); if (g.piles[c.kd] >= 3) think('Platos atascando la puerta... no cierra. Si mantengo B2 me los como.', 'jam', 4); c.st = 'RETURN'; leaveDoor(c); }
       }
-    } else { c.kd = null; c.kt = 0; c.knocked = 0; }
+    }
   } else if (c.st == 'RETURN') {
     if (go(c, 0, CHEF_HOME[0], CHEF_HOME[1], 70, dt, wb(c)) == 1) { c.st = 'COOK'; c.cookT = g.cf.cook * rnd(0.8, 1.2); }
   }
@@ -1330,7 +1351,7 @@ function aiChef(dt) {
 function coderAngry() {
   const c = G.E.coder;
   if (c.st == 'HUNT' || c.st == 'COMPLAIN') return;
-  c.st = 'WAIT'; c.t = rnd(1.5, 3); c.kd = null; c.kt = 0;
+  c.st = 'WAIT'; c.t = rnd(1.5, 3); leaveDoor(c);
 }
 function aiCoder(dt) {
   const g = G, c = g.E.coder;
@@ -1345,13 +1366,9 @@ function aiCoder(dt) {
   if (c.st == 'BACK') { if (go(c, 2, CODER_HOME[0], CODER_HOME[1], 70, dt, wb(c)) == 1) { c.st = 'TYPE'; c.plugT = g.cf.coder * rnd(0.8, 1.2); } return; }
   if (c.st == 'WAIT') { c.mv = 0; c.t -= dt; if (c.t <= 0) { c.st = 'COMPLAIN'; vignette('coder_go'); } return; }
   if (c.st == 'COMPLAIN') {
-    if (goYou(c, 82, dt) == -1) {
-      if (waitAtDoor(c, 82, dt)) {
-        c.kt += dt;
-        if (c.kt > 0.1 && !c.knocked) { c.knocked = 1; SFX.knock(panOf(c)); }
-        if (c.kt > 6) { c.st = 'BACK'; c.knocked = 0; }
-      }
-    } else { c.kd = null; c.kt = 0; c.knocked = 0; }
+    const h = hunt(c, 82, dt);
+    if (h == 'in') return doom('coder', c);
+    if (h == 'shut' && c.kt > 6) { c.st = 'BACK'; leaveDoor(c); }
     return;
   }
   if (c.st == 'HUNT') {
@@ -1388,7 +1405,8 @@ function updateGhost(dt) {
 function doom(why, e) {
   const g = G;
   if (g.doom) return;
-  g.doom = { why, e, t: 0, max: rnd(3, 8) };
+  g.doom = { why, e, t: 0, max: rnd(2.5, 6) };
+  e.r = CTRL; e.x = SEAT[0]; e.y = SEAT[1]; // it is inside now, out of every camera and doorway
   e.ps = e.st; e.st = 'DOOM'; e.mv = 1; // keeps sounding exactly as before: no silence gives it away
 }
 function updateDoom(dt) {
@@ -1404,16 +1422,7 @@ function updateDoom(dt) {
 function checkAttacks() {
   const g = G, E = g.E;
   if (g.doom) return;
-  if (E.pitcher.st == 'SEARCH' && !g.suit && atYou(E.pitcher)) return doom('pitcher', E.pitcher);
-  if (E.sleeper.st == 'ANGRY' && atYou(E.sleeper)) return doom('sleeper', E.sleeper);
-  const c = E.chef;
-  if (c.st == 'DELIVER' && atYou(c)) {
-    if (g.suit) return doom('chef', c);
-    g.sueno += 28; SFX.eat(); setMsg('"¡COME, COME! ¡TE VES FLACO!"  +SUEÑO', 2.2); think('Ugh... después de comer me da sueño.', 'ate'); c.st = 'RETURN';
-    if (g.sueno >= 100) return lose('sleep');
-  }
-  if (E.coder.st == 'COMPLAIN' && atYou(E.coder)) return doom('coder', E.coder);
-  if (E.mentora.st == 'STALK' && atYou(E.mentora)) return doom('mentora', E.mentora);
+  // arrivals are resolved in hunt(): nothing walks up to the desk anymore
 }
 
 // =====================================================================
@@ -1457,7 +1466,8 @@ function audioCues(dt) {
       else if (e.st == 'WANDER') { SFX.snore(v * 0.7, pn); if (e.mv) SFX.step(v * 0.6, pn); e.snd = e.mv ? 1.4 : 2.6; }
       else { SFX.step(v * 1.6, pn); tone(rnd(200, 300), 0.12, 'sawtooth', 0.12 * v, pn, 120); e.snd = 0.22; }
     } else if (k == 'mentora') {
-      if (!g.cf.mentora) { e.snd = 5; continue; }
+      if (!g.cf.mentora) { e.snd = 5; e.st = real; continue; }
+      if (e.st == 'RUSH') { SFX.step(v * 1.6, pn); tone(2400, 0.03, 'square', 0.04 * v, pn); e.snd = 0.2; e.st = real; continue; }
       SFX.murmur(v * 0.7, pn); e.snd = rnd(2.5, 4.5);
     } else if (k == 'chef') {
       if (e.st == 'DELIVER' || e.st == 'RETURN') { if (e.mv) SFX.squeak(v, pn); e.snd = 0.42; }
@@ -1511,7 +1521,7 @@ function renderCam(r, dt) {
   dynG.clear(); emG.clear();
   projTxt.setVisible(false); askTxt.setVisible(false);
   for (const k2 in E) eImg[k2].setVisible(false);
-  ghostImg.setVisible(false);
+  ghostImg.setVisible(false); lensImg.setVisible(false);
   zPoolR.forEach((t) => t.setVisible(false));
   if (!on) { g.statA = M.max(g.statA, 0.55); return; }
   const pts = (a) => a.map((p) => ({ x: p[0], y: p[1] }));
@@ -1564,9 +1574,16 @@ function renderCam(r, dt) {
     if (k2 == 'sleeper' && e.st == 'SLEEP') im.setRotation(-PI / 2).setOrigin(0.5, 0.5).setPosition(sx + sh, sy - 10 * sc);
     else im.setRotation(0).setOrigin(0.5, 1).setPosition(sx + sh, sy);
     im.setTint((k2 == 'mentora' && !g.cf.mentora) || (k2 == 'chef' && !g.cf.cook) || (k2 == 'coder' && !g.cf.coder) ? 0x888888 : 0xffffff);
-    if (k2 == 'mentora' && e.eye > 0.3 && g.cf.mentora) { im.setScale(sc * (1 + e.eye * 0.15)).setFlipX(false); if (M.random() < e.eye * 0.15) g.statA = M.max(g.statA, 0.4); }
     im.depth = e.y; im.hx = sx; im.hy = sy - (k2 == 'sleeper' && e.st == 'SLEEP' ? 14 : 30) * sc; im.sc = sc;
     order.push(im);
+  }
+  // the mentora walking up to the lens: her face grows until it fills the screen
+  const mm = E.mentora;
+  if (mm.st == 'LENS' && mm.r == r) {
+    eImg.mentora.setVisible(false);
+    const k = clamp(mm.lt / 2, 0, 1), [sx, sy, s] = P(400, 300), cx = W / 2 - rC.x;
+    lensImg.setVisible(true).setScale(lerp(3.3 * s, 30, k * k)).setPosition(lerp(sx, cx, k) + (M.random() - 0.5) * k * 10, lerp(sy - 60 * s, H / 2, k) + (M.random() - 0.5) * k * 10);
+    rC.bringToTop(lensImg);
   }
   const gh = g.ghost;
   if (gh && gh.r == r && !gh.door) { const [sx, sy, s] = P(gh.x, gh.y); ghostImg.setVisible(true).setPosition(sx, sy).setScale(3.3 * s).setTexture(SPRF.ghost[((g.t * 6) | 0) % 4]).setAlpha(0.75); gh.seenT += dt * 0.3; g.statA = M.max(g.statA, 0.25); }
@@ -1730,20 +1747,22 @@ function renderHud(dt) {
       gr.fillStyle(i == g.camR ? 0x2f8f4f : 0x0c2a16, 0.9); gr.fillRect(x, y, 68, 38);
       gr.lineStyle(1, 0x6fdc8f, 1); gr.strokeRect(x, y, 68, 38);
       ui.mapT[i].setPosition(x + 34, y + 19);
+      if (g.E.mentora.st == 'RUSH' && g.E.mentora.r == i && ((g.t * 6) | 0) % 2) { gr.fillStyle(0xc77dff, 0.9); gr.fillRect(x + 3, y + 3, 8, 8); }
       if (i == 1 && g.cf.pitch) { const b = g.E.pitcher.st == 'PITCH' ? g.E.pitcher.bar : 0; gr.lineStyle(3, b < 0.35 && ((g.t * 4) | 0) % 2 ? 0xff3344 : 0x6fdc8f, 1); gr.beginPath(); gr.arc(x + 58, y + 10, 6, -PI / 2, -PI / 2 + M.max(0.05, b) * PI * 2, false); gr.strokePath(); }
     }
-    ui.camHint.setText(g.paCd > 0 ? 'ALTAVOZ: ESPERA ' + M.ceil(g.paCd) + 's · B3 BAJAR' : (learned('camnav', 2) ? '' : 'STICK: CÁMARA · ') + 'B1 ALTAVOZ · B3 BAJAR');
+    ui.camHint.setText('STICK: CÁMARA · B3 BAJAR');
     if (g.camR == 1 && g.cf.pitch) {
       // FNAF2 music box style: a fixed circular timer on the camera UI
-      const p = g.E.pitcher, b = p.st == 'PITCH' ? p.bar : 0, urgent = b < 0.35, cx = 110, cy = 470;
-      gr.fillStyle(0x000000, 0.65); gr.fillCircle(cx, cy, 44);
-      gr.lineStyle(10, 0x1d3a26, 1); gr.strokeCircle(cx, cy, 34);
-      gr.lineStyle(10, urgent ? (((g.t * 4) | 0) % 2 ? 0xff3344 : 0xffd400) : 0x6fff8f, 1); gr.beginPath(); gr.arc(cx, cy, 34, -PI / 2, -PI / 2 + M.max(0.01, b) * PI * 2, false); gr.strokePath();
-      prompt(0, cx + 150, cy, g.clicking ? '▶ PASANDO DIAPOSITIVAS...' : 'MANTÉN B2 · PASAR DIAPOSITIVAS', urgent ? '#ffd400' : '#fff', urgent || !learned('slide', 3) ? 1 : 0.6);
+      const p = g.E.pitcher, b = p.st == 'PITCH' ? p.bar : 0, urgent = b < 0.35, cx = 92, cy = 150;
+      gr.fillStyle(0x000000, 0.7); gr.fillCircle(cx, cy, 44);
+      gr.fillStyle(0x1d3a26, 1); gr.fillCircle(cx, cy, 36);
+      if (b > 0.005) { gr.fillStyle(urgent ? (((g.t * 4) | 0) % 2 ? 0xff3344 : 0xffd400) : 0x6fff8f, 1); gr.beginPath(); gr.slice(cx, cy, 36, -PI / 2, -PI / 2 + b * PI * 2, false); gr.fillPath(); }
+      gr.lineStyle(2, 0x6fdc8f, 1); gr.strokeCircle(cx, cy, 36);
+      prompt(0, cx + 110, cy + 66, g.clicking ? '▶ PASANDO DIAPOSITIVAS...' : 'MANTÉN B1 · PASAR DIAPOSITIVAS', urgent ? '#ffd400' : '#fff', urgent || !learned('slide', 3) ? 1 : 0.6);
     } else if (g.camR == 2 && g.plug >= 0) {
-      prompt(0, 400, 330, g.cutH > 0 ? 'CORTANDO...' : 'MANTÉN B2 · CORTAR SU ENCHUFE', '#ff8888');
+      prompt(0, 400, 330, g.cutH > 0 ? 'CORTANDO...' : 'MANTÉN B1 · CORTAR SU ENCHUFE', '#ff8888');
       if (g.cutH > 0) { gr.fillStyle(0xff8888, 1); gr.fillRect(350, 344, 100 * g.cutH / 1.2, 5); }
-    } else if (!learned('pa', 1) && g.paCd <= 0) prompt(0, 400, 330, 'B1 · ALTAVOZ: hacer ruido en esta sala', '#bfffcf');
+    }
   }
   // office prompts: on the panel of the door you are looking at
   ui.camBar.setVisible(office).setAlpha(g.out ? 0.35 : 1);
