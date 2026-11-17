@@ -294,7 +294,7 @@ const CALLS = [
   ['RAFA', 'rafa', [
     '¿Aló? ¿Aló? Hola, soy Rafa. Te llamo desde la puerta de embarque, así que rapidito.',
     'La hackathon terminó y todos se fueron... bueno, casi todos. No salgas de la sala de control, ¿ya? Para eso están las cámaras.',
-    'En la sala de siesta quedó alguien durmiendo. Déjalo dormir. La luz de cada sala se maneja desde el tablero... y la luz es cara.',
+    'En la sala de siesta quedó alguien durmiendo. Déjalo dormir. Y cuida la energía: las puertas, la luz y las cámaras gastan.',
     'Ah, hay una cafetera en el escritorio. La vas a necesitar. ¡Me llaman, chao!',
   ]],
   ['RAFA', 'rafa', [
@@ -314,7 +314,7 @@ const CALLS = [
   ]],
   ['NACHO', 'nacho', [
     'Hola, soy Nacho. Rafa se quedó dormido en el avión.',
-    'El de la sala de código dice que le faltan cinco minutos. Desde el sábado. Si la energía baja muy rápido, revisa el tablero.',
+    'El de la sala de código dice que le faltan cinco minutos. Desde el sábado. Está enchufado a todo... si la energía baja muy rápido, mira su cámara.',
     'Oye... es la última noche. Mañana devolvemos el edificio. Creo que ellos también lo saben. Así que—',
   ]],
 ];
@@ -593,7 +593,6 @@ function buildOffice() {
     c.fillStyle = '#222'; c.fillRect(800, 430, 60, 38); c.fillStyle = '#444'; c.fillRect(804, 434, 30, 30);
     c.fillStyle = '#333'; c.fillRect(712, 446, 6, 26); c.fillRect(696, 468, 38, 6);
     // breaker box under the desk + banana suit locker
-    c.fillStyle = '#3a3d42'; c.fillRect(456, 520, 80, 70); c.fillStyle = '#ffd400'; c.fillRect(466, 528, 60, 10); c.fillStyle = '#000'; c.font = 'bold 9px monospace'; c.fillText('TABLERO', 472, 536);
     c.fillStyle = '#e6c21a'; c.fillRect(1440, 380, 70, 120); c.fillStyle = '#000'; c.font = 'bold 12px monospace'; c.fillText('TRAJE', 1452, 446);
   });
   canvasTex('door', 180, 300, (c) => {
@@ -669,7 +668,7 @@ function create() {
 
   loadSave();
   goTitle();
-  window.FNAP = { held, HINT, get G() { return G; }, get mode() { return mode; }, startNight, setPower };
+  window.FNAP = { held, HINT, get G() { return G; }, get mode() { return mode; }, startNight };
 }
 
 // =====================================================================
@@ -679,25 +678,12 @@ const TS = (sz, col, extra) => Object.assign({ fontFamily: 'monospace', fontSize
 function uText(x, y, s, sz, col, ox, oy, extra) { const t = S.add.text(x, y, s, TS(sz, col, extra)).setOrigin(ox ?? 0.5, oy ?? 0.5); uC.add(t); return t; }
 function uRect(x, y, w, h, col, a) { const r = S.add.rectangle(x, y, w, h, col, a ?? 1).setOrigin(0); uC.add(r); return r; }
 const KEYBOX = { backgroundColor: '#000000cc', padding: { x: 6, y: 3 } };
-// breaker panel layout: switch slots in a 3x2 grid mirroring the venue map
-const BRK = (i) => [148 + RC[i][0] * 180, 182 + RC[i][1] * 168];
 function buildUI() {
   ui.lid = uRect(0, 0, W, 0, 0x000000); ui.lid2 = uRect(0, H, W, 0, 0x000000); // eyelids: over the scene, under the UI
   ui.g = S.add.graphics(); uC.add(ui.g);
   ui.stat = S.add.tileSprite(0, 0, W, H, 'noise').setOrigin(0).setAlpha(0); uC.add(ui.stat);
   ui.tab = uRect(0, H, W, H, 0x0e1612);
   ui.suit = S.add.image(0, 0, 'suitov').setOrigin(0).setAlpha(0); uC.add(ui.suit);
-  // breaker board overlay
-  ui.bk = S.add.container(0, H); uC.add(ui.bk);
-  ui.bkG = S.add.graphics(); ui.bk.add(ui.bkG);
-  ui.bk.add(S.add.text(400, 132, 'TABLERO ELÉCTRICO', TS(20, '#ffd400')).setOrigin(0.5));
-  ui.bkT = {};
-  for (const i of [...ROOMS5, CTRL]) {
-    const [x, y] = BRK(i);
-    ui.bkT[i] = [S.add.text(x + 74, y + 14, i == CTRL ? 'PRINCIPAL' : RNAME[i], TS(12, '#ddd')).setOrigin(0.5), S.add.text(x + 74, y + 128, '', TS(11, '#aaa', { align: 'center' })).setOrigin(0.5)];
-    ui.bk.add(ui.bkT[i]);
-  }
-  ui.bkHint = S.add.text(400, 548, 'CARGA MÁX 6: SALAS, PUERTAS, LUZ, CÁMARAS Y CAFÉ SUMAN · B2 ON/OFF · B3 CERRAR', TS(11, '#bbb')).setOrigin(0.5); ui.bk.add(ui.bkHint);
   ui.hour = uText(24, 22, '12 AM', 30, '#fff', 0, 0);
   ui.night = uText(26, 58, 'NOCHE 1', 14, '#aab', 0, 0);
   ui.pow = uText(776, 22, '', 16, '#fff', 1, 0);
@@ -707,12 +693,12 @@ function buildUI() {
   ui.camTime = uText(40, 60, '', 13, '#8fdc9f', 0, 0);
   ui.camHint = uText(668, 474, '', 10, '#8fdc9f', 0.5, 0.5);
   ui.noSig = uText(400, 260, 'SIN SEÑAL', 40, '#bfffcf', 0.5, 0.5);
-  ui.noSig2 = uText(400, 304, 'esta sala no tiene energía · actívala en el TABLERO', 13, '#8fdc9f', 0.5, 0.5);
+  ui.noSig2 = uText(400, 304, 'sin energía', 13, '#8fdc9f', 0.5, 0.5);
   ui.mapT = [];
   for (let i = 0; i < 6; i++) ui.mapT.push(uText(0, 0, i == CTRL ? 'TÚ' : 'CAM ' + (i + 1 - (i > CTRL)), 11, '#bfffcf'));
   ui.pr = []; for (let i = 0; i < 5; i++) ui.pr.push(uText(0, 0, '', 13, '#fff', 0.5, 0.5, KEYBOX));
   ui.camBar = uText(400, 580, '▲  CÁMARAS', 14, '#cfe', 0.5, 0.5, { backgroundColor: '#1f3b2acc', padding: { x: 70, y: 4 } });
-  ui.bkBar = uText(16, 582, '▼ TABLERO', 12, '#ffd400', 0, 0.5, KEYBOX);
+  ui.warn = uText(560, 580, '⚠', 22, '#ffd400', 0.5, 0.5); // FNAF2-style warning next to the camera bar
   ui.arrL = uText(16, 300, '◄', 30, '#fff'); ui.arrR = uText(784, 300, '►', 30, '#fff');
   ui.msg = uText(400, 140, '', 22, '#fff', 0.5, 0.5, { stroke: '#000', strokeThickness: 5, align: 'center' });
   ui.th = uText(400, 530, '', 14, '#1a1a22', 0.5, 1, { backgroundColor: '#e9e6f2', padding: { x: 10, y: 6 }, wordWrap: { width: 420 }, align: 'center', fontStyle: 'italic bold' });
@@ -869,10 +855,10 @@ function startNight(n) {
   const cf = NIGHTS[n - 1];
   G = {
     n, cf, hl: cf.hl, len: cf.hl * 6, t: 0, power: 100, sueno: n == 1 ? 0 : 8, out: 0,
-    // view: 'office' | 'cams' | 'panel' (with flip animation va)
+    // view: office | cams (with flip animation va)
     view: 'office', va: 0, pan: 400, panV: 0, focus: 'N', camR: 1, bkSel: 1, statA: 0, light: 0, paCd: 0, lockT: 0,
     doors: { W: 0, N: 0, E: 0 }, shut: 0, piles: { W: 0, N: 0, E: 0 }, jamHold: 0,
-    pw: { 0: 1, 1: 1, 2: 1, 3: 0, 5: 1 }, plug: -1, trip: 0, over: 0, resetH: 0, load: 0, cof: 0, cofT: 0, cofHold: 0, drink: 0, dp: { W: 0, N: 0, E: 0 }, lidY: 0,
+    pw: { 0: 1, 1: 1, 2: 1, 3: 1, 5: 1 }, plug: -1, cutH: 0, cof: 0, cofT: 0, cofHold: 0, drink: 0, dp: { W: 0, N: 0, E: 0 }, lidY: 0,
     suit: 0, suitP: 0, ac: 0, acT: rnd(10, 20), blink: 0, blinkT: rnd(8, 14), ghost: null, ghostT: rnd(6, 12), noises: [], dread: 0, heartT: 0, msgT: 0,
     call: { i: -1, ch: 0, t: -1.5, skip: 0, set: CALLS[n - 1] }, flick: 0, scareT: rnd(14, 24), breathT: 3,
     th: null, thOnce: {}, vig: [], vigOn: null, vigOnce: {},
@@ -893,26 +879,7 @@ function startNight(n) {
 }
 const hourOf = (t) => (t / G.hl) | 0;
 function clockStr(t) { const h = hourOf(t), mm = ((t % G.hl) / G.hl * 60) | 0; return (h == 0 ? 12 : h) + ':' + String(mm).padStart(2, '0') + ' AM'; }
-const powered = (r) => !G.out && !G.trip && !!G.pw[r];
-const CAP = 6; // breaker capacity in load units
-// Everything you run takes load: lit rooms, closed doors, door light, cameras, coffee, the coder's theft.
-function loadNow() {
-  const g = G; let l = 0;
-  for (const r of ROOMS5) if (g.pw[r]) l++;
-  for (const d of ADOOR) if (g.doors[d]) l++;
-  if (g.light) l++;
-  if (g.view == 'cams') l++;
-  if (g.cof == 1) l += 2;
-  if (g.plug >= 0 && g.pw[g.plug]) l += 2;
-  return l;
-}
-function trip() {
-  const g = G;
-  g.trip = 1; g.over = 0; g.doors = { W: 0, N: 0, E: 0 }; g.light = 0; if (g.cof == 1) g.cof = 0;
-  if (g.view == 'cams') g.view = 'office';
-  SFX.breaker(0); noise(1.2, 0.35, 'lowpass', 250, 0, 60);
-  think('¡Saltó el automático! Las puertas se abrieron... (▼ TABLERO → PRINCIPAL → mantén B2)', 0, 4.5);
-}
+const powered = () => !G.out; // every room keeps its lights (and its camera) on
 
 // ---- thoughts & vignettes ----
 function think(s, once, dur) {
@@ -929,7 +896,7 @@ const VIG = {
   chef_go: ['chef', 0, 'COCINA: ¡el bajón está listo! Va en camino...'],
   pile: ['chef', -1, 'Te dejaron platos en la puerta...'],
   coder_plug: ['coder', 2, 'SALA DE CÓDIGO: "solo necesito un enchufe más..."'],
-  coder_go: ['coder', 2, 'SALA DE CÓDIGO: "¿quién me cortó la luz?"'],
+  coder_go: ['coder', 2, 'SALA DE CÓDIGO: "¿quién me desenchufó?"'],
   ment_see: ['mentora', -1, 'LA MENTORA miró a la cámara... "¡te vi! tengo un feedback"'],
   power: ['coder', 4, 'QUEDA POCA ENERGÍA...'],
 };
@@ -1053,8 +1020,7 @@ function input(dt) {
   g.light = 0; g.clicking = 0;
   if (office) {
     if (g.drink > 0) return; // drinking: cup in front of your face
-    if (pr('U') && !g.out && !g.trip) return openView('cams');
-    if (pr('D') && !g.out) return openView('panel');
+    if (pr('U') && !g.out) return openView('cams');
     if (g.focus == 'C') { coffeeInput(dt); return; }
     g.light = hd('1') && !g.out && !g.suit && g.focus ? 1 : 0;
     if (pr('1') && g.light) { SFX.light(); HINT.light++; }
@@ -1076,11 +1042,13 @@ function input(dt) {
     if (n == CTRL) n = pr('L') ? 3 : pr('R') ? 5 : g.camR;
     if (n != g.camR) { g.camR = n; SFX.cam(); g.statA = 0.85; HINT.camnav++; }
     if (pr('1')) {
-      if (g.paCd <= 0 && g.power > 3 && !g.trip) { g.paCd = 10; g.power -= 2; addNoise(g.camR, 400, 300, 1.2, 'pa'); SFX.pa(); SFX.applause(0.25, 0); setMsg('ALTAVOZ: ¡APLAUSOS EN ' + RNAME[g.camR] + '!', 1.6); HINT.pa++; think('Aplausos grabados... quien los escuche va a ir para allá.', 'pa1', 3.5); }
+      if (g.paCd <= 0 && g.power > 3) { g.paCd = 10; g.power -= 2; addNoise(g.camR, 400, 300, 1.2, 'pa'); SFX.pa(); SFX.applause(0.25, 0); setMsg('ALTAVOZ: ¡APLAUSOS EN ' + RNAME[g.camR] + '!', 1.6); HINT.pa++; think('Aplausos grabados... quien los escuche va a ir para allá.', 'pa1', 3.5); }
       else SFX.err();
     }
     // the remote clicker only works through the pitch room camera, with power
-    g.clicking = hd('2') && g.camR == 1 && powered(1) && g.cf.pitch;
+    g.clicking = hd('2') && g.camR == 1 && g.cf.pitch;
+    // the coder's outlet can be switched off remotely from his camera (he won't like it)
+    if (g.camR == 2 && g.plug >= 0 && hd('2')) { g.cutH += dt; if (g.cutH > 1.2) { g.cutH = 0; g.plug = -1; SFX.breaker(0); setMsg('ENCHUFE CORTADO', 1.4); coderAngry(); } } else g.cutH = 0;
     if (g.clicking) {
       const p = g.E.pitcher;
       p.bar = M.min(1, p.bar + dt / 2.4); HINT.slide += dt / 2;
@@ -1089,39 +1057,18 @@ function input(dt) {
     }
     return;
   }
-  // breaker board
-  const [c, r] = RC[g.bkSel];
-  if (pr('3') || (pr('U') && r == 0)) { g.view = 'office'; SFX.cam(); return; }
-  let nc = c, nr = r;
-  if (pr('L')) nc--; if (pr('R')) nc++; if (pr('U')) nr--; if (pr('D')) nr++;
-  nc = clamp(nc, 0, 2); nr = clamp(nr, 0, 1);
-  let n = nr * 3 + nc;
-  if (n != g.bkSel) { g.bkSel = n; SFX.blip(0.6, 0, 300); g.resetH = 0; }
-  if (g.bkSel == CTRL) {
-    if (g.trip && hd('2')) { g.resetH += dt; if (g.resetH > 1.5) { g.trip = 0; g.resetH = 0; SFX.breaker(1); SFX.ding(); think('Volvió la luz.', 0, 2); } }
-    else g.resetH = 0;
-  } else if (pr('2')) setPower(g.bkSel, !g.pw[g.bkSel]);
 }
 // Coffee: look at the machine, hold B1 to brew, wait, press B1 to drink.
 function coffeeInput(dt) {
   const g = G;
   if (g.cof == 0) {
-    if (hd('1') && !g.out && !g.trip) { g.cofHold += dt; if (g.cofHold > 0.6) { g.cof = 1; g.cofT = 4; g.cofHold = 0; g.power -= 1.5; SFX.coffee(); addNoise(CTRL, 400, 400, 0.85, 'coffee'); } }
+    if (hd('1') && !g.out) { g.cofHold += dt; if (g.cofHold > 0.6) { g.cof = 1; g.cofT = 4; g.cofHold = 0; g.power -= 1.5; SFX.coffee(); addNoise(CTRL, 400, 400, 0.85, 'coffee'); } }
     else g.cofHold = 0;
   } else if (g.cof == 2 && pr('1')) { g.cof = 0; g.drink = 1.3; HINT.coffee++; SFX.eat(); }
-}
-function setPower(r, on) {
-  const g = G;
-  g.pw[r] = on ? 1 : 0;
-  SFX.breaker(on);
-  if (!on && (r == g.plug || r == 2)) coderAngry(r);
-  if (!on && r == 1) think('Sin proyector... el de la sala de pitch se va a quedar sin presentación.', 'pdark');
-  if (on && r == 3) think('Si dejo la luz de la siesta prendida... lo voy a despertar.', 'siestaOn');
 }
 function toggleDoor(d) {
   const g = G;
   if (g.out) { SFX.err(); think('No hay energía... las puertas no responden.', 'outdoor'); return; }
-  if (g.trip) { SFX.err(); think('Sin corriente: saltó el automático. Hay que reiniciarlo en el TABLERO.', 0, 3); return; }
   if (d == 'N') { g.doors.N = g.doors.N ? 0 : 1; SFX.shutter(0); }
   else { g.doors[d] = g.doors[d] ? 0 : 1; SFX.door(d == 'W' ? -0.7 : 0.7); }
 }
@@ -1135,16 +1082,12 @@ function updateResources(dt) {
   if (g.cof == 1) { g.cofT -= dt; if (g.cofT <= 0) { g.cof = 2; SFX.ding(); think('Café listo. (mira la cafetera y presiona B1)', 'cofready'); } }
   if (g.drink > 0) { g.drink -= dt; if (g.drink <= 0) { g.sueno = M.max(0, g.sueno - 60); setMsg('☕  -SUEÑO', 1.2); think('Ahh... mucho mejor.', 'coffee1'); } }
   for (const d of ADOOR) if (g.piles[d] >= 3) { if (d == 'N') g.doors.N = 0; else g.doors[d] = 0; }
-  g.load = g.trip ? 0 : loadNow();
-  if (!g.out && !g.trip && g.load > CAP) {
-    // overload: a couple of seconds of alarm to undo it, then the breaker trips
-    g.over += dt;
-    if (((g.over * 3) | 0) != (((g.over - dt) * 3) | 0)) tone(1200, 0.12, 'square', 0.1);
-    think('¡Sobrecarga! Apaga algo o salta el automático...', 'overload', 3);
-    if (g.over > 1.6) trip();
-  } else g.over = 0;
   if (!g.out) {
-    const u = g.cf.drain + (g.trip ? 0 : g.load * 0.045);
+    // FNAF-style power: doors, door light, cameras and the coder's extension cord all drain
+    let u = g.cf.drain;
+    if (g.dp.W > 0) u += 0.14; if (g.dp.E > 0) u += 0.14; if (g.dp.N > 0) u += 0.18;
+    if (g.light) u += 0.18; if (g.view == 'cams') u += 0.07; if (g.cof == 1) u += 0.1;
+    if (g.plug >= 0) u += g.n >= 5 ? 0.3 : 0.25;
     g.use = u;
     g.power -= u * dt;
     if (g.power < 20 && !g.vigOnce.power) vignette('power');
@@ -1189,8 +1132,8 @@ function updateThoughts(dt) {
     const bd = blindDoor(s);
     if (bd && s.st == 'WANDER' && !doorClosed(bd)) think('Escucho ronquidos en la puerta... no prendas la luz. Ya se irá.', 'sleepdoor', 3.6);
   }
-  if (g.view == 'cams' && g.camR == 3 && powered(3) && s.st == 'SLEEP') think('Está durmiendo. Si dejo la luz prendida mucho rato... se va a despertar.', 'sleepcam', 4);
-  if (g.plug >= 0 && g.pw[g.plug]) think('La energía baja muy rápido... ¿alguien se colgó de un circuito? (TABLERO)', 'plugthink', 4);
+  if (g.view == 'cams' && g.camR == 3 && s.st == 'SLEEP') think('Está durmiendo. Cualquier ruido fuerte lo puede despertar...', 'sleepcam', 4);
+  if (g.plug >= 0) think('La energía baja muy rápido... el de código se enchufó a algo. (cámara 3, mantén B2)', 'plugthink', 4);
 }
 
 // ---- Perception ----
@@ -1265,7 +1208,6 @@ function aiPitcher(dt) {
   if (p.st == 'PITCH') {
     go(p, 1, PITCH_HOME[0] + M.sin(g.t * 0.4) * 70, PITCH_HOME[1], 22, dt);
     if (!g.cf.pitch) return; // night 1: he just pitches to the empty room
-    if (!powered(1)) { p.st = 'SEARCH'; p.bar = 0; p.kd = null; vignette('pitch_dark'); return; }
     // his patience runs out unless someone keeps passing slides (or listens to him)
     const was = p.bar;
     if (!audience && !g.clicking) p.bar -= dt / g.cf.pat;
@@ -1291,7 +1233,7 @@ function aiSleeper(dt) {
   if (s.st == 'SLEEP') {
     s.mv = 0;
     // a lit siesta room slowly wakes him up; darkness lets him settle back
-    if (powered(s.r) && s.r == 3) s.wm += dt; else s.wm = M.max(0, s.wm - dt * 0.3);
+    s.wm = M.max(0, s.wm - dt * 0.3);
     s.shake = s.wm / g.cf.sw;
     if (s.wm >= g.cf.sw) wakeSleeper(s);
     if (g.t > s.wakeAt && !s.slept) { s.slept = 1; wakeSleeper(s); }
@@ -1368,7 +1310,7 @@ function aiChef(dt) {
   if (!g.cf.cook) { go(c, 0, CHEF_HOME[0] + M.sin(g.t) * 40, CHEF_HOME[1], 30, dt); return; }
   if (c.st == 'COOK') {
     go(c, 0, CHEF_HOME[0] + M.sin(g.t) * 40, CHEF_HOME[1], 30, dt);
-    c.cookT -= dt * (powered(0) ? 1 : 0.4); // cooking in the dark is slower
+    c.cookT -= dt;
     if (c.cookT <= 0) { c.st = 'DELIVER'; c.kd = null; c.kt = 0; c.knocked = 0; SFX.bell(0.5, panOf(c)); vignette('chef_go'); }
   } else if (c.st == 'DELIVER') {
     for (const n of g.noises) if (n.kind == 'pa' && !n.cd && gdist(n.r, c.r) <= 2) { n.cd = 1; c.lure = n.r; }
@@ -1385,11 +1327,10 @@ function aiChef(dt) {
   }
 }
 // The coder steals power from a lit circuit. Cut it (or his own room) and he comes for you.
-function coderAngry(r) {
+function coderAngry() {
   const c = G.E.coder;
   if (c.st == 'HUNT' || c.st == 'COMPLAIN') return;
   c.st = 'WAIT'; c.t = rnd(1.5, 3); c.kd = null; c.kt = 0;
-  G.plug = -1;
 }
 function aiCoder(dt) {
   const g = G, c = g.E.coder;
@@ -1398,15 +1339,7 @@ function aiCoder(dt) {
   if (c.st == 'TYPE') {
     go(c, 2, CODER_HOME[0], CODER_HOME[1], 40, dt);
     if (!g.cf.coder) return;
-    c.plugT -= dt;
-    const opts = ROOMS5.filter((r) => r != 2 && powered(r));
-    if (c.plugT <= 0 && opts.length && g.plug < 0) { c.st = 'PLUG'; c.target = pick(opts); }
-    return;
-  }
-  if (c.st == 'PLUG') {
-    if (!powered(c.target)) { c.st = 'BACK'; return; }
-    const o = OUTLET[c.target];
-    if (go(c, c.target, o[0], o[1], 70, dt, wb(c)) == 1) { c.t = (c.t || 0) + dt; if (c.t > 2) { c.t = 0; g.plug = c.target; c.st = 'BACK'; SFX.type(0.8, panOf(c)); vignette('coder_plug'); } }
+    if (g.plug < 0) { c.plugT -= dt; if (c.plugT <= 0) { g.plug = 2; SFX.type(0.8, panOf(c)); vignette('coder_plug'); } }
     return;
   }
   if (c.st == 'BACK') { if (go(c, 2, CODER_HOME[0], CODER_HOME[1], 70, dt, wb(c)) == 1) { c.st = 'TYPE'; c.plugT = g.cf.coder * rnd(0.8, 1.2); } return; }
@@ -1456,7 +1389,7 @@ function doom(why, e) {
   const g = G;
   if (g.doom) return;
   g.doom = { why, e, t: 0, max: rnd(3, 8) };
-  e.st = 'DOOM'; e.mv = 0; e.snd = 1e9;
+  e.ps = e.st; e.st = 'DOOM'; e.mv = 1; // keeps sounding exactly as before: no silence gives it away
 }
 function updateDoom(dt) {
   const g = G, d = g.doom;
@@ -1514,6 +1447,7 @@ function audioCues(dt) {
     e.snd -= dt;
     if (e.snd > 0) continue;
     const v = audible(e), pn = panOf(e);
+    const real = e.st; if (real == 'DOOM') e.st = e.ps; // sound as if still on the way
     if (k == 'pitcher') {
       if (e.st == 'PITCH') { if (g.cf.pitch && e.bar < 0.35) { SFX.babble(v * (1.6 - e.bar * 2), pn, 420 + (0.35 - e.bar) * 400); e.snd = 0.5 + e.bar * 2; } else { if (g.cf.pitch) SFX.babble(v * 0.8, pn, 300); e.snd = rnd(0.6, 1.4); } }
       else if (e.st == 'SEARCH') { SFX.babble(v * 1.3, pn, 380); if (e.mv) SFX.step(v * 1.2, pn); e.snd = e.mv ? 0.33 : 0.9; }
@@ -1533,6 +1467,7 @@ function audioCues(dt) {
       else if (e.st == 'TYPE') { SFX.type(v * 0.6, pn); e.snd = rnd(0.3, 0.8); }
       else { SFX.step(v * (e.st == 'COMPLAIN' ? 1.4 : 1), pn); e.snd = e.st == 'COMPLAIN' ? 0.3 : 0.4; }
     }
+    e.st = real;
   }
   g.breathT -= dt;
   if (g.breathT <= 0) { g.breathT = 3.2; for (const k in E) { const bd = blindDoor(E[k]); if (bd && !doorClosed(bd) && (k != 'mentora' || g.cf.mentora)) SFX.breath(0.8, bd == 'W' ? -0.8 : bd == 'E' ? 0.8 : 0); } }
@@ -1568,7 +1503,7 @@ function render(dt) {
 }
 function renderCam(r, dt) {
   const g = G, E = g.E;
-  const on = powered(r);
+  const on = !g.out;
   // FNAF-style slow pan: drift to one side, hold, drift back
   const ph = (g.t * 0.12 + r * 0.37) % 2, k = ph < 1 ? ph : 2 - ph;
   rC.x = -(CAMW - W) * clamp((k - 0.15) / 0.7, 0, 1);
@@ -1593,8 +1528,7 @@ function renderCam(r, dt) {
   }
   // the coder's extension cord, from the doorway to the outlet
   if (g.plug == r) {
-    const o = OUTLET[r], dd = DP[dirTo(r, gdist(r, 2) == 1 ? 2 : bfs(r, 2)[1])];
-    const a = P(dd[0], dd[1]), m = P((dd[0] + o[0]) / 2 + 30, (dd[1] + o[1]) / 2 + 40), b = P(o[0], o[1]);
+    const a = P(LAPTOP[0], LAPTOP[1] + 20), m = P(660, 380), b = P(745, 470, 30);
     dynG.lineStyle(4, 0x111111, 1); dynG.beginPath(); dynG.moveTo(a[0], a[1]); dynG.lineTo(m[0], m[1]); dynG.lineTo(b[0], b[1]); dynG.strokePath();
     emG.fillStyle(((g.t * 4) | 0) % 2 ? 0x44ff66 : 0x117722, 1); emG.fillRect(b[0] - 5, b[1] - 5, 10, 10);
   }
@@ -1641,13 +1575,6 @@ function renderCam(r, dt) {
   const pi = eImg.pitcher, ci = eImg.coder;
   if (pi.visible) { emG.fillStyle(0xff2222, 0.95); emG.fillRect(pi.hx + p.fx * 6 * pi.sc, pi.hy + 6 * pi.sc, 1.5 * pi.sc, 1.5 * pi.sc); }
   if (ci.visible) { emG.fillStyle(0x45ff7a, 0.22); emG.fillCircle(ci.hx, ci.hy, 9 * ci.sc); }
-  if (g.cf.pitch && r == 1 && pi.visible && p.st == 'PITCH') {
-    // circular patience meter over his head
-    const cx = pi.hx, cy = pi.hy - 70, col = p.bar < 0.35 ? 0xff3344 : 0x6fff8f;
-    dynG.lineStyle(10, 0x000000, 0.6); dynG.strokeCircle(cx, cy, 26);
-    dynG.lineStyle(8, col, 1); dynG.beginPath(); dynG.arc(cx, cy, 26, -PI / 2, -PI / 2 + p.bar * PI * 2, false); dynG.strokePath();
-    rC.bringToTop(dynG);
-  }
   if (g.cf.pitch && p.st == 'PITCH' && p.bar < 0.35 && pi.visible) {
     const kk = 1 - p.bar / 0.35, bx = pi.hx + 140 + (M.random() - 0.5) * kk * 8, by = pi.hy - 40;
     dynG.fillStyle(0xffffff, 1); dynG.fillRoundedRect(bx - 110, by - 22, 220, 34, 8); dynG.fillTriangle(bx - 100, by + 12, bx - 80, by + 12, bx - 112, by + 26);
@@ -1768,7 +1695,7 @@ function hideHud() {
   ui.pr && ui.pr.forEach((t) => t.setVisible(false));
   ui.mapT && ui.mapT.forEach((t) => t.setVisible(false));
   ui.g && ui.g.clear(); ui.call && ui.call.setVisible(false); ui.vig && ui.vig.setVisible(false);
-  ui.stat && ui.stat.setAlpha(0); ui.suit && ui.suit.setAlpha(0); ui.tab && (ui.tab.y = H); ui.bk && (ui.bk.y = H);
+  ui.stat && ui.stat.setAlpha(0); ui.suit && ui.suit.setAlpha(0); ui.tab && (ui.tab.y = H); ui.warn && ui.warn.setVisible(false);
   ui.lid && (ui.lid.height = 0, ui.lid2.height = 0);
   ui.scr && ui.scr.setVisible(false); ui.scrT && ui.scrT.setText('');
   ui.fade && ui.fade.setAlpha(0);
@@ -1781,20 +1708,16 @@ function renderHud(dt) {
   ui.hour.setText((hourOf(g.t) == 0 ? 12 : hourOf(g.t)) + ' AM');
   ui.night.setText('NOCHE ' + g.n);
   ui.pow.setText(g.out ? 'SIN ENERGÍA' : 'ENERGÍA ' + M.ceil(g.power) + '%').setColor(g.power < 20 ? '#ff5555' : '#ffffff');
-  // breaker load: one box per unit of capacity, red when you go over
-  if (!g.out) for (let i = 0; i < CAP + 2; i++) { const over = i >= CAP, f = i < (g.trip ? 0 : g.load); gr.fillStyle(f ? (over ? 0xff3333 : i >= CAP - 1 ? 0xeecc33 : 0x44dd66) : over ? 0x2a0a0a : 0x222222, f && over && ((g.t * 6) | 0) % 2 ? 0.4 : 1); gr.fillRect(626 + i * 19, 46, 15, 12); }
-  if (g.trip) { ui.pow.setText('¡AUTOMÁTICO!').setColor(((g.t * 3) | 0) % 2 ? '#ff4444' : '#ffaa44'); }
+  if (!g.out) { const u = clamp(M.round((g.use || 0) / 0.16), 1, 5); for (let i = 0; i < 5; i++) { gr.fillStyle(i < u ? (i < 2 ? 0x44dd66 : i < 4 ? 0xeecc33 : 0xee4444) : 0x222222, 1); gr.fillRect(668 + i * 22, 46, 18, 12); } }
   gr.fillStyle(0x1a1430, 1); gr.fillRect(626, 88, 150, 10);
   gr.fillStyle(g.sueno > 70 ? 0xb44dff : 0x7a5cff, 1); gr.fillRect(626, 88, 150 * clamp(g.sueno / 100, 0, 1), 10);
   ui.sue.setText(g.sueno > 70 ? 'SUEÑO ¡¡CAFÉ!!' : 'SUEÑO').setColor(g.sueno > 70 && M.sin(g.t * 8) > 0 ? '#ff77ff' : '#c9b6ff');
-  const office = g.view == 'office', cm = g.view == 'cams' && g.va >= 1, bk = g.view == 'panel';
-  // flip-up animations: green tablet for cameras, metal breaker box for the panel
+  const office = g.view == 'office', cm = g.view == 'cams' && g.va >= 1;
   ui.tab.y = H * (1 - (g.view == 'cams' ? g.va : 0)); ui.tab.setVisible(g.view == 'cams' && g.va < 1);
-  ui.bk.y = bk ? H * (1 - g.va) : H; ui.bk.setVisible(bk);
-  ui.hour.setVisible(!cm && !bk); ui.night.setVisible(!cm && !bk);
+  ui.hour.setVisible(!cm); ui.night.setVisible(!cm);
   for (const k of ['camLbl', 'rec', 'camTime', 'camHint']) ui[k].setVisible(cm);
   ui.mapT.forEach((t) => t.setVisible(cm));
-  const nos = cm && !powered(g.camR);
+  const nos = cm && g.out;
   ui.noSig.setVisible(nos).setAlpha(0.6 + M.random() * 0.4); ui.noSig2.setVisible(nos);
   if (cm) {
     ui.camLbl.setText('CAM ' + (g.camR + 1 - (g.camR > CTRL)) + ' · ' + RNAME[g.camR]);
@@ -1804,21 +1727,28 @@ function renderHud(dt) {
     const mx = 560, my = 372;
     for (let i = 0; i < 6; i++) {
       const [c, r] = RC[i], x = mx + c * 74, y = my + r * 44;
-      gr.fillStyle(i == g.camR ? 0x2f8f4f : i != CTRL && !powered(i) ? 0x0a0a0a : 0x0c2a16, 0.9); gr.fillRect(x, y, 68, 38);
+      gr.fillStyle(i == g.camR ? 0x2f8f4f : 0x0c2a16, 0.9); gr.fillRect(x, y, 68, 38);
       gr.lineStyle(1, 0x6fdc8f, 1); gr.strokeRect(x, y, 68, 38);
-      ui.mapT[i].setPosition(x + 34, y + 19).setAlpha(i == CTRL || powered(i) ? 1 : 0.35);
+      ui.mapT[i].setPosition(x + 34, y + 19);
       if (i == 1 && g.cf.pitch) { const b = g.E.pitcher.st == 'PITCH' ? g.E.pitcher.bar : 0; gr.lineStyle(3, b < 0.35 && ((g.t * 4) | 0) % 2 ? 0xff3344 : 0x6fdc8f, 1); gr.beginPath(); gr.arc(x + 58, y + 10, 6, -PI / 2, -PI / 2 + M.max(0.05, b) * PI * 2, false); gr.strokePath(); }
     }
     ui.camHint.setText(g.paCd > 0 ? 'ALTAVOZ: ESPERA ' + M.ceil(g.paCd) + 's · B3 BAJAR' : (learned('camnav', 2) ? '' : 'STICK: CÁMARA · ') + 'B1 ALTAVOZ · B3 BAJAR');
-    if (g.camR == 1 && powered(1) && g.cf.pitch) {
-      const p = g.E.pitcher, urgent = p.bar < 0.35;
-      prompt(0, 400, 330, g.clicking ? '▶ PASANDO DIAPOSITIVAS...' : 'MANTÉN B2 · PASAR DIAPOSITIVAS', urgent ? '#ffd400' : '#fff', urgent || !learned('slide', 3) ? 1 : 0.5);
-    } else if (!learned('pa', 1) && g.paCd <= 0 && powered(g.camR)) prompt(0, 400, 330, 'B1 · ALTAVOZ: hacer ruido en esta sala', '#bfffcf');
+    if (g.camR == 1 && g.cf.pitch) {
+      // FNAF2 music box style: a fixed circular timer on the camera UI
+      const p = g.E.pitcher, b = p.st == 'PITCH' ? p.bar : 0, urgent = b < 0.35, cx = 110, cy = 470;
+      gr.fillStyle(0x000000, 0.65); gr.fillCircle(cx, cy, 44);
+      gr.lineStyle(10, 0x1d3a26, 1); gr.strokeCircle(cx, cy, 34);
+      gr.lineStyle(10, urgent ? (((g.t * 4) | 0) % 2 ? 0xff3344 : 0xffd400) : 0x6fff8f, 1); gr.beginPath(); gr.arc(cx, cy, 34, -PI / 2, -PI / 2 + M.max(0.01, b) * PI * 2, false); gr.strokePath();
+      prompt(0, cx + 150, cy, g.clicking ? '▶ PASANDO DIAPOSITIVAS...' : 'MANTÉN B2 · PASAR DIAPOSITIVAS', urgent ? '#ffd400' : '#fff', urgent || !learned('slide', 3) ? 1 : 0.6);
+    } else if (g.camR == 2 && g.plug >= 0) {
+      prompt(0, 400, 330, g.cutH > 0 ? 'CORTANDO...' : 'MANTÉN B2 · CORTAR SU ENCHUFE', '#ff8888');
+      if (g.cutH > 0) { gr.fillStyle(0xff8888, 1); gr.fillRect(350, 344, 100 * g.cutH / 1.2, 5); }
+    } else if (!learned('pa', 1) && g.paCd <= 0) prompt(0, 400, 330, 'B1 · ALTAVOZ: hacer ruido en esta sala', '#bfffcf');
   }
-  if (bk) renderPanel(gr);
   // office prompts: on the panel of the door you are looking at
-  ui.camBar.setVisible(office).setAlpha(g.out || g.trip ? 0.35 : 1);
-  ui.bkBar.setVisible(office).setAlpha(g.out ? 0.35 : 1);
+  ui.camBar.setVisible(office).setAlpha(g.out ? 0.35 : 1);
+  // warning sign next to the camera bar when the pitcher is about to lose it
+  ui.warn.setVisible(office && g.cf.pitch && g.E.pitcher.st == 'PITCH' && g.E.pitcher.bar < 0.35).setAlpha(((g.t * 3) | 0) % 2 ? 1 : 0.3);
   const showArr = office && !learned('look', 2);
   ui.arrL.setVisible(showArr && g.pan > 40).setAlpha(0.4 + M.sin(g.t * 5) * 0.4);
   ui.arrR.setVisible(showArr && g.pan < PW - W - 40).setAlpha(0.4 + M.sin(g.t * 5) * 0.4);
@@ -1843,7 +1773,7 @@ function renderHud(dt) {
   g.statA = M.max(0, g.statA - dt * 2.2);
   ui.stat.setAlpha(clamp(g.statA * 0.9 + (g.out ? 0.03 : 0), 0, 1)).setTilePosition(rnd(0, 200), rnd(0, 150));
   g.msgT -= dt; ui.msg.setAlpha(clamp(g.msgT * 2, 0, 1));
-  if (g.th) ui.th.setVisible(true).setText(g.th.s).setPosition(400, callOn() ? 452 : bk ? 590 : 548).setAlpha(clamp(g.th.t * 3, 0, 1));
+  if (g.th) ui.th.setVisible(true).setText(g.th.s).setPosition(400, callOn() ? 452 : 548).setAlpha(clamp(g.th.t * 3, 0, 1));
   else ui.th.setVisible(false);
   const c = g.call, on = callOn();
   ui.call.setVisible(on);
@@ -1863,45 +1793,6 @@ function renderHud(dt) {
   if (g.drink > 0) { const k = 1 - g.drink / 1.3; ui.mug.setY(H + 40 - M.sin(k * PI) * 330).setAngle(-k * 40); }
   ui.fade.setAlpha(M.max(0, ui.fade.alpha - dt * 5));
 }
-// Breaker board: one switch per room, laid out like the venue map
-function renderPanel() {
-  const g = G, b = ui.bkG;
-  b.clear();
-  b.fillStyle(0x24272c, 0.97); b.fillRect(90, 110, 620, 460);
-  b.lineStyle(4, 0x4a4f57, 1); b.strokeRect(90, 110, 620, 460);
-  b.fillStyle(0xffd400, 1); for (let x = 96; x < 704; x += 24) b.fillRect(x, 116, 12, 4);
-  for (const i of [...ROOMS5, CTRL]) {
-    const [x, y] = BRK(i), sel = g.bkSel == i;
-    b.fillStyle(sel ? 0x3a3f48 : 0x2d3036, 1); b.fillRect(x, y, 148, 150);
-    b.lineStyle(2, sel ? 0xffd400 : 0x444a52, 1); b.strokeRect(x, y, 148, 150);
-    const [lbl, sub] = ui.bkT[i];
-    if (i == CTRL) {
-      lbl.setColor('#ffd400');
-      if (g.trip) {
-        sub.setText(g.resetH > 0 ? 'REINICIANDO...' : '¡SALTÓ!\nMANTÉN B2: REINICIAR').setColor('#ff5555');
-        b.fillStyle(0x441111, 1); b.fillRect(x + 20, y + 40, 108, 60);
-        b.fillStyle(0xffaa33, 1); b.fillRect(x + 24, y + 44, 100 * g.resetH / 1.5, 52);
-      } else {
-        sub.setText('CARGA ' + g.load + ' / ' + CAP + '\nENERGÍA ' + M.ceil(g.power) + '%').setColor(g.load > CAP ? '#ff5555' : '#aaa');
-        b.fillStyle(0x111111, 1); b.fillRect(x + 20, y + 40, 108, 60);
-        for (let k = 0; k < CAP; k++) { b.fillStyle(k < g.load ? (g.load > CAP ? 0xff3333 : 0x44dd66) : 0x2a2a2a, 1); b.fillRect(x + 26 + k * 17, y + 50, 13, 40); }
-      }
-      continue;
-    }
-    const on = !!g.pw[i], plug = g.plug == i && on;
-    // lever
-    b.fillStyle(0x111111, 1); b.fillRect(x + 54, y + 34, 40, 74);
-    b.fillStyle(on ? 0x44dd66 : 0x777777, 1); b.fillRect(x + 58, on ? y + 38 : y + 72, 32, 32);
-    b.fillStyle(on ? (plug && ((g.t * 6) | 0) % 2 ? 0xff3333 : 0x33ff66) : 0x331111, 1); b.fillCircle(x + 120, y + 44, 7);
-    let s = on ? 'ENCENDIDA · carga 1' : 'APAGADA';
-    if (plug) s = '¡SOBRECARGA!';
-    else if (i == 1) s += on ? '\nproyector ON' : '\nproyector OFF';
-    else if (i == 3 && on) s += '\n(lo despierta)';
-    lbl.setColor(on ? '#fff' : '#888');
-    sub.setText(s).setColor(plug ? '#ff5555' : on ? '#aaccaa' : '#777');
-  }
-}
-
 // =====================================================================
 // LOSE / WIN
 // =====================================================================
