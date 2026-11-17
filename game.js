@@ -437,70 +437,97 @@ function buildFxTex() {
   });
 }
 
-// ---- Room backgrounds (seen only through the cameras) ----
-function px(c, col, x, y, w, h) { c.fillStyle = col; c.fillRect(x, y, w, h); }
-function roomBase(c, r, floorA, floorB, wall, tile) {
-  for (let y = 96; y < 560; y += tile) for (let x = 48; x < 752; x += tile)
-    px(c, (((x / tile) | 0) + ((y / tile) | 0)) % 2 ? floorA : floorB, x, y, tile, tile);
-  px(c, wall, 0, 0, W, 96); px(c, '#000', 0, 90, W, 6);
-  px(c, '#0a0a0e', 0, 0, 48, H); px(c, '#0a0a0e', 752, 0, 48, H); px(c, '#0a0a0e', 0, 560, W, 40);
-  px(c, 'rgba(255,255,255,.05)', 0, 70, W, 4);
-  for (const d of DIRS) {
-    if (nb(r, d) < 0) continue;
-    if (d == 'N') { px(c, '#030303', 352, 18, 96, 78); px(c, '#555', 346, 14, 6, 82); px(c, '#555', 448, 14, 6, 82); px(c, '#555', 346, 12, 108, 6); }
-    if (d == 'S') px(c, '#030303', 352, 560, 96, 40);
-    if (d == 'W') px(c, '#030303', 0, 252, 48, 96);
-    if (d == 'E') px(c, '#030303', 752, 252, 48, 96);
+// ---- Camera shots: each camera is a fixed, high-corner perspective view of
+// a specific scene (FNAF style). The world keeps its floor-plan coordinates;
+// P() projects a floor point (x, y) at height h into the 1000px-wide shot.
+const CF = 450, CAMH = 166.7, CY0 = 130, CX0 = 500, CAMW = 1000;
+function P(x, y, h) { const s = CF / (700 - y); return [CX0 + (x - 400) * s, CY0 + (CAMH - (h || 0)) * s, s]; }
+function quad(c, col, pts) { c.fillStyle = col; c.beginPath(); pts.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); c.closePath(); c.fill(); }
+// a box standing on the floor: [x, y, w, d] footprint, height h
+function box(c, o, h, front, top, side) {
+  const [x, y, w, d] = o, x2 = x + w, y2 = y + d;
+  if (side) {
+    if (x2 < 400) quad(c, side, [P(x2, y, 0), P(x2, y2, 0), P(x2, y2, h), P(x2, y, h)]);
+    if (x > 400) quad(c, side, [P(x, y, 0), P(x, y2, 0), P(x, y2, h), P(x, y, h)]);
   }
+  quad(c, top, [P(x, y, h), P(x2, y, h), P(x2, y2, h), P(x, y2, h)]);
+  quad(c, front, [P(x, y2, 0), P(x2, y2, 0), P(x2, y2, h), P(x, y2, h)]);
 }
-function furn(c, r, col, top) {
-  for (const o of OBS[r]) {
-    px(c, 'rgba(0,0,0,.45)', o[0] + 6, o[1] + 8, o[2], o[3]);
-    px(c, col, o[0], o[1] - 12, o[2], o[3] + 12);
-    px(c, top, o[0], o[1] - 12, o[2], 10);
+function wallText(c, s, x, h, size, col) { const [sx, sy, k] = P(x, 96, h); c.fillStyle = col; c.font = 'bold ' + ((size * k) | 0) + 'px monospace'; c.textAlign = 'center'; c.fillText(s, sx, sy); c.textAlign = 'left'; }
+const DOORQ = {
+  N: [[352, 96, 0], [448, 96, 0], [448, 96, 150], [352, 96, 150]],
+  W: [[48, 252, 0], [48, 348, 0], [48, 348, 150], [48, 252, 150]],
+  E: [[752, 252, 0], [752, 348, 0], [752, 348, 150], [752, 252, 150]],
+};
+const doorPts = (d) => DOORQ[d].map((q) => P(q[0], q[1], q[2]));
+function shell(c, r, floorA, floorB, wall, tile) {
+  c.fillStyle = '#050506'; c.fillRect(0, 0, CAMW, H);
+  quad(c, '#0d0d10', [P(48, 96, 220), P(752, 96, 220), P(752, 640, 220), P(48, 640, 220)]); // ceiling
+  // floor tiles in perspective
+  for (let y = 96; y < 640; y += tile) for (let x = 48; x < 752; x += tile)
+    quad(c, (((x / tile) | 0) + ((y / tile) | 0)) % 2 ? floorA : floorB, [P(x, y), P(x + tile, y), P(x + tile, y + tile), P(x, y + tile)]);
+  quad(c, wall, [P(48, 96, 0), P(752, 96, 0), P(752, 96, 220), P(48, 96, 220)]);
+  quad(c, 'rgba(0,0,0,.25)', [P(48, 96, 0), P(48, 640, 0), P(48, 640, 220), P(48, 96, 220)]);
+  quad(c, wall, [P(48, 96, 4), P(48, 640, 4), P(48, 640, 220), P(48, 96, 220)]);
+  quad(c, 'rgba(0,0,0,.35)', [P(48, 96, 4), P(48, 640, 4), P(48, 640, 220), P(48, 96, 220)]);
+  quad(c, wall, [P(752, 96, 4), P(752, 640, 4), P(752, 640, 220), P(752, 96, 220)]);
+  quad(c, 'rgba(0,0,0,.35)', [P(752, 96, 4), P(752, 640, 4), P(752, 640, 220), P(752, 96, 220)]);
+  quad(c, 'rgba(255,255,255,.06)', [P(48, 96, 20), P(752, 96, 20), P(752, 96, 26), P(48, 96, 26)]); // baseboard
+  for (const d of ['N', 'W', 'E']) if (nb(r, d) >= 0) {
+    quad(c, '#3a3d42', doorPts(d).map((p, i) => [p[0] + (i == 0 || i == 3 ? -4 : 4), p[1] - (i > 1 ? 6 : 0)]));
+    quad(c, '#020202', doorPts(d));
+    const t = DOORQ[d][3]; const [sx, sy, k] = P(t[0] + (d == 'N' ? 48 : 0), t[1] + (d == 'N' ? 0 : 48), 168);
+    c.fillStyle = '#0c6'; c.fillRect(sx - 22 * k, sy - 6 * k, 44 * k, 12 * k);
   }
 }
 function buildRooms() {
-  canvasTex('room0', W, H, (c) => {
-    roomBase(c, 0, '#c9c9c0', '#3a3a3a', '#6e6a5c', 32);
-    furn(c, 0, '#8d8778', '#b5b0a0');
-    px(c, '#222', 170, 112, 70, 34);
-    for (let i = 0; i < 4; i++) { c.strokeStyle = '#a33'; c.lineWidth = 3; c.beginPath(); c.arc(185 + (i % 2) * 38, 122 + ((i / 2) | 0) * 16, 6, 0, PI * 2); c.stroke(); }
-    px(c, '#9ab', 100, 112, 50, 30); px(c, '#567', 108, 118, 34, 18);
-    px(c, '#ddd', 640, 96, 80, 70); px(c, '#999', 700, 110, 6, 30);
-    px(c, '#e8d', 130, 395, 30, 20); px(c, '#ec5', 170, 398, 26, 16); px(c, '#d84', 210, 396, 40, 18);
-    c.fillStyle = '#ddd'; c.font = 'bold 14px monospace'; c.fillText('BAJÓN 24/7', 520, 40);
+  // 0 COCINA: counters, stove, fridge, island with leftover food
+  canvasTex('room0', CAMW, H, (c) => {
+    shell(c, 0, '#c9c9c0', '#3a3a3a', '#6e6a5c', 64);
+    wallText(c, 'BAJÓN 24/7', 560, 160, 26, '#eee');
+    box(c, [60, 104, 250, 62], 60, '#8d8778', '#b5b0a0', '#6d6758');
+    quad(c, '#222', [P(150, 112, 61), P(240, 112, 61), P(240, 150, 61), P(150, 150, 61)]);
+    box(c, [630, 104, 100, 70], 170, '#d8d8d8', '#eee', '#aaa');
+    quad(c, '#999', [P(700, 174, 60), P(706, 174, 60), P(706, 174, 140), P(700, 174, 140)]);
+    box(c, [110, 405, 190, 70], 55, '#8d8778', '#b5b0a0', '#6d6758');
+    box(c, [510, 410, 190, 80], 55, '#8d8778', '#b5b0a0', '#6d6758');
+    for (const [x, y, col] of [[150, 420, '#e8d'], [200, 430, '#ec5'], [560, 430, '#d84'], [620, 440, '#eee']]) box(c, [x, y, 30, 20], 70, col, col, col);
   });
-  canvasTex('room1', W, H, (c) => {
-    roomBase(c, 1, '#5a1a22', '#4a1219', '#2a2230', 24);
-    px(c, '#2b2b33', 100, 110, 600, 110); px(c, '#3c3c46', 100, 110, 600, 8); px(c, '#16161b', 100, 214, 600, 10);
-    furn(c, 1, '#26262c', '#3d3d46');
-    for (const o of OBS[1].slice(1)) for (let x = o[0] + 6; x < o[0] + o[2]; x += 30) px(c, '#7a2030', x, o[1] - 10, 22, 22);
-    px(c, '#665', 528, 116, 34, 46); px(c, '#998', 524, 112, 42, 8);
-    px(c, '#111', 240, 6, 320, 82);
-    c.fillStyle = '#ffe'; c.font = 'bold 12px monospace'; c.fillText('DEMO DAY', 60, 40);
+  // 1 SALA DE PITCH: the stage and the projector screen, seen from behind the audience
+  canvasTex('room1', CAMW, H, (c) => {
+    shell(c, 1, '#5a1a22', '#4a1219', '#2a2230', 48);
+    quad(c, '#111', [P(230, 96, 120), P(570, 96, 120), P(570, 96, 212), P(230, 96, 212)]); // screen frame
+    box(c, [100, 96, 600, 120], 30, '#16161b', '#2b2b33');
+    wallText(c, 'DEMO DAY', 120, 180, 22, '#ffe');
+    box(c, [528, 128, 34, 34], 75, '#665', '#998', '#554');
+    for (const o of OBS[1].slice(1)) for (let x = o[0] + 6; x < o[0] + o[2]; x += 30) box(c, [x, o[1], 22, 22], 40, '#7a2030', '#9a3040', '#5a1020');
   });
-  canvasTex('room2', W, H, (c) => {
-    roomBase(c, 2, '#3c4048', '#34373e', '#26303a', 40);
-    furn(c, 2, '#6d5a42', '#8c7558');
-    for (const o of OBS[2]) for (let x = o[0] + 10; x < o[0] + o[2] - 30; x += 56) { px(c, '#222', x, o[1] - 10, 34, 20); px(c, '#111', x + 4, o[1] - 8, 26, 12); }
-    c.fillStyle = '#9cf'; c.font = 'bold 13px monospace'; c.fillText('NO SE ACEPTAN ENTREGAS DESPUÉS DE LAS 12', 210, 50);
-    for (let i = 0; i < 20; i++) px(c, pick(['#e33', '#fd3', '#3d6', '#39f']), rnd(60, 740), rnd(240, 360), 6, 6);
+  // 2 SALA DE CÓDIGO: rows of desks, one laptop still on
+  canvasTex('room2', CAMW, H, (c) => {
+    shell(c, 2, '#3c4048', '#34373e', '#26303a', 64);
+    wallText(c, 'NO SE ACEPTAN ENTREGAS DESPUÉS DE LAS 12', 400, 170, 15, '#9cf');
+    for (const o of OBS[2]) {
+      box(c, o, 48, '#6d5a42', '#8c7558', '#4d3a22');
+      for (let x = o[0] + 10; x < o[0] + o[2] - 30; x += 56) box(c, [x, o[1] + 6, 34, 6], 66, '#111', '#222', '#111');
+    }
   });
-  canvasTex('room3', W, H, (c) => {
-    roomBase(c, 3, '#1f2c4a', '#24335a', '#1c1c2c', 48);
-    for (let i = 0; i < 6; i++) px(c, '#344a7a', 90 + i * 100, 230 + (i % 2) * 150, 80, 40);
-    for (const o of OBS[3]) { c.fillStyle = pick(['#a33', '#3a6', '#c6c', '#e94']); c.beginPath(); c.ellipse(o[0] + o[2] / 2, o[1] + o[3] / 2 - 8, o[2] / 2 + 4, o[3] / 2 + 6, 0, 0, PI * 2); c.fill(); }
-    c.fillStyle = '#88a'; c.font = 'bold 13px monospace'; c.fillText('SILENCIO · ZONA DE DESCANSO', 270, 50);
-    c.fillStyle = '#c43'; c.beginPath(); c.ellipse(210, 345, 40, 26, 0, 0, PI * 2); c.fill();
+  // 3 SALA DE SIESTA: mats and beanbags, his red beanbag in the middle
+  canvasTex('room3', CAMW, H, (c) => {
+    shell(c, 3, '#1f2c4a', '#24335a', '#1c1c2c', 96);
+    wallText(c, 'SILENCIO · ZONA DE DESCANSO', 400, 160, 18, '#88a');
+    for (let i = 0; i < 6; i++) { const x = 90 + i * 100, y = 230 + (i % 2) * 150; quad(c, '#344a7a', [P(x, y), P(x + 80, y), P(x + 80, y + 40), P(x, y + 40)]); }
+    const bean = (x, y, rad, col) => { const [sx, sy, k] = P(x, y, 0); c.fillStyle = col; c.beginPath(); c.ellipse(sx, sy - 14 * k, rad * k, rad * 0.7 * k, 0, 0, PI * 2); c.fill(); };
+    for (const o of OBS[3]) bean(o[0] + o[2] / 2, o[1] + o[3] / 2, 46, pick(['#a33', '#3a6', '#c6c', '#e94']));
+    bean(SLEEP_HOME[0], SLEEP_HOME[1] + 20, 44, '#c43');
   });
-  canvasTex('room5', W, H, (c) => {
-    roomBase(c, 5, '#5c5a58', '#666462', '#3e4a40', 56);
-    furn(c, 5, '#2f3f68', '#4a5c90');
-    px(c, '#311', 686, 96, 56, 74); px(c, '#622', 692, 104, 44, 30);
-    px(c, '#9cd', 230, 560, 340, 40);
-    c.fillStyle = '#ffd400'; c.font = 'bold 16px monospace'; c.fillText('PLATANUS HACK 26 · SANTIAGO', 250, 50);
-    c.fillStyle = '#ccc'; c.font = 'bold 11px monospace'; c.fillText('SPONSORS', 140, 150); c.fillText('STAND', 590, 460);
+  // 5 LOBBY: sponsor stands, the big banner, the inflatable banana
+  canvasTex('room5', CAMW, H, (c) => {
+    shell(c, 5, '#5c5a58', '#666462', '#3e4a40', 112);
+    wallText(c, 'PLATANUS HACK 26 · SANTIAGO', 400, 165, 26, '#ffd400');
+    box(c, [90, 128, 170, 60], 70, '#2f3f68', '#4a5c90', '#1f2f58');
+    wallText(c, 'SPONSORS', 175, 120, 16, '#ccc');
+    box(c, [520, 440, 200, 50], 70, '#2f3f68', '#4a5c90', '#1f2f58');
+    box(c, [686, 108, 56, 62], 120, '#311', '#622', '#211');
   });
 }
 
@@ -655,6 +682,7 @@ const KEYBOX = { backgroundColor: '#000000cc', padding: { x: 6, y: 3 } };
 // breaker panel layout: switch slots in a 3x2 grid mirroring the venue map
 const BRK = (i) => [148 + RC[i][0] * 180, 182 + RC[i][1] * 168];
 function buildUI() {
+  ui.lid = uRect(0, 0, W, 0, 0x000000); ui.lid2 = uRect(0, H, W, 0, 0x000000); // eyelids: over the scene, under the UI
   ui.g = S.add.graphics(); uC.add(ui.g);
   ui.stat = S.add.tileSprite(0, 0, W, H, 'noise').setOrigin(0).setAlpha(0); uC.add(ui.stat);
   ui.tab = uRect(0, H, W, H, 0x0e1612);
@@ -708,7 +736,6 @@ function buildUI() {
   ui.mug = S.add.container(400, H + 200); uC.add(ui.mug);
   { const m = S.add.graphics(); m.fillStyle(0xe8e2c8, 1); m.fillRoundedRect(-110, -130, 220, 260, 24); m.lineStyle(26, 0xe8e2c8, 1); m.strokeCircle(130, 0, 60); m.fillStyle(0x5a3416, 1); m.fillEllipse(0, -120, 190, 34); m.fillStyle(0xc0392b, 1); m.fillRect(-110, -20, 220, 40); ui.mug.add(m); ui.mug.add(S.add.text(0, 0, 'PLATANUS', TS(22, '#fff')).setOrigin(0.5)); }
   ui.mug.setVisible(false);
-  ui.lid = uRect(0, 0, W, 0, 0x000000); ui.lid2 = uRect(0, H, W, 0, 0x000000);
   ui.fade = uRect(0, 0, W, H, 0x000000, 0);
   ui.scr = S.add.image(400, 330, 'pitcherH').setScale(24).setVisible(false); uC.add(ui.scr);
   ui.scrT = uText(400, 520, '', 40, '#fff', 0.5, 0.5, { stroke: '#000', strokeThickness: 8 });
@@ -1506,75 +1533,89 @@ function render(dt) {
 function renderCam(r, dt) {
   const g = G, E = g.E;
   const on = powered(r);
+  // FNAF-style slow pan: drift to one side, hold, drift back
+  const ph = (g.t * 0.12 + r * 0.37) % 2, k = ph < 1 ? ph : 2 - ph;
+  rC.x = -(CAMW - W) * clamp((k - 0.15) / 0.7, 0, 1);
   bgImg.setTexture('room' + r).setVisible(on);
   dynG.clear(); emG.clear();
   projTxt.setVisible(false); askTxt.setVisible(false);
-  for (const k in E) eImg[k].setVisible(false);
+  for (const k2 in E) eImg[k2].setVisible(false);
   ghostImg.setVisible(false);
   zPoolR.forEach((t) => t.setVisible(false));
   if (!on) { g.statA = M.max(g.statA, 0.55); return; }
-  // closed control doors as seen from this room
-  for (const d of ADOOR) if (r == CDOOR[d].adj && (doorClosed(d) || (d == 'N' && g.shut > 0.05))) {
-    const ad = CDOOR[d].ad;
+  const pts = (a) => a.map((p) => ({ x: p[0], y: p[1] }));
+  // closed control doors as seen from this room (the pitch room looks away from it)
+  for (const d of ADOOR) if (r == CDOOR[d].adj && CDOOR[d].ad != 'S' && g.dp[d] > 0.02) {
+    const q = doorPts(CDOOR[d].ad), f = g.dp[d];
     dynG.fillStyle(0x5a5f66, 1);
-    if (ad == 'S') dynG.fillRect(352, 560, 96, 40); else if (ad == 'W') dynG.fillRect(0, 252, 48, 96); else dynG.fillRect(752, 252, 48, 96);
+    dynG.fillPoints(pts([q[3], q[2], [q[2][0], q[2][1] + (q[1][1] - q[2][1]) * f], [q[3][0], q[3][1] + (q[0][1] - q[3][1]) * f]]), true);
   }
-  // plates left at a door
-  for (const d of ADOOR) if (r == CDOOR[d].adj) for (let i = 0; i < g.piles[d]; i++) { const [bx, by] = blindPt(d); dynG.fillStyle(0xeeeeee, 1); dynG.fillEllipse(bx + i * 8, by + 30 - i * 7, 30, 10); dynG.fillStyle(0xcc6633, 1); dynG.fillEllipse(bx + i * 8, by + 28 - i * 7, 16, 5); }
-  // the coder's extension cord, from the door to the outlet
+  // plates left outside a control door
+  for (const d of ADOOR) if (r == CDOOR[d].adj) for (let i = 0; i < g.piles[d]; i++) {
+    const [bx, by] = blindPt(d), [sx, sy, s] = P(bx + i * 10, by + 20, i * 6);
+    dynG.fillStyle(0xeeeeee, 1); dynG.fillEllipse(sx, sy, 34 * s, 12 * s); dynG.fillStyle(0xcc6633, 1); dynG.fillEllipse(sx, sy - 2 * s, 18 * s, 6 * s);
+  }
+  // the coder's extension cord, from the doorway to the outlet
   if (g.plug == r) {
-    const o = OUTLET[r], dp = DP[dirTo(r, gdist(r, 2) == 1 ? 2 : bfs(r, 2)[1])];
-    dynG.lineStyle(4, 0x111111, 1); dynG.beginPath(); dynG.moveTo(dp[0], dp[1]); dynG.lineTo((dp[0] + o[0]) / 2 + 30, (dp[1] + o[1]) / 2 + 40); dynG.lineTo(o[0], o[1]); dynG.strokePath();
-    emG.fillStyle(((g.t * 4) | 0) % 2 ? 0x44ff66 : 0x117722, 1); emG.fillRect(o[0] - 5, o[1] - 5, 10, 10);
+    const o = OUTLET[r], dd = DP[dirTo(r, gdist(r, 2) == 1 ? 2 : bfs(r, 2)[1])];
+    const a = P(dd[0], dd[1]), m = P((dd[0] + o[0]) / 2 + 30, (dd[1] + o[1]) / 2 + 40), b = P(o[0], o[1]);
+    dynG.lineStyle(4, 0x111111, 1); dynG.beginPath(); dynG.moveTo(a[0], a[1]); dynG.lineTo(m[0], m[1]); dynG.lineTo(b[0], b[1]); dynG.strokePath();
+    emG.fillStyle(((g.t * 4) | 0) % 2 ? 0x44ff66 : 0x117722, 1); emG.fillRect(b[0] - 5, b[1] - 5, 10, 10);
   }
   const p = E.pitcher;
   if (r == 1) {
     const q = p.st == 'SEARCH' || p.st == 'RETURN';
-    dynG.fillStyle(q ? 0xffffff : 0xf4f1e0, 1); dynG.fillRect(246, 10, 308, 74);
-    projTxt.setVisible(true).setText(q ? '¿PREGUNTAS?' : 'DIAPOSITIVA ' + p.slide).setColor(q ? '#c00' : '#222');
-    if (!q) { dynG.fillStyle(0x3366cc, 1); for (let i = 0; i < 5; i++) dynG.fillRect(270 + i * 20, 76 - (i + 1) * 4 - (p.slide % 4) * 2, 12, (i + 1) * 4 + (p.slide % 4) * 2); }
-    if (p.st == 'ASK' && p.r == 1) {
-      const k = p.wait / g.cf.pat, bx = p.x + (M.random() - 0.5) * k * 8, by = p.y - 96;
-      dynG.fillStyle(0xffffff, 1); dynG.fillRoundedRect(bx - 110, by - 22, 220, 34, 8); dynG.fillTriangle(bx - 8, by + 12, bx + 8, by + 12, bx, by + 24);
-      askTxt.setVisible(true).setPosition(bx, by - 5).setText(k > 0.6 ? '¡¡SIGUIENTE!!' : '¿SIGUIENTE DIAPOSITIVA?').setColor(k > 0.6 ? '#c00' : '#111').setScale(1 + k * 0.25);
-    }
+    dynG.fillStyle(q ? 0xffffff : 0xf4f1e0, 1);
+    dynG.fillPoints(pts([P(240, 96, 126), P(560, 96, 126), P(560, 96, 206), P(240, 96, 206)]), true);
+    const [tx, ty] = P(400, 96, 172);
+    projTxt.setVisible(true).setPosition(tx, ty).setText(q ? '¿PREGUNTAS?' : 'DIAPOSITIVA ' + p.slide).setColor(q ? '#c00' : '#222');
+    if (!q) { dynG.fillStyle(0x3366cc, 1); for (let i = 0; i < 5; i++) { const [bx, by] = P(290 + i * 22, 96, 132); dynG.fillRect(bx, by - (i + 1) * 4 - (p.slide % 4) * 2, 12, (i + 1) * 4 + (p.slide % 4) * 2); } }
   }
   if (r == 5) {
-    const amp = 0.08 + g.ac * 0.5;
-    let x = 171, y = 480, a = -PI / 2 + M.sin(g.t * 1.3) * amp;
+    const amp = 0.08 + g.ac * 0.5, [bx, by, s] = P(171, 480);
+    let x = bx, y = by, a = -PI / 2 + M.sin(g.t * 1.3) * amp;
     for (let i = 0; i < 9; i++) {
-      const w = 22 - M.abs(i - 4) * 1.5;
+      const w = (22 - M.abs(i - 4) * 1.5) * s;
       dynG.fillStyle(i == 8 ? 0x5a3a10 : i % 2 ? 0xf2cf1d : 0xe0b812, 1);
-      dynG.fillRect(x - w / 2, y - 10, w, 14);
-      if (i == 5) { dynG.fillStyle(0x111111, 1); dynG.fillRect(x - 6, y - 6, 4, 4); dynG.fillRect(x + 3, y - 6, 4, 4); }
+      dynG.fillRect(x - w / 2, y - 10 * s, w, 14 * s);
+      if (i == 5) { dynG.fillStyle(0x111111, 1); dynG.fillRect(x - 6 * s, y - 6 * s, 4 * s, 4 * s); dynG.fillRect(x + 3 * s, y - 6 * s, 4 * s, 4 * s); }
       a += 0.12 + M.sin(g.t * 2.1 + i * 0.6) * amp * 0.6;
-      x += M.cos(a) * 12; y += M.sin(a) * 12;
+      x += M.cos(a) * 12 * s; y += M.sin(a) * 12 * s;
     }
   }
+  // people in the shot, far to near
   const order = [];
-  for (const k in E) {
-    const e = E[k], im = eImg[k];
+  for (const k2 in E) {
+    const e = E[k2], im = eImg[k2];
     if (e.r != r || blindDoor(e)) continue;
-    im.setVisible(true).setTexture(frameOf(e));
-    const sh = e.shake ? (M.random() - 0.5) * e.shake * 7 : 0;
-    im.setPosition(e.x + sh, e.y).setFlipX(e.fx < 0);
-    if (k == 'sleeper' && e.st == 'SLEEP') im.setRotation(-PI / 2).setOrigin(0.5, 0.5).setPosition(e.x + sh, e.y - 10);
-    else im.setRotation(0).setOrigin(0.5, 1);
-    im.setTint((k == 'mentora' && !g.cf.mentora) || (k == 'chef' && !g.cf.cook) || (k == 'coder' && !g.cf.coder) ? 0x888888 : 0xffffff);
-    im.depth = e.y; order.push(im);
+    const [sx, sy, s] = P(e.x, e.y), sc = 3.3 * s;
+    const sh = e.shake ? (M.random() - 0.5) * e.shake * 7 * s : 0;
+    im.setVisible(true).setTexture(frameOf(e)).setScale(sc).setFlipX(e.fx < 0);
+    if (k2 == 'sleeper' && e.st == 'SLEEP') im.setRotation(-PI / 2).setOrigin(0.5, 0.5).setPosition(sx + sh, sy - 10 * sc);
+    else im.setRotation(0).setOrigin(0.5, 1).setPosition(sx + sh, sy);
+    im.setTint((k2 == 'mentora' && !g.cf.mentora) || (k2 == 'chef' && !g.cf.cook) || (k2 == 'coder' && !g.cf.coder) ? 0x888888 : 0xffffff);
+    im.depth = e.y; im.hx = sx; im.hy = sy - (k2 == 'sleeper' && e.st == 'SLEEP' ? 14 : 30) * sc; im.sc = sc;
+    order.push(im);
   }
   const gh = g.ghost;
-  if (gh && gh.r == r && !gh.door) { ghostImg.setVisible(true).setPosition(gh.x, gh.y).setTexture(SPRF.ghost[((g.t * 6) | 0) % 4]).setAlpha(0.75); gh.seenT += dt * 0.3; g.statA = M.max(g.statA, 0.25); }
+  if (gh && gh.r == r && !gh.door) { const [sx, sy, s] = P(gh.x, gh.y); ghostImg.setVisible(true).setPosition(sx, sy).setScale(3.3 * s).setTexture(SPRF.ghost[((g.t * 6) | 0) % 4]).setAlpha(0.75); gh.seenT += dt * 0.3; g.statA = M.max(g.statA, 0.25); }
   order.sort((a, b) => a.depth - b.depth).forEach((im) => rC.bringToTop(im));
-  rC.bringToTop(emG); rC.add(askTxt); rC.bringToTop(askTxt);
-  if (E.pitcher.r == r) { emG.fillStyle(0xff2222, 0.95); emG.fillRect(E.pitcher.x + E.pitcher.fx * 18, E.pitcher.y - 40, 4, 4); }
-  if (E.coder.r == r) { emG.fillStyle(0x45ff7a, 0.22); emG.fillCircle(E.coder.x, E.coder.y - 34, 22); }
-  const s = E.sleeper;
+  rC.bringToTop(emG); rC.bringToTop(projTxt); rC.add(askTxt); rC.bringToTop(askTxt);
+  const pi = eImg.pitcher, ci = eImg.coder;
+  if (pi.visible) { emG.fillStyle(0xff2222, 0.95); emG.fillRect(pi.hx + p.fx * 6 * pi.sc, pi.hy + 6 * pi.sc, 1.5 * pi.sc, 1.5 * pi.sc); }
+  if (ci.visible) { emG.fillStyle(0x45ff7a, 0.22); emG.fillCircle(ci.hx, ci.hy, 9 * ci.sc); }
+  if (p.st == 'ASK' && pi.visible) {
+    const kk = p.wait / g.cf.pat, bx = pi.hx + (M.random() - 0.5) * kk * 8, by = pi.hy - 34;
+    dynG.fillStyle(0xffffff, 1); dynG.fillRoundedRect(bx - 110, by - 22, 220, 34, 8); dynG.fillTriangle(bx - 8, by + 12, bx + 8, by + 12, bx, by + 24);
+    rC.bringToTop(dynG); rC.bringToTop(askTxt);
+    askTxt.setVisible(true).setPosition(bx, by - 5).setText(kk > 0.6 ? '¡¡SIGUIENTE!!' : '¿SIGUIENTE DIAPOSITIVA?').setColor(kk > 0.6 ? '#c00' : '#111').setScale(1 + kk * 0.25);
+  }
+  const s = E.sleeper, si = eImg.sleeper;
   zPoolR.forEach((t, i) => {
     const z = s.parts[i];
-    if (!z || s.r != r || blindDoor(s)) return;
-    const ang = s.st == 'ANGRY';
-    t.setVisible(true).setText(ang ? '!' : 'z').setColor(ang ? '#ff4040' : '#9fd8ff').setPosition(s.x + z.dx, s.y - 40 + z.dy).setAlpha(z.l).setScale(0.8 + (1 - z.l) * 0.8);
+    if (!z || !si.visible) return;
+    const ang = s.st == 'ANGRY', k3 = si.sc / 2.6;
+    t.setVisible(true).setText(ang ? '!' : 'z').setColor(ang ? '#ff4040' : '#9fd8ff').setPosition(si.hx + z.dx * k3, si.hy + z.dy * k3).setAlpha(z.l).setScale((0.8 + (1 - z.l) * 0.8) * k3);
     rC.bringToTop(t);
   });
 }
