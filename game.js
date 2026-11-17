@@ -285,10 +285,10 @@ function blindDoor(e) {
 const NIGHTS = [
   // N1: sleeper + coffee + board · N2: + pitcher · N3: + mentora (and the suit) · N4: + chef · N5: + coder
   { hl: 30, pitch: 0, ask: [0, 0], pat: 0, pfast: 105, wake: [2, 3], sw: 14, drain: 0.07, cook: 0, mentora: 0, coder: 0, mspd: 50, sue: 100 },
-  { hl: 34, pitch: 1, ask: [30, 44], pat: 16, pfast: 115, wake: [2, 3], sw: 12, drain: 0.07, cook: 0, mentora: 0, coder: 0, mspd: 55, sue: 105 },
-  { hl: 38, pitch: 1, ask: [26, 38], pat: 14, pfast: 125, wake: [2, 3], sw: 11, drain: 0.075, cook: 0, mentora: 1, coder: 0, mspd: 58, sue: 105 },
-  { hl: 42, pitch: 1, ask: [22, 34], pat: 12, pfast: 135, wake: [2, 3], sw: 10, drain: 0.075, cook: 34, mentora: 1, coder: 0, mspd: 62, sue: 100 },
-  { hl: 46, pitch: 1, ask: [18, 28], pat: 10, pfast: 148, wake: [1, 2], sw: 9, drain: 0.08, cook: 30, mentora: 1, coder: 20, mspd: 68, sue: 95 },
+  { hl: 34, pitch: 1, ask: [0, 0], pat: 55, pfast: 115, wake: [2, 3], sw: 12, drain: 0.07, cook: 0, mentora: 0, coder: 0, mspd: 55, sue: 105 },
+  { hl: 38, pitch: 1, ask: [0, 0], pat: 48, pfast: 125, wake: [2, 3], sw: 11, drain: 0.075, cook: 0, mentora: 1, coder: 0, mspd: 58, sue: 105 },
+  { hl: 42, pitch: 1, ask: [0, 0], pat: 42, pfast: 135, wake: [2, 3], sw: 10, drain: 0.075, cook: 34, mentora: 1, coder: 0, mspd: 62, sue: 100 },
+  { hl: 46, pitch: 1, ask: [0, 0], pat: 36, pfast: 148, wake: [1, 2], sw: 9, drain: 0.08, cook: 30, mentora: 1, coder: 20, mspd: 68, sue: 95 },
 ];
 const CALLS = [
   ['RAFA', 'rafa', [
@@ -300,11 +300,11 @@ const CALLS = [
   ['RAFA', 'rafa', [
     '¡Hola de nuevo! Sobreviviste. Te dije que era fácil.',
     'Oye, hay un cabro en la sala de pitch que todavía no termina de presentar. No le gusta presentar solo.',
-    'Si te pide la siguiente diapositiva, pásasela. El clicker funciona desde la cámara de esa sala. No lo hagas esperar.',
+    'Tiene que ir pasando diapositivas, si no se pone nervioso. El clicker funciona desde la cámara de esa sala... mantenlo apretado.',
   ]],
   ['RAFA', 'rafa', [
     'Hola, ya casi embarcamos. Oye, la mentora se quedó. Dice que nadie le pidió feedback en todo el fin de semana.',
-    'Anda buscando a alguien que esté trabajando... ya sabes, donde haya luz. Es buena onda, solo habla harto.',
+    'Anda buscando a alguien que esté trabajando. Si te ve... va a querer darte feedback. Mucho feedback. Le encantan los aplausos.',
     'Ah, y en el casillero hay un traje de plátano. Por si acaso.',
   ]],
   ['RAFA', 'rafa', [
@@ -697,7 +697,7 @@ function buildUI() {
     ui.bkT[i] = [S.add.text(x + 74, y + 14, i == CTRL ? 'PRINCIPAL' : RNAME[i], TS(12, '#ddd')).setOrigin(0.5), S.add.text(x + 74, y + 128, '', TS(11, '#aaa', { align: 'center' })).setOrigin(0.5)];
     ui.bk.add(ui.bkT[i]);
   }
-  ui.bkHint = S.add.text(400, 548, 'STICK: ELEGIR · B2 ENCENDER/APAGAR · B3 CERRAR', TS(12, '#bbb')).setOrigin(0.5); ui.bk.add(ui.bkHint);
+  ui.bkHint = S.add.text(400, 548, 'CARGA MÁX 6: SALAS, PUERTAS, LUZ, CÁMARAS Y CAFÉ SUMAN · B2 ON/OFF · B3 CERRAR', TS(11, '#bbb')).setOrigin(0.5); ui.bk.add(ui.bkHint);
   ui.hour = uText(24, 22, '12 AM', 30, '#fff', 0, 0);
   ui.night = uText(26, 58, 'NOCHE 1', 14, '#aab', 0, 0);
   ui.pow = uText(776, 22, '', 16, '#fff', 1, 0);
@@ -872,7 +872,7 @@ function startNight(n) {
     // view: 'office' | 'cams' | 'panel' (with flip animation va)
     view: 'office', va: 0, pan: 400, panV: 0, focus: 'N', camR: 1, bkSel: 1, statA: 0, light: 0, paCd: 0, lockT: 0,
     doors: { W: 0, N: 0, E: 0 }, shut: 0, piles: { W: 0, N: 0, E: 0 }, jamHold: 0,
-    pw: { 0: 1, 1: 1, 2: 1, 3: 0, 5: 1 }, plug: -1, cof: 0, cofT: 0, cofHold: 0, drink: 0, dp: { W: 0, N: 0, E: 0 }, lidY: 0,
+    pw: { 0: 1, 1: 1, 2: 1, 3: 0, 5: 1 }, plug: -1, trip: 0, over: 0, resetH: 0, load: 0, cof: 0, cofT: 0, cofHold: 0, drink: 0, dp: { W: 0, N: 0, E: 0 }, lidY: 0,
     suit: 0, suitP: 0, ac: 0, acT: rnd(10, 20), blink: 0, blinkT: rnd(8, 14), ghost: null, ghostT: rnd(6, 12), noises: [], dread: 0, heartT: 0, msgT: 0,
     call: { i: -1, ch: 0, t: -1.5, skip: 0, set: CALLS[n - 1] }, flick: 0, scareT: rnd(14, 24), breathT: 3,
     th: null, thOnce: {}, vig: [], vigOn: null, vigOnce: {},
@@ -880,7 +880,7 @@ function startNight(n) {
   };
   const E = G.E;
   E.pitcher = mkE('pitcher', 1, PITCH_HOME[0], PITCH_HOME[1], 'PITCH');
-  E.pitcher.slide = 1; E.pitcher.askT = cf.pitch ? rnd(cf.ask[0], cf.ask[1]) : 1e9; E.pitcher.wait = 0; E.pitcher.pause = 0;
+  E.pitcher.slide = 1; E.pitcher.bar = 1; E.pitcher.pause = 0; E.pitcher.lure = null;
   E.sleeper = mkE('sleeper', 3, SLEEP_HOME[0], SLEEP_HOME[1], 'SLEEP');
   E.sleeper.wakeAt = rnd(cf.wake[0], cf.wake[1]) * cf.hl; E.sleeper.anger = 0; E.sleeper.wm = 0;
   E.mentora = mkE('mentora', 0, 400, 300, 'WANDER'); E.mentora.cool = 0; E.mentora.goal = null;
@@ -893,7 +893,26 @@ function startNight(n) {
 }
 const hourOf = (t) => (t / G.hl) | 0;
 function clockStr(t) { const h = hourOf(t), mm = ((t % G.hl) / G.hl * 60) | 0; return (h == 0 ? 12 : h) + ':' + String(mm).padStart(2, '0') + ' AM'; }
-const powered = (r) => !G.out && !!G.pw[r];
+const powered = (r) => !G.out && !G.trip && !!G.pw[r];
+const CAP = 6; // breaker capacity in load units
+// Everything you run takes load: lit rooms, closed doors, door light, cameras, coffee, the coder's theft.
+function loadNow() {
+  const g = G; let l = 0;
+  for (const r of ROOMS5) if (g.pw[r]) l++;
+  for (const d of ADOOR) if (g.doors[d]) l++;
+  if (g.light) l++;
+  if (g.view == 'cams') l++;
+  if (g.cof == 1) l += 2;
+  if (g.plug >= 0 && g.pw[g.plug]) l += 2;
+  return l;
+}
+function trip() {
+  const g = G;
+  g.trip = 1; g.over = 0; g.doors = { W: 0, N: 0, E: 0 }; g.light = 0; if (g.cof == 1) g.cof = 0;
+  if (g.view == 'cams') g.view = 'office';
+  SFX.breaker(0); noise(1.2, 0.35, 'lowpass', 250, 0, 60);
+  think('¡Saltó el automático! Las puertas se abrieron... (▼ TABLERO → PRINCIPAL → mantén B2)', 0, 4.5);
+}
 
 // ---- thoughts & vignettes ----
 function think(s, once, dur) {
@@ -902,7 +921,7 @@ function think(s, once, dur) {
   g.th = { s, t: dur || 3.4 };
 }
 const VIG = {
-  pitch_ask: ['pitcher', 1, 'SALA DE PITCH: "¿...siguiente diapositiva?"'],
+  pitch_ask: ['pitcher', 1, 'SALA DE PITCH: "¿...siguiente diapositiva? ¿hola?"'],
   pitch_out: ['pitcher', 1, 'SALA DE PITCH: nadie le pasó la diapositiva. Busca público...'],
   pitch_dark: ['pitcher', 1, 'SALA DE PITCH: se apagó el proyector. "¿Hola? ¿Público?"'],
   sleep_wake: ['sleeper', 3, 'SALA DE SIESTA: ...alguien se despertó.'],
@@ -911,7 +930,7 @@ const VIG = {
   pile: ['chef', -1, 'Te dejaron platos en la puerta...'],
   coder_plug: ['coder', 2, 'SALA DE CÓDIGO: "solo necesito un enchufe más..."'],
   coder_go: ['coder', 2, 'SALA DE CÓDIGO: "¿quién me cortó la luz?"'],
-  ment_see: ['mentora', -1, 'LA MENTORA vio una luz... "¿alguien trabajando?"'],
+  ment_see: ['mentora', -1, 'LA MENTORA miró a la cámara... "¡te vi! tengo un feedback"'],
   power: ['coder', 4, 'QUEDA POCA ENERGÍA...'],
 };
 function vignette(k, skip) {
@@ -1005,7 +1024,7 @@ const callOn = () => { const c = G.call; return c.i < c.set[2].length && (c.i >=
 // ---- Suit ----
 function updateSuit(dt) {
   const g = G;
-  if (pr('4') && g.view == 'office' && g.lockT <= 0 && g.n >= 3) {
+  if (pr('4') && g.view == 'office' && g.n >= 3) {
     if (g.suitP == 0 || g.suitP == 1) { g.suitDir = g.suit ? -1 : 1; SFX.zip(); HINT.suit++; if (!g.suit) think('Hace calor aquí adentro... y da sueño.', 'suit'); }
   }
   if (g.suitDir) {
@@ -1032,10 +1051,9 @@ function input(dt) {
   g.focus = best;
   g.va = clamp(g.va + (office ? -dt : dt) * 5, 0, 1);
   g.light = 0; g.clicking = 0;
-  if (g.lockT > 0) { g.lockT -= dt; if (!office) g.view = 'office'; return; }
   if (office) {
     if (g.drink > 0) return; // drinking: cup in front of your face
-    if (pr('U') && !g.out) return openView('cams');
+    if (pr('U') && !g.out && !g.trip) return openView('cams');
     if (pr('D') && !g.out) return openView('panel');
     if (g.focus == 'C') { coffeeInput(dt); return; }
     g.light = hd('1') && !g.out && !g.suit && g.focus ? 1 : 0;
@@ -1058,37 +1076,39 @@ function input(dt) {
     if (n == CTRL) n = pr('L') ? 3 : pr('R') ? 5 : g.camR;
     if (n != g.camR) { g.camR = n; SFX.cam(); g.statA = 0.85; HINT.camnav++; }
     if (pr('1')) {
-      if (g.paCd <= 0 && g.power > 3) { g.paCd = 8; g.power -= 2; addNoise(g.camR, 400, 300, 1.2, 'pa'); SFX.pa(); SFX.applause(0.25, 0); setMsg('ALTAVOZ: ' + RNAME[g.camR], 1.5); HINT.pa++; }
+      if (g.paCd <= 0 && g.power > 3 && !g.trip) { g.paCd = 10; g.power -= 2; addNoise(g.camR, 400, 300, 1.2, 'pa'); SFX.pa(); SFX.applause(0.25, 0); setMsg('ALTAVOZ: ¡APLAUSOS EN ' + RNAME[g.camR] + '!', 1.6); HINT.pa++; think('Aplausos grabados... quien los escuche va a ir para allá.', 'pa1', 3.5); }
       else SFX.err();
     }
     // the remote clicker only works through the pitch room camera, with power
-    if (pr('2') && g.camR == 1 && powered(1) && g.cf.pitch) nextSlide();
+    g.clicking = hd('2') && g.camR == 1 && powered(1) && g.cf.pitch;
+    if (g.clicking) {
+      const p = g.E.pitcher;
+      p.bar = M.min(1, p.bar + dt / 2.4); HINT.slide += dt / 2;
+      g.clickT = (g.clickT || 0) - dt;
+      if (g.clickT <= 0) { g.clickT = 0.45; p.slide++; SFX.click(); }
+    }
     return;
   }
   // breaker board
   const [c, r] = RC[g.bkSel];
-  if (pr('3') || pr('U') && r == 0) { g.view = 'office'; SFX.cam(); return; }
+  if (pr('3') || (pr('U') && r == 0)) { g.view = 'office'; SFX.cam(); return; }
   let nc = c, nr = r;
   if (pr('L')) nc--; if (pr('R')) nc++; if (pr('U')) nr--; if (pr('D')) nr++;
   nc = clamp(nc, 0, 2); nr = clamp(nr, 0, 1);
   let n = nr * 3 + nc;
-  if (n == CTRL) n = pr('L') ? 3 : pr('R') ? 5 : g.bkSel;
-  if (n != g.bkSel) { g.bkSel = n; SFX.blip(0.6, 0, 300); }
-  if (pr('2')) setPower(g.bkSel, !g.pw[g.bkSel]);
+  if (n != g.bkSel) { g.bkSel = n; SFX.blip(0.6, 0, 300); g.resetH = 0; }
+  if (g.bkSel == CTRL) {
+    if (g.trip && hd('2')) { g.resetH += dt; if (g.resetH > 1.5) { g.trip = 0; g.resetH = 0; SFX.breaker(1); SFX.ding(); think('Volvió la luz.', 0, 2); } }
+    else g.resetH = 0;
+  } else if (pr('2')) setPower(g.bkSel, !g.pw[g.bkSel]);
 }
-function nextSlide() {
-  const g = G, p = g.E.pitcher;
-  p.slide++; SFX.click(); HINT.slide++; g.statA = M.max(g.statA, 0.3);
-  if (p.st == 'ASK') { p.st = 'PITCH'; p.shake = 0; p.askT = rnd(g.cf.ask[0], g.cf.ask[1]); setMsg('"¡GRACIAS!"', 1); }
-  else if (p.st == 'SEARCH') { p.st = 'RETURN'; p.shake = 0; setMsg('"¡AH! ¡SIGUIENTE DIAPOSITIVA!"', 1.4); }
-}
-// Coffee: look at the machine, hold B2 to brew, wait, press B2 to drink.
+// Coffee: look at the machine, hold B1 to brew, wait, press B1 to drink.
 function coffeeInput(dt) {
   const g = G;
   if (g.cof == 0) {
-    if (hd('2') && !g.out) { g.cofHold += dt; if (g.cofHold > 0.6) { g.cof = 1; g.cofT = 4; g.cofHold = 0; g.power -= 1.5; SFX.coffee(); addNoise(CTRL, 400, 400, 0.85, 'coffee'); } }
+    if (hd('1') && !g.out && !g.trip) { g.cofHold += dt; if (g.cofHold > 0.6) { g.cof = 1; g.cofT = 4; g.cofHold = 0; g.power -= 1.5; SFX.coffee(); addNoise(CTRL, 400, 400, 0.85, 'coffee'); } }
     else g.cofHold = 0;
-  } else if (g.cof == 2 && pr('2')) { g.cof = 0; g.drink = 1.3; HINT.coffee++; SFX.eat(); }
+  } else if (g.cof == 2 && pr('1')) { g.cof = 0; g.drink = 1.3; HINT.coffee++; SFX.eat(); }
 }
 function setPower(r, on) {
   const g = G;
@@ -1101,6 +1121,7 @@ function setPower(r, on) {
 function toggleDoor(d) {
   const g = G;
   if (g.out) { SFX.err(); think('No hay energía... las puertas no responden.', 'outdoor'); return; }
+  if (g.trip) { SFX.err(); think('Sin corriente: saltó el automático. Hay que reiniciarlo en el TABLERO.', 0, 3); return; }
   if (d == 'N') { g.doors.N = g.doors.N ? 0 : 1; SFX.shutter(0); }
   else { g.doors[d] = g.doors[d] ? 0 : 1; SFX.door(d == 'W' ? -0.7 : 0.7); }
 }
@@ -1111,15 +1132,19 @@ function updateResources(dt) {
   const g = G;
   for (const d of ADOOR) g.dp[d] = clamp(g.dp[d] + (g.doors[d] ? dt : -dt) / (d == 'N' ? 1.2 : 0.45), 0, 1);
   g.shut = g.dp.N;
-  if (g.cof == 1) { g.cofT -= dt; if (g.cofT <= 0) { g.cof = 2; SFX.ding(); think('Café listo. (mira la cafetera y presiona B2)', 'cofready'); } }
+  if (g.cof == 1) { g.cofT -= dt; if (g.cofT <= 0) { g.cof = 2; SFX.ding(); think('Café listo. (mira la cafetera y presiona B1)', 'cofready'); } }
   if (g.drink > 0) { g.drink -= dt; if (g.drink <= 0) { g.sueno = M.max(0, g.sueno - 60); setMsg('☕  -SUEÑO', 1.2); think('Ahh... mucho mejor.', 'coffee1'); } }
   for (const d of ADOOR) if (g.piles[d] >= 3) { if (d == 'N') g.doors.N = 0; else g.doors[d] = 0; }
+  g.load = g.trip ? 0 : loadNow();
+  if (!g.out && !g.trip && g.load > CAP) {
+    // overload: a couple of seconds of alarm to undo it, then the breaker trips
+    g.over += dt;
+    if (((g.over * 3) | 0) != (((g.over - dt) * 3) | 0)) tone(1200, 0.12, 'square', 0.1);
+    think('¡Sobrecarga! Apaga algo o salta el automático...', 'overload', 3);
+    if (g.over > 1.6) trip();
+  } else g.over = 0;
   if (!g.out) {
-    let u = g.cf.drain;
-    for (const r of ROOMS5) if (g.pw[r]) u += 0.05;
-    if (g.dp.W > 0) u += 0.15; if (g.dp.E > 0) u += 0.15; if (g.dp.N > 0) u += 0.2;
-    if (g.light) u += 0.2; if (g.view == 'cams') u += 0.08;
-    if (g.plug >= 0 && g.pw[g.plug]) u += g.n >= 5 ? 0.38 : 0.3;
+    const u = g.cf.drain + (g.trip ? 0 : g.load * 0.045);
     g.use = u;
     g.power -= u * dt;
     if (g.power < 20 && !g.vigOnce.power) vignette('power');
@@ -1159,7 +1184,7 @@ function updateThoughts(dt) {
   if (g.th) { g.th.t -= dt; if (g.th.t <= 0) g.th = null; }
   const s = g.E.sleeper, p = g.E.pitcher;
   if (callOn()) return;
-  if (p.st == 'ASK' && !(g.view == 'cams' && g.camR == 1)) think('Alguien pide "¿siguiente diapositiva?"... (cámara 2, B2)', 'pask', 4);
+  if (g.cf.pitch && p.st == 'PITCH' && p.bar < 0.35 && !(g.view == 'cams' && g.camR == 1)) think('El de pitch se está poniendo nervioso... (cámara 2, mantén B2)', 'pask', 4);
   if (g.view == 'office') {
     const bd = blindDoor(s);
     if (bd && s.st == 'WANDER' && !doorClosed(bd)) think('Escucho ronquidos en la puerta... no prendas la luz. Ya se irá.', 'sleepdoor', 3.6);
@@ -1240,24 +1265,24 @@ function aiPitcher(dt) {
   if (p.st == 'PITCH') {
     go(p, 1, PITCH_HOME[0] + M.sin(g.t * 0.4) * 70, PITCH_HOME[1], 22, dt);
     if (!g.cf.pitch) return; // night 1: he just pitches to the empty room
-    if (!powered(1)) { p.st = 'SEARCH'; p.pause = 0; p.kd = null; vignette('pitch_dark'); return; }
-    if (!audience) p.askT -= dt;
-    if (p.askT <= 0) { p.st = 'ASK'; p.wait = 0; vignette('pitch_ask', g.n > 3); }
-  } else if (p.st == 'ASK') {
-    // he asks for the next slide and gets more and more nervous
-    go(p, 1, PITCH_HOME[0], PITCH_HOME[1], 22, dt);
-    p.wait += dt; p.shake = (p.wait / g.cf.pat) * 1.6;
-    if (!powered(1) || p.wait > g.cf.pat) { p.st = 'SEARCH'; p.shake = 0; p.pause = 0; p.kd = null; vignette('pitch_out'); }
+    if (!powered(1)) { p.st = 'SEARCH'; p.bar = 0; p.kd = null; vignette('pitch_dark'); return; }
+    // his patience runs out unless someone keeps passing slides (or listens to him)
+    const was = p.bar;
+    if (!audience && !g.clicking) p.bar -= dt / g.cf.pat;
+    if (was >= 0.35 && p.bar < 0.35) vignette('pitch_ask', g.n > 3);
+    p.shake = p.bar < 0.35 ? (0.35 - p.bar) * 4 : 0;
+    if (p.bar <= 0) { p.bar = 0; p.st = 'SEARCH'; p.shake = 0; p.kd = null; vignette('pitch_out'); }
   } else if (p.st == 'SEARCH') {
-    if (p.pause > 0) { p.pause -= dt; p.mv = 0; return; }
+    if (g.clicking && p.bar > 0.3) { p.st = 'RETURN'; setMsg('"¡AH! ¡SIGUIENTE DIAPOSITIVA!"', 1.4); }
+    if (p.lure) { p.lure.t -= dt; go(p, p.lure.r, 400, 320, g.cf.pfast * 0.7, dt); if (p.lure.t <= 0) p.lure = null; return; }
     if (g.suit) { p.mv = 0; return; } // a mascot is not an audience
     const sp = seen(p) ? 30 : g.cf.pfast;
     if (goYou(p, sp, dt) == -1) waitAtDoor(p, sp, dt); else p.kd = null;
     if (audience) p.st = 'RETURN';
   } else if (p.st == 'RETURN') {
-    if (go(p, 1, PITCH_HOME[0], PITCH_HOME[1], 95, dt, p.r == CTRL ? null : wb(p)) == 1) { p.st = 'PITCH'; p.askT = rnd(g.cf.ask[0], g.cf.ask[1]); }
+    if (go(p, 1, PITCH_HOME[0], PITCH_HOME[1], 95, dt, p.r == CTRL ? null : wb(p)) == 1) { p.st = 'PITCH'; p.bar = M.max(p.bar, 0.5); }
   }
-  for (const n of g.noises) if (n.kind == 'pa' && !n.pd && p.st == 'SEARCH' && gdist(n.r, p.r) <= 1) { n.pd = 1; p.pause = 4; }
+  for (const n of g.noises) if (n.kind == 'pa' && !n.pd && p.st == 'SEARCH' && gdist(n.r, p.r) <= 2) { n.pd = 1; p.lure = { r: n.r, t: 7 }; } // applause = an audience
 }
 function aiSleeper(dt) {
   const g = G, s = g.E.sleeper;
@@ -1299,34 +1324,43 @@ function fallAsleep(s) {
   s.st = 'SLEEP'; s.anger = 0; s.shake = 0; s.door = null; s.wm = 0; s.sleptAt = G.t; s.slept = 1;
   for (const d of DIRS) { const p = DP[d], n = nb(s.r, d); if (n >= 0 && dist(s.x, s.y, p[0], p[1]) < 90) s.door = ek(s.r, n); }
 }
+// LA MENTORA: she wants to give feedback to whoever is working. If you watch
+// her on camera (or light her at your door) she notices you and comes for your
+// office. Don't stare; lure her away with applause on the speaker.
 function aiMentora(dt) {
   const g = G, m = g.E.mentora;
   m.anim += dt;
   const active = g.cf.mentora;
-  if (m.st == 'OFFICE') { m.mv = 0; if (g.lockT <= 0) { m.st = 'COOL'; m.cool = 16; m.goal = null; } return; }
+  if (m.st == 'DOOM') return;
   if (m.st == 'COOL') { m.cool -= dt; if (m.cool <= 0) m.st = 'WANDER'; }
-  if (active && m.st == 'WANDER' && !g.suit) {
-    const had = m.goal && m.goal[3] == 'you';
-    if (g.light && M.random() < dt * 0.4 && gdist(m.r, CTRL) <= 2) m.goal = [CTRL, SEAT[0], SEAT[1], 'you'];
-    if (!had && m.goal && m.goal[3] == 'you') vignette('ment_see');
-    for (const n of g.noises) if (n.kind == 'pa' && !n.md && gdist(n.r, m.r) <= 2) { n.md = 1; m.goal = [n.r, 400, 320]; m.wait = rnd(10, 16); }
+  if (active && !g.suit) {
+    const watched = (g.view == 'cams' && g.va >= 1 && g.camR == m.r && powered(m.r) && !blindDoor(m) && !blinking()) || seen(m) == 2;
+    m.eye = watched ? M.min(1.6, (m.eye || 0) + dt) : M.max(0, (m.eye || 0) - dt * 0.25);
+    if (m.st == 'WANDER' && m.eye > 1.2) { m.st = 'STALK'; m.kd = null; m.kt = 0; m.knocked = 0; vignette('ment_see'); SFX.murmur(1, panOf(m)); }
+    for (const n of g.noises) if (n.kind == 'pa' && !n.md && gdist(n.r, m.r) <= 2) { n.md = 1; m.st = 'WANDER'; m.eye = 0; m.goal = [n.r, 400, 330]; m.wait = rnd(10, 15); }
+  }
+  if (m.st == 'STALK') {
+    if (g.suit) { m.st = 'COOL'; m.cool = 8; return; }
+    if (goYou(m, g.cf.mspd * 1.25, dt) == -1) {
+      if (waitAtDoor(m, g.cf.mspd, dt)) {
+        m.kt += dt;
+        if (m.kt > 0.1 && !m.knocked) { m.knocked = 1; SFX.knock(panOf(m)); think('"¿Puedo pasar? Es un feedback cortito..."', 0, 3); }
+        if (m.kt > 12) { m.st = 'COOL'; m.cool = 12; m.knocked = 0; m.goal = null; }
+      }
+    } else { m.kd = null; m.kt = 0; m.knocked = 0; }
+    return;
   }
   if (!m.goal) {
-    // she likes rooms with the lights on
     const lit = ROOMS5.filter((r) => powered(r));
     const r = lit.length && M.random() < 0.8 ? pick(lit) : pick(ROOMS5), sp = pick(SPOTS[r]);
     m.goal = [r, sp[0], sp[1]]; m.wait = r == 1 ? rnd(12, 22) : rnd(5, 10);
   }
-  if (m.goal[3] == 'you' && g.suit) m.goal = null;
-  if (m.goal) {
-    const res = go(m, m.goal[0], m.goal[1], m.goal[2], g.cf.mspd, dt, m.goal[3] == 'you' ? null : wb(m));
-    if (res == 1) { m.mv = 0; m.wait = (m.wait || 3) - dt; if (m.wait <= 0) m.goal = null; }
-    if (res == -1 || m.stuck) m.goal = null;
-  }
-  if (!active || m.st != 'WANDER' || g.suit) return;
+  const res = go(m, m.goal[0], m.goal[1], m.goal[2], g.cf.mspd, dt, wb(m));
+  if (res == 1) { m.mv = 0; m.wait = (m.wait || 3) - dt; if (m.wait <= 0) m.goal = null; }
+  if (res == -1 || m.stuck) m.goal = null;
+  if (!active) return;
   const c = g.E.coder;
   if (g.cf.coder && c.r == m.r && dist(c.x, c.y, m.x, m.y) < 90 && c.dis <= 0) { c.dis = 15; m.goal = [m.r, m.x, m.y]; m.wait = 8; }
-  if (atYou(m)) { m.st = 'OFFICE'; g.lockT = 5; g.view = 'office'; setMsg('"MMM... ¿Y CUÁL ES TU MODELO DE NEGOCIO?"', 3); think('No puedo hacer nada mientras me habla...', 0, 3); SFX.murmur(1, 0); m.goal = null; }
 }
 function aiChef(dt) {
   const g = G, c = g.E.chef;
@@ -1337,6 +1371,8 @@ function aiChef(dt) {
     c.cookT -= dt * (powered(0) ? 1 : 0.4); // cooking in the dark is slower
     if (c.cookT <= 0) { c.st = 'DELIVER'; c.kd = null; c.kt = 0; c.knocked = 0; SFX.bell(0.5, panOf(c)); vignette('chef_go'); }
   } else if (c.st == 'DELIVER') {
+    for (const n of g.noises) if (n.kind == 'pa' && !n.cd && gdist(n.r, c.r) <= 2) { n.cd = 1; c.lure = n.r; }
+    if (c.lure != null) { if (go(c, c.lure, 400, 320, 70, dt) == 1) { c.lure = null; c.st = 'RETURN'; SFX.plates(0.5, panOf(c)); } return; }
     if (goYou(c, 62, dt) == -1) {
       if (waitAtDoor(c, 62, dt)) {
         c.kt = (c.kt || 0) + dt;
@@ -1444,6 +1480,7 @@ function checkAttacks() {
     if (g.sueno >= 100) return lose('sleep');
   }
   if (E.coder.st == 'COMPLAIN' && atYou(E.coder)) return doom('coder', E.coder);
+  if (E.mentora.st == 'STALK' && atYou(E.mentora)) return doom('mentora', E.mentora);
 }
 
 // =====================================================================
@@ -1478,8 +1515,7 @@ function audioCues(dt) {
     if (e.snd > 0) continue;
     const v = audible(e), pn = panOf(e);
     if (k == 'pitcher') {
-      if (e.st == 'PITCH') { if (g.cf.pitch) SFX.babble(v * 0.8, pn, 300); e.snd = rnd(0.6, 1.4); }
-      else if (e.st == 'ASK') { SFX.babble(v * (1 + e.wait / g.cf.pat), pn, 420 + e.wait * 15); e.snd = M.max(0.5, 1.6 - e.wait * 0.08); }
+      if (e.st == 'PITCH') { if (g.cf.pitch && e.bar < 0.35) { SFX.babble(v * (1.6 - e.bar * 2), pn, 420 + (0.35 - e.bar) * 400); e.snd = 0.5 + e.bar * 2; } else { if (g.cf.pitch) SFX.babble(v * 0.8, pn, 300); e.snd = rnd(0.6, 1.4); } }
       else if (e.st == 'SEARCH') { SFX.babble(v * 1.3, pn, 380); if (e.mv) SFX.step(v * 1.2, pn); e.snd = e.mv ? 0.33 : 0.9; }
       else { SFX.step(v, pn); e.snd = 0.45; }
     } else if (k == 'sleeper') {
@@ -1594,6 +1630,7 @@ function renderCam(r, dt) {
     if (k2 == 'sleeper' && e.st == 'SLEEP') im.setRotation(-PI / 2).setOrigin(0.5, 0.5).setPosition(sx + sh, sy - 10 * sc);
     else im.setRotation(0).setOrigin(0.5, 1).setPosition(sx + sh, sy);
     im.setTint((k2 == 'mentora' && !g.cf.mentora) || (k2 == 'chef' && !g.cf.cook) || (k2 == 'coder' && !g.cf.coder) ? 0x888888 : 0xffffff);
+    if (k2 == 'mentora' && e.eye > 0.3 && g.cf.mentora) { im.setScale(sc * (1 + e.eye * 0.15)).setFlipX(false); if (M.random() < e.eye * 0.15) g.statA = M.max(g.statA, 0.4); }
     im.depth = e.y; im.hx = sx; im.hy = sy - (k2 == 'sleeper' && e.st == 'SLEEP' ? 14 : 30) * sc; im.sc = sc;
     order.push(im);
   }
@@ -1604,9 +1641,16 @@ function renderCam(r, dt) {
   const pi = eImg.pitcher, ci = eImg.coder;
   if (pi.visible) { emG.fillStyle(0xff2222, 0.95); emG.fillRect(pi.hx + p.fx * 6 * pi.sc, pi.hy + 6 * pi.sc, 1.5 * pi.sc, 1.5 * pi.sc); }
   if (ci.visible) { emG.fillStyle(0x45ff7a, 0.22); emG.fillCircle(ci.hx, ci.hy, 9 * ci.sc); }
-  if (p.st == 'ASK' && pi.visible) {
-    const kk = p.wait / g.cf.pat, bx = pi.hx + (M.random() - 0.5) * kk * 8, by = pi.hy - 34;
-    dynG.fillStyle(0xffffff, 1); dynG.fillRoundedRect(bx - 110, by - 22, 220, 34, 8); dynG.fillTriangle(bx - 8, by + 12, bx + 8, by + 12, bx, by + 24);
+  if (g.cf.pitch && r == 1 && pi.visible && p.st == 'PITCH') {
+    // circular patience meter over his head
+    const cx = pi.hx, cy = pi.hy - 70, col = p.bar < 0.35 ? 0xff3344 : 0x6fff8f;
+    dynG.lineStyle(10, 0x000000, 0.6); dynG.strokeCircle(cx, cy, 26);
+    dynG.lineStyle(8, col, 1); dynG.beginPath(); dynG.arc(cx, cy, 26, -PI / 2, -PI / 2 + p.bar * PI * 2, false); dynG.strokePath();
+    rC.bringToTop(dynG);
+  }
+  if (g.cf.pitch && p.st == 'PITCH' && p.bar < 0.35 && pi.visible) {
+    const kk = 1 - p.bar / 0.35, bx = pi.hx + 140 + (M.random() - 0.5) * kk * 8, by = pi.hy - 40;
+    dynG.fillStyle(0xffffff, 1); dynG.fillRoundedRect(bx - 110, by - 22, 220, 34, 8); dynG.fillTriangle(bx - 100, by + 12, bx - 80, by + 12, bx - 112, by + 26);
     rC.bringToTop(dynG); rC.bringToTop(askTxt);
     askTxt.setVisible(true).setPosition(bx, by - 5).setText(kk > 0.6 ? '¡¡SIGUIENTE!!' : '¿SIGUIENTE DIAPOSITIVA?').setColor(kk > 0.6 ? '#c00' : '#111').setScale(1 + kk * 0.25);
   }
@@ -1651,10 +1695,11 @@ function renderOffice(dt) {
       const a = M.atan2(e.x - CHAIR[0], CHAIR[1] - e.y), dd = dist(e.x, e.y, CHAIR[0], CHAIR[1]);
       sx = PCX + a * 490; sc = clamp(1000 / dd, 2.8, 9.5); sy = 410 + (sc - 2.8) * 30;
       tint = seen(e) == 2 ? 0xffffff : k == 'coder' && g.out ? 0x3aa060 : dd < 280 && !g.out ? 0x55555f : 0x141418;
-    } else if (bd && !doorClosed(bd)) {
+    } else if (bd && !doorClosed(bd) && seen(e) == 2) {
+      // only your door light reveals who is standing there
       const [x, y, w, h] = ODOOR[bd];
       sx = x + w / 2 + (e.x - 400) * 0.05; sy = y + h - 6; sc = 3.6;
-      tint = seen(e) == 2 ? 0xffffff : 0x0a0a0c;
+      tint = 0xffffff;
     } else continue;
     im.setVisible(true).setTexture(frameOf(e)).setScale(sc).setPosition(sx + (e.shake ? (M.random() - 0.5) * e.shake * 10 : 0), sy).setFlipX(e.fx < 0).setTint(tint);
     im.setRotation(k == 'sleeper' && e.st == 'SLEEP' ? -PI / 2 : 0);
@@ -1736,7 +1781,9 @@ function renderHud(dt) {
   ui.hour.setText((hourOf(g.t) == 0 ? 12 : hourOf(g.t)) + ' AM');
   ui.night.setText('NOCHE ' + g.n);
   ui.pow.setText(g.out ? 'SIN ENERGÍA' : 'ENERGÍA ' + M.ceil(g.power) + '%').setColor(g.power < 20 ? '#ff5555' : '#ffffff');
-  if (!g.out) { const u = clamp(M.round((g.use || 0) / 0.17), 1, 5); for (let i = 0; i < 5; i++) { gr.fillStyle(i < u ? (i < 2 ? 0x44dd66 : i < 4 ? 0xeecc33 : 0xee4444) : 0x222222, 1); gr.fillRect(668 + i * 22, 46, 18, 12); } }
+  // breaker load: one box per unit of capacity, red when you go over
+  if (!g.out) for (let i = 0; i < CAP + 2; i++) { const over = i >= CAP, f = i < (g.trip ? 0 : g.load); gr.fillStyle(f ? (over ? 0xff3333 : i >= CAP - 1 ? 0xeecc33 : 0x44dd66) : over ? 0x2a0a0a : 0x222222, f && over && ((g.t * 6) | 0) % 2 ? 0.4 : 1); gr.fillRect(626 + i * 19, 46, 15, 12); }
+  if (g.trip) { ui.pow.setText('¡AUTOMÁTICO!').setColor(((g.t * 3) | 0) % 2 ? '#ff4444' : '#ffaa44'); }
   gr.fillStyle(0x1a1430, 1); gr.fillRect(626, 88, 150, 10);
   gr.fillStyle(g.sueno > 70 ? 0xb44dff : 0x7a5cff, 1); gr.fillRect(626, 88, 150 * clamp(g.sueno / 100, 0, 1), 10);
   ui.sue.setText(g.sueno > 70 ? 'SUEÑO ¡¡CAFÉ!!' : 'SUEÑO').setColor(g.sueno > 70 && M.sin(g.t * 8) > 0 ? '#ff77ff' : '#c9b6ff');
@@ -1760,22 +1807,22 @@ function renderHud(dt) {
       gr.fillStyle(i == g.camR ? 0x2f8f4f : i != CTRL && !powered(i) ? 0x0a0a0a : 0x0c2a16, 0.9); gr.fillRect(x, y, 68, 38);
       gr.lineStyle(1, 0x6fdc8f, 1); gr.strokeRect(x, y, 68, 38);
       ui.mapT[i].setPosition(x + 34, y + 19).setAlpha(i == CTRL || powered(i) ? 1 : 0.35);
-      if (i == 1 && (g.E.pitcher.st == 'ASK' || g.E.pitcher.st == 'SEARCH') && ((g.t * 4) | 0) % 2) { gr.fillStyle(0xff3344, 1); gr.fillRect(x + 54, y + 4, 10, 10); }
+      if (i == 1 && g.cf.pitch) { const b = g.E.pitcher.st == 'PITCH' ? g.E.pitcher.bar : 0; gr.lineStyle(3, b < 0.35 && ((g.t * 4) | 0) % 2 ? 0xff3344 : 0x6fdc8f, 1); gr.beginPath(); gr.arc(x + 58, y + 10, 6, -PI / 2, -PI / 2 + M.max(0.05, b) * PI * 2, false); gr.strokePath(); }
     }
     ui.camHint.setText(g.paCd > 0 ? 'ALTAVOZ: ESPERA ' + M.ceil(g.paCd) + 's · B3 BAJAR' : (learned('camnav', 2) ? '' : 'STICK: CÁMARA · ') + 'B1 ALTAVOZ · B3 BAJAR');
     if (g.camR == 1 && powered(1) && g.cf.pitch) {
-      const p = g.E.pitcher, urgent = p.st == 'ASK' || p.st == 'SEARCH';
-      prompt(0, 400, 330, 'B2 · SIGUIENTE DIAPOSITIVA', urgent ? '#ffd400' : '#fff', urgent || !learned('slide', 3) ? 1 : 0.5);
+      const p = g.E.pitcher, urgent = p.bar < 0.35;
+      prompt(0, 400, 330, g.clicking ? '▶ PASANDO DIAPOSITIVAS...' : 'MANTÉN B2 · PASAR DIAPOSITIVAS', urgent ? '#ffd400' : '#fff', urgent || !learned('slide', 3) ? 1 : 0.5);
     } else if (!learned('pa', 1) && g.paCd <= 0 && powered(g.camR)) prompt(0, 400, 330, 'B1 · ALTAVOZ: hacer ruido en esta sala', '#bfffcf');
   }
   if (bk) renderPanel(gr);
   // office prompts: on the panel of the door you are looking at
-  ui.camBar.setVisible(office && !g.out && g.lockT <= 0);
-  ui.bkBar.setVisible(office && !g.out && g.lockT <= 0);
+  ui.camBar.setVisible(office).setAlpha(g.out || g.trip ? 0.35 : 1);
+  ui.bkBar.setVisible(office).setAlpha(g.out ? 0.35 : 1);
   const showArr = office && !learned('look', 2);
   ui.arrL.setVisible(showArr && g.pan > 40).setAlpha(0.4 + M.sin(g.t * 5) * 0.4);
   ui.arrR.setVisible(showArr && g.pan < PW - W - 40).setAlpha(0.4 + M.sin(g.t * 5) * 0.4);
-  if (office && g.lockT <= 0 && !g.out && g.drink <= 0) {
+  if (office && !g.out && g.drink <= 0) {
     if (g.focus && ODOOR[g.focus]) {
       // FNAF-style: the hints live inside the doorway you are looking at
       const [x, y, w, h] = ODOOR[g.focus], cx = x + w / 2 - g.pan;
@@ -1787,7 +1834,7 @@ function renderHud(dt) {
       if (!g.suit && !closed) prompt(1, cx, y + h * 0.35 + 34, 'B1 · LUZ', '#ffe9a0', a);
     } else if (g.focus == 'C') {
       const cx = COFFEE_X - g.pan;
-      prompt(0, cx, 372, g.cof == 0 ? 'MANTÉN B2 · PREPARAR CAFÉ' : g.cof == 1 ? 'PREPARANDO... ' + M.ceil(g.cofT) : 'B2 · TOMAR CAFÉ', g.cof == 2 ? '#7f7' : '#c9b6ff');
+      prompt(0, cx, 372, g.cof == 0 ? 'MANTÉN B1 · PREPARAR CAFÉ' : g.cof == 1 ? 'PREPARANDO... ' + M.ceil(g.cofT) : 'B1 · TOMAR CAFÉ', g.cof == 2 ? '#7f7' : '#c9b6ff');
       if (g.cof == 0 && g.cofHold > 0) { gr.fillStyle(0xc9b6ff, 1); gr.fillRect(cx - 50, 386, 100 * g.cofHold / 0.6, 5); }
     } else if (g.sueno > 45 || g.cof == 2) prompt(2, clamp(COFFEE_X - g.pan, 90, 710), 372, g.cof == 2 ? '☕ CAFÉ LISTO' : '☕ CAFÉ', g.sueno > 70 ? '#ff77ff' : '#c9b6ff', 0.75);
     if (g.n >= 3 && !learned('suit', 2)) prompt(3, 690, 540, 'B4 · TRAJE DE PLÁTANO', '#ffd400');
@@ -1815,7 +1862,6 @@ function renderHud(dt) {
   ui.mug.setVisible(g.drink > 0);
   if (g.drink > 0) { const k = 1 - g.drink / 1.3; ui.mug.setY(H + 40 - M.sin(k * PI) * 330).setAngle(-k * 40); }
   ui.fade.setAlpha(M.max(0, ui.fade.alpha - dt * 5));
-  if (g.lockT > 0) { gr.fillStyle(0x2a1040, 0.35); gr.fillRect(0, 0, W, H); }
 }
 // Breaker board: one switch per room, laid out like the venue map
 function renderPanel() {
@@ -1831,9 +1877,15 @@ function renderPanel() {
     const [lbl, sub] = ui.bkT[i];
     if (i == CTRL) {
       lbl.setColor('#ffd400');
-      sub.setText('ENERGÍA ' + M.ceil(g.power) + '%\nCONSUMO x' + (g.use || 0).toFixed(2));
-      b.fillStyle(0x111111, 1); b.fillRect(x + 20, y + 40, 108, 60);
-      b.fillStyle(g.power < 20 ? 0xee4444 : 0x44dd66, 1); b.fillRect(x + 24, y + 44, 100 * g.power / 100, 52);
+      if (g.trip) {
+        sub.setText(g.resetH > 0 ? 'REINICIANDO...' : '¡SALTÓ!\nMANTÉN B2: REINICIAR').setColor('#ff5555');
+        b.fillStyle(0x441111, 1); b.fillRect(x + 20, y + 40, 108, 60);
+        b.fillStyle(0xffaa33, 1); b.fillRect(x + 24, y + 44, 100 * g.resetH / 1.5, 52);
+      } else {
+        sub.setText('CARGA ' + g.load + ' / ' + CAP + '\nENERGÍA ' + M.ceil(g.power) + '%').setColor(g.load > CAP ? '#ff5555' : '#aaa');
+        b.fillStyle(0x111111, 1); b.fillRect(x + 20, y + 40, 108, 60);
+        for (let k = 0; k < CAP; k++) { b.fillStyle(k < g.load ? (g.load > CAP ? 0xff3333 : 0x44dd66) : 0x2a2a2a, 1); b.fillRect(x + 26 + k * 17, y + 50, 13, 40); }
+      }
       continue;
     }
     const on = !!g.pw[i], plug = g.plug == i && on;
@@ -1841,7 +1893,7 @@ function renderPanel() {
     b.fillStyle(0x111111, 1); b.fillRect(x + 54, y + 34, 40, 74);
     b.fillStyle(on ? 0x44dd66 : 0x777777, 1); b.fillRect(x + 58, on ? y + 38 : y + 72, 32, 32);
     b.fillStyle(on ? (plug && ((g.t * 6) | 0) % 2 ? 0xff3333 : 0x33ff66) : 0x331111, 1); b.fillCircle(x + 120, y + 44, 7);
-    let s = on ? 'ENCENDIDA' : 'APAGADA';
+    let s = on ? 'ENCENDIDA · carga 1' : 'APAGADA';
     if (plug) s = '¡SOBRECARGA!';
     else if (i == 1) s += on ? '\nproyector ON' : '\nproyector OFF';
     else if (i == 3 && on) s += '\n(lo despierta)';
@@ -1855,20 +1907,19 @@ function renderPanel() {
 // =====================================================================
 const SCREAM = {
   pitcher: ['pitcher', '¡¿PREGUNTAS?!'], sleeper: ['sleeper', '¡¿QUÉ HORA ES?!'], coder: ['coder', '¡¿QUIÉN ME CORTÓ LA LUZ?!'],
-  chef: ['chef', '¡PLÁTANO FRITO!'], sleep: ['sleeper', '¿tú también?'], springlock: ['suit', '*CLACK*'],
+  chef: ['chef', '¡PLÁTANO FRITO!'], mentora: ['mentora', '¡TENGO UN FEEDBACK!'], sleep: ['sleeper', '¿tú también?'], springlock: ['suit', '*CLACK*'],
 };
 const LOSE_TIP = {
   pitcher: 'Alguien quería público.', sleeper: 'A nadie le gusta que le alumbren la cara.', coder: 'Cinco minutos más...',
-  chef: 'Un plátano frente al chef. Mala idea.', sleep: 'TE QUEDASTE DORMIDO', springlock: 'TE DORMISTE CON EL TRAJE PUESTO',
+  chef: 'Un plátano frente al chef. Mala idea.', mentora: 'No la mires tanto.', sleep: 'TE QUEDASTE DORMIDO', springlock: 'TE DORMISTE CON EL TRAJE PUESTO',
 };
 function lose(why) {
   if (mode != 'play' || window.FNAP_GOD) return;
   const g = G;
   g.why = why; g.loseT = g.t;
   mode = 'scream'; modeT = 0;
-  if (why == 'sleep') hideHud(); // the screamer pops over a live screen, nothing disappears first
   if (why != 'sleep') { g.view = 'office'; g.va = 0; rC.setVisible(false); oC.setVisible(true); renderOffice(0); } // the tablet drops: it is right there
-  if (why == 'sleep') { ui.fade.setAlpha(1); g.scrDelay = 1.6; } else g.scrDelay = 0; // no warning beat: it just happens
+  if (why == 'sleep') { ui.lid.height = ui.lid2.height = 310; ui.lid2.y = H - 310; g.scrDelay = 1.4; } else g.scrDelay = 0; // no warning beat: it just happens
   ui.scr.setTexture(SCREAM[why][0] + 'H').setVisible(false);
   ui.scrT.setText('');
   ui.scrTxt = SCREAM[why][1];
