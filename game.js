@@ -953,8 +953,8 @@ function aiSleeper(dt) {
     if (s.t <= 0) { leaveDoor(s); s.st = 'SLEEP'; s.anger = 0; s.wakeAt = now + rnd(1, 2) * hl; } // passes out wherever he is
   }
 }
-// LA MENTORA: she only comes closer while you watch her. Keep her on camera
-// and she walks up to the lens; look away and she backs off. Once her face
+// LA MENTORA: she only comes closer while you watch her. Stare at her and she
+// walks up to the lens; look away and she backs off. Once her face
 // is pressed against the lens (LENS_T s of watching) she runs for the door
 // nearest to her room. Follow her on the cameras (purple flag) or by ear.
 const LENS_T = 2.2;
@@ -963,7 +963,10 @@ function aiMentora(dt) {
   m.anim += dt;
   if (m.st == 'DOOM') return;
   if (m.st == 'COOL' && (m.cool -= dt) <= 0) m.st = 'WANDER';
-  if (mentoraOn && watched && m.st == 'WANDER') { m.st = 'LENS'; m.lt = 0; sfxMurmur(1, 0); }
+  // a glance is free: the count resets the moment you look away. Past 1 s she
+  // stops and stares back (your cue to switch); past 1.8 s she starts coming
+  m.eye = mentoraOn && watched && m.st == 'WANDER' ? (m.eye || 0) + dt : 0;
+  if (m.eye > 1.8) { m.st = 'LENS'; m.lt = 0; sfxMurmur(1, 0); }
   if (m.st == 'LENS') {
     m.mv = watched;
     if (!watched) { if ((m.lt -= dt * 0.6) <= 0) m.st = 'WANDER'; return; }
@@ -979,7 +982,8 @@ function aiMentora(dt) {
     const h = hunt(m, 130, dt);
     if (h == 'in') return doom('mentora', m);
     if (h == 'shut') { if (m.kt > 0.4) think('"¿Puedo pasar? Es un feedback cortito..."', 'mknock', 3); if (m.kt > m.stay) { m.st = 'COOL'; m.cool = 14; leaveDoor(m); m.goal = null; } }
-  } else wander(m, mspd, dt, ROOMS5, (r) => (r == 1 ? rnd(12, 22) : rnd(5, 10)));
+  } else if ((m.shake = m.eye > 1 ? 0.5 : 0)) { m.mv = 0; m.fx = 1; }
+  else wander(m, mspd, dt, ROOMS5, (r) => (r == 1 ? rnd(12, 22) : rnd(5, 10)));
 }
 // THE CHEF: every so often the food is ready and he brings it to you. Open
 // door = he makes you eat (+sueño). Closed door = he knocks and leaves.
