@@ -32,10 +32,10 @@ const pr = (a) => !!pressed[a];
 const anyPr = () => ['1', '2', '3', '4', '5', '6', 'S'].some(pr);
 
 // =====================================================================
-// SPRITES (PCSEF, 24x24, PC-66 palette): frame 0 standing, 1 action, 2 step
+// SPRITES (PCSEF, 24x24, PC-66 palette): one pose per character
 // =====================================================================
 const P_PAL=[0x6e2100,0xdeac92,0xfefdfe,0x000000,0xab8169,0x24222a,0xf7bb1b,0xd11717,0x254c93,0xd3cde7,0x333d8d,0xa4dbff,0x08b8ea,0x390800,0x8d00f9,0x4200a5,0xc1b087,0xa41c1c,0x4e4b5b,0x83fe6b,0xaba4c1,0x019000,0xf6629d,0x9f5611];
-const SPR={"Pitcher":["~~8.7A9.7.9A8.7.2A7B8.7.1A1B1C1D2B1C1D1B8.7.1A1B1C1D2B1C1D2B7.7.1E9B7.7.1E7D1B8.8.1B3C>8.1E5D1B9.9.1E3B9.2.7.3F4G2F8.6.4F1G1H2G3F7.^6.4F4G3F7.6.2B2F4G1F2B7.8.1F5I1F9.8.7I9.8.3I1.3I9.^^8.3J1.4J8.~","~~8.7A9.7.9A8.7.2A7B8.7.1A1B1C1D2B1C1D1B8.7.1A1B1C1D2B1C1D2B7.7.1E9B7.7.1E7D1B8.8.1B3C>8.1E5D1B9.9.1E3B5.1H5.7.3F4G2F2.1B5.6.4F1G1H2G4F1B5.6.4F1G1H2G4F6.6.4F4G2F8.6.2B2F4G1F9.8.1F5I1F9.8.7I9.8.3I1.3I9.^^8.3J1.4J8.~","~~8.7A9.7.9A8.7.2A7B8.7.1A1B1C1D2B1C1D1B8.7.1A1B1C1D2B1C1D2B7.7.1E9B7.7.1E7D1B8.8.1B3C>8.1E5D1B9.9.1E3B9.2.7.3F4G2F8.6.4F1G1H2G3F7.^6.4F4G3F7.6.2B2F4G1F2B7.8.1F5I1F9.8.7I9.7.4I1.3I9.7.3I3.3I8.6.3I5.3I7.6.3J5.4J6.~"],"Sonambulo":["~~5.2C3.4K9.1.5.2C9K8.7.9K8.7.9C8.7.9B8.7.2B2D2B2D1B8.7.5B>7.1E3B2D3B8.8.1E2B2D2B9.9.1E3B9.2.7.2L1M2L1M2L9.6.3L1M2L1M6L2B3.^6.3L1M2L1M2L9.^7.2L1M2L1M1L9.1.^7.3L1.3L9.1.^7.3M1.3M9.1.7.3B1.4B9.~","~~5.2C3.4K4.1C5.5.2C9K1.1C1.1C4.7.9K2.1C5.7.9C8.7.9B8.7.2B2D2B2D1B8.7.5B>7.1E3B2D3B8.8.1E2B2D2B9.9.1E3B9.2.7.2L1M2L1M2L9.6.3L1M2L1M6L2B3.^6.3L1M2L1M2L9.^7.2L1M2L1M1L9.1.^7.3L1.3L9.1.^7.3M1.3M9.1.7.3B1.4B9.~","~~5.2C3.4K9.1.5.2C9K8.7.9K8.7.9C8.7.9B8.7.2B2D2B2D1B8.7.5B>7.1E3B2D3B8.8.1E2B2D2B9.9.1E3B9.2.7.2L1M2L1M2L9.6.3L1M2L1M6L2B3.^6.3L1M2L1M2L9.^7.2L1M2L1M1L9.1.^6.4L1.3L9.1.6.3L3.3L9.5.3M5.3M8.5.3B5.4B7.~"],"Mentora":["~5.3N9.7.5.9N1N9.6.9N1N8.6.3N7B8.6.2N4F1B4F7.6.2N1F2C1D1F2C1D1F7.6.2N1B3F1B3F2B6.6.2N1E2B3H2B8.7.2N1E5B9.9.1E3B9.2.7.2O1P2C1P2O9.6.3O1P2C1P1O4Q6.6.3O1P2O1P1O1Q2C1Q6.6.8O1B2C1Q6.6.8O4Q6.7.7O9.1.7.7F9.1.7.8F9.8.2B2.2B9.1.^^8.2H2.3H9.~","~5.3N9.7.5.9N1N9.6.9N1N8.6.3N7B8.6.2N4F1B4F7.6.2N1F2C1D1F2C1D1F7.6.2N1B3F1B3F2B6.6.2N1E2B3H2B8.7.2N1E5B9.9.1E3B9.2.7.2O1P2C1P2O9.6.3O1P2C1P4O1B1D5.6.3O1P2O1P4O1B6.6.9O9.^7.7O9.1.7.7F9.1.7.8F9.8.2B2.2B9.1.^^8.2H2.3H9.~","~5.3N9.7.5.9N1N9.6.9N1N8.6.3N7B8.6.2N4F1B4F7.6.2N1F2C1D1F2C1D1F7.6.2N1B3F1B3F2B6.6.2N1E2B3H2B8.7.2N1E5B9.9.1E3B9.2.7.2O1P2C1P2O9.6.3O1P2C1P1O4Q6.6.3O1P2O1P1O1Q2C1Q6.6.8O1B2C1Q6.6.8O4Q6.7.7O9.1.7.7F9.1.7.8F9.7.2B3.2B9.1.7.2B4.2B9.6.2B6.2B8.6.2H6.3H7.~"],"Chef":["8.7C9.7.9C8.^8.1C1J1C1J1C1J1C9.8.7C9.8.7B9.8.1B2D2B2D9.8.1B1C1D2B1C1D1B8.8.4B>8.1E7D8.9.1E5B9.9.5H9.1.7.4C1H4C8.6.3C1D3C1D3C7.6.9C2C7.6.3C1D3C1D3C7.6.2B7C2B7.8.2C1R4C9.8.1C2R4C9.8.3S1.3S9.^^8.3D1.4D8.~","8.7C9.7.9C8.^8.1C1J1C1J1C1J1C9.8.7C9.8.7B9.8.1B2D2B2D9.8.1B1C1D2B1C1D1B8.8.4B>8.1E7D4.1J3.9.1E5B5.1J3.9.5H5.2J3.7.4C1H4C3.2J3.6.3C1D3C1D5C1B1J3.6.9C4C1B1A3.6.3C1D3C1D2C4.1A3.6.2B7C9.8.2C1R4C9.8.1C2R4C9.8.3S1.3S9.^^8.3D1.4D8.~","8.7C9.7.9C8.^8.1C1J1C1J1C1J1C9.8.7C9.8.7B9.8.1B2D2B2D9.8.1B1C1D2B1C1D1B8.8.4B>8.1E7D8.9.1E5B9.9.5H9.1.7.4C1H4C8.6.3C1D3C1D3C7.6.9C2C7.6.3C1D3C1D3C7.6.2B7C2B7.8.2C1R4C9.8.1C2R4C9.7.4S1.3S9.7.3S3.3S8.6.3S5.3S7.6.3D5.4D6.~"],"Coder":["~~8.7S9.7.1S7F1S8.6.1S9F1S7.6.1S2F6B2S7.6.2F1B2T1D1B2T1D1F7.^6.2F1E7B1F7.6.3F1E4D1B1F8.7.3F1E3B2F8.8.7F9.7.4F1S4F8.6.5F1S3F5U4.6.5F1S2F1B1U3V1U4.6.5F1S2F1B1U1V1T1V1U4.6.9F5U4.7.7F9.1.7.7S9.1.7.3S1.3S9.1.^^7.3G1.4G9.~","~~8.7S9.7.1S7F1S8.6.1S9F1S7.6.1S2F6B2S7.6.2F1B2T1D1B2T1D1F7.^6.2F1E7B1F7.6.3F1E4D1B1F8.7.3F1E3B2F8.8.7F9.7.4F1S4F8.6.5F1S4F8.^6.4F1B7U6.^7.7F9.1.7.7S9.1.7.3S1.3S9.1.^^7.3G1.4G9.~","~~8.7S9.7.1S7F1S8.6.1S9F1S7.6.1S2F6B2S7.6.2F1B2T1D1B2T1D1F7.^6.2F1E7B1F7.6.3F1E4D1B1F8.7.3F1E3B2F8.8.7F9.7.4F1S4F8.6.5F1S3F5U4.6.5F1S2F1B1U3V1U4.6.5F1S2F1B1U1V1T1V1U4.6.9F5U4.7.7F9.1.7.7S9.1.6.4S1.3S9.1.6.3S3.3S9.5.3S5.3S8.5.3G5.4G7.~"],"Frontend":["~8.7P9.7.9P8.6.1U9P1U7.5.2U2P5B2P2U6.5.2U1P1B1C1D2B1C1D1P2U6.^6.1U1P7B1P8.7.1P1E2B2H2B1P8.7.2P1E4B2P8.8.1P1.1E2B1.1P9.7.8W9.6.5W1C4W8.^6.9W1W8.6.2B6W2B8.7.8W9.7.8I9.7.3I2.3I9.^^^7.3C2.4C8.~","~8.7P9.7.9P8.6.1U9P1U7.5.2U2P5B2P2U6.5.2U1P1B1C1D2B1C1D1P2U6.^6.1U1P7B1P8.7.1P1E2B2H2B1P8.7.2P1E4B2P8.8.1P1.1E2B1.1P9.7.8W9.6.5W1C4W8.^6.9W1W2B6.^7.8W9.7.8I9.7.3I2.3I9.^^^7.3C2.4C8.~","~8.7P9.7.9P8.6.1U9P1U7.5.2U2P5B2P2U6.5.2U1P1B1C1D2B1C1D1P2U6.^6.1U1P7B1P8.7.1P1E2B2H2B1P8.7.2P1E4B2P8.8.1P1.1E2B1.1P9.7.8W9.6.5W1C4W8.^6.9W1W8.6.2B6W2B8.7.8W9.7.8I9.6.4I2.3I9.6.3I4.3I8.5.3I6.3I7.^5.3C6.4C6.~"],"Backend":["~8.7V9.7.9V8.7.1V1T1V1T1V1T1V1T1V8.7.9B8.7.1B1C1D3B1C1D1B8.7.1B1C1D3B1C1D2B7.7.9B8.7.3X3D3X8.7.9X8.8.7X9.6.9R2R7.5.2R1D2R1D2R1D4R6.5.9R4R6.5.2R1D2R1D2R1D4R6.5.9R4R6.5.2B9R2B6.6.9S2S7.7.3S3.3S8.^^^7.3D3.4D7.~","~8.7V9.7.9V8.7.1V1T1V1T1V1T1V1T1V8.7.9B8.7.1B1C1D3B1C1D1B8.7.1B1C1D3B1C1D2B7.7.9B8.7.3X3D3X8.7.9X8.8.7X9.6.9R2R7.5.2R1D2R1D2R1D4R6.5.9R4R1B1M4.5.2R1D2R1D2R1D4R1B1V4.5.9R3R1.2M4.5.2B9R8.6.9S2S7.7.3S3.3S8.^^^7.3D3.4D7.~","~8.7V9.7.9V8.7.1V1T1V1T1V1T1V1T1V8.7.9B8.7.1B1C1D3B1C1D1B8.7.1B1C1D3B1C1D2B7.7.9B8.7.3X3D3X8.7.9X8.8.7X9.6.9R2R7.5.2R1D2R1D2R1D4R6.5.9R4R6.5.2R1D2R1D2R1D4R6.5.9R4R6.5.2B9R2B6.6.9S2S7.6.3S5.3S7.^5.3S7.3S6.^5.3D7.4D5.~"]};
+const SPR={"pitcher":"~~8.7A9.7.9A8.7.2A7B8.7.1A1B1C1D2B1C1D1B8.7.1A1B1C1D2B1C1D2B7.7.1E9B7.7.1E7D1B8.8.1B3C>8.1E5D1B9.9.1E3B9.2.7.3F4G2F8.6.4F1G1H2G3F7.^6.4F4G3F7.6.2B2F4G1F2B7.8.1F5I1F9.8.7I9.8.3I1.3I9.^^8.3J1.4J8.~","sleeper":"~~5.2C3.4K9.1.5.2C9K8.7.9K8.7.9C8.7.9B8.7.2B2D2B2D1B8.7.5B>7.1E3B2D3B8.8.1E2B2D2B9.9.1E3B9.2.7.2L1M2L1M2L9.6.3L1M2L1M6L2B3.^6.3L1M2L1M2L9.^7.2L1M2L1M1L9.1.^7.3L1.3L9.1.^7.3M1.3M9.1.7.3B1.4B9.~","mentora":"~5.3N9.7.5.9N1N9.6.9N1N8.6.3N7B8.6.2N4F1B4F7.6.2N1F2C1D1F2C1D1F7.6.2N1B3F1B3F2B6.6.2N1E2B3H2B8.7.2N1E5B9.9.1E3B9.2.7.2O1P2C1P2O9.6.3O1P2C1P1O4Q6.6.3O1P2O1P1O1Q2C1Q6.6.8O1B2C1Q6.6.8O4Q6.7.7O9.1.7.7F9.1.7.8F9.8.2B2.2B9.1.^^8.2H2.3H9.~","chef":"8.7C9.7.9C8.^8.1C1J1C1J1C1J1C9.8.7C9.8.7B9.8.1B2D2B2D9.8.1B1C1D2B1C1D1B8.8.4B>8.1E7D8.9.1E5B9.9.5H9.1.7.4C1H4C8.6.3C1D3C1D3C7.6.9C2C7.6.3C1D3C1D3C7.6.2B7C2B7.8.2C1R4C9.8.1C2R4C9.8.3S1.3S9.^^8.3D1.4D8.~","coder":"~~8.7S9.7.1S7F1S8.6.1S9F1S7.6.1S2F6B2S7.6.2F1B2T1D1B2T1D1F7.^6.2F1E7B1F7.6.3F1E4D1B1F8.7.3F1E3B2F8.8.7F9.7.4F1S4F8.6.5F1S3F5U4.6.5F1S2F1B1U3V1U4.6.5F1S2F1B1U1V1T1V1U4.6.9F5U4.7.7F9.1.7.7S9.1.7.3S1.3S9.1.^^7.3G1.4G9.~","fe":"~8.7P9.7.9P8.6.1U9P1U7.5.2U2P5B2P2U6.5.2U1P1B1C1D2B1C1D1P2U6.^6.1U1P7B1P8.7.1P1E2B2H2B1P8.7.2P1E4B2P8.8.1P1.1E2B1.1P9.7.8W9.6.5W1C4W8.^6.9W1W8.6.2B6W2B8.7.8W9.7.8I9.7.3I2.3I9.^^^7.3C2.4C8.~","be":"~8.7V9.7.9V8.7.1V1T1V1T1V1T1V1T1V8.7.9B8.7.1B1C1D3B1C1D1B8.7.1B1C1D3B1C1D2B7.7.9B8.7.3X3D3X8.7.9X8.8.7X9.6.9R2R7.5.2R1D2R1D2R1D4R6.5.9R4R6.5.2R1D2R1D2R1D4R6.5.9R4R6.5.2B9R2B6.6.9S2S7.7.3S3.3S8.^^^7.3D3.4D7.~"};
 const CH = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%&*()_+-=[]{};:,/<?`"';
 const CLR = {};
 P_PAL.forEach((c, i) => (CLR[CH[i]] = c));
@@ -60,13 +60,12 @@ function parseCSEF(s, w) {
   if (p.length) r.push(p);
   return r;
 }
-const CAST = { pitcher: 'Pitcher', sleeper: 'Sonambulo', mentora: 'Mentora', chef: 'Chef', coder: 'Coder', fe: 'Frontend', be: 'Backend' };
-const ROLES = Object.keys(CAST);
+const ROLES = Object.keys(SPR);
 
 // =====================================================================
 // AUDIO (pure WebAudio synthesis)
 // =====================================================================
-let AC = null, master, muffle, noiseBuf, ambG, droneG, droneF, buzzG, fanG;
+let AC = null, master, effectsGain, muffle, noiseBuf, ambG, droneG, droneF, buzzG, fanG;
 // short codes for oscillator / filter types
 const TY = { s: 'sine', q: 'square', w: 'sawtooth', t: 'triangle', l: 'lowpass', b: 'bandpass', h: 'highpass' };
 function initAudio() {
@@ -78,6 +77,7 @@ function initAudio() {
   comp.threshold.value = -16; comp.ratio.value = 5; comp.connect(AC.destination);
   muffle = node('BiquadFilter', 'l', 9000, comp);
   master = gain(0.8, muffle);
+  effectsGain = gain(M.SQRT1_2, master);
   const len = AC.sampleRate * 2;
   noiseBuf = AC.createBuffer(1, len, AC.sampleRate);
   const d = noiseBuf.getChannelData(0);
@@ -101,27 +101,26 @@ function initAudio() {
   const bn = AC.createBufferSource(); bn.buffer = noiseBuf; bn.loop = true; bn.playbackRate.value = 0.5;
   bn.connect(node('BiquadFilter', 'h', 5000, gain(0.4, buzzG))); bn.start();
 }
-function out(pan) {
+function out() {
   const g = AC.createGain(); g.gain.value = 0;
-  if (AC.createStereoPanner) { const p = AC.createStereoPanner(); p.pan.value = clamp(pan || 0, -1, 1); g.connect(p); p.connect(master); }
-  else g.connect(master);
+  g.connect(effectsGain);
   return g;
 }
 function env(g, t, vol, dur, a) { g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol, t + a); g.gain.exponentialRampToValueAtTime(0.0001, t + dur); }
-// tone(freq, dur, type, vol, pan, freqEnd, delay)
-function tone(f, dur, type, vol, pan, f2, dl) {
+// tone(freq, dur, type, vol, freqEnd, delay)
+function tone(f, dur, type, vol, f2, dl) {
   if (!AC || vol <= 0.002) return;
-  const t = AC.currentTime + (dl || 0), o = AC.createOscillator(), g = out(pan);
+  const t = AC.currentTime + (dl || 0), o = AC.createOscillator(), g = out();
   o.type = TY[type || 'q'];
   o.frequency.setValueAtTime(f, t);
   if (f2) o.frequency.exponentialRampToValueAtTime(M.max(20, f2), t + dur);
   env(g, t, vol, dur, 0.008);
   o.connect(g); o.start(t); o.stop(t + dur + 0.02);
 }
-// noise(dur, vol, filterType, freq, pan, freqEnd, delay, q)
-function noise(dur, vol, ft, f, pan, f2, dl, q) {
+// noise(dur, vol, filterType, freq, freqEnd, delay, q)
+function noise(dur, vol, ft, f, f2, dl, q) {
   if (!AC || vol <= 0.002) return;
-  const t = AC.currentTime + (dl || 0), s = AC.createBufferSource(), fl = AC.createBiquadFilter(), g = out(pan);
+  const t = AC.currentTime + (dl || 0), s = AC.createBufferSource(), fl = AC.createBiquadFilter(), g = out();
   s.buffer = noiseBuf; s.playbackRate.value = rnd(0.8, 1.2);
   fl.type = TY[ft || 'l']; fl.frequency.setValueAtTime(f || 1000, t);
   if (q) fl.Q.value = q;
@@ -130,20 +129,19 @@ function noise(dur, vol, ft, f, pan, f2, dl, q) {
   s.connect(fl); fl.connect(g); s.start(t, rnd(0, 1.5)); s.stop(t + dur + 0.05);
 }
 // sound effects (synthesized)
-const sfxChair = (v, p) => { noise(0.5, 0.25 * v, 'b', 900, p, 300, 0, 5); noise(0.3, 0.18 * v, 'b', 1400, p, 700, 0.35, 6); };
-const sfxStep = (v, p, dl) => { noise(0.07, 0.09 * v, 'l', 300, p, 0, dl); tone(70, 0.06, 's', 0.06 * v, p, 0, dl); };
-const sfxBlip = (v, p, f) => tone(f || rnd(260, 520), 0.06, 'q', 0.05 * v, p);
-const sfxBabble = (v, p, base) => { for (let i = 0; i < 5; i++) if (M.random() < 0.8) tone((base || 300) * rnd(0.8, 1.5), 0.05, 'q', 0.045 * v, p, 0, i * 0.075); };
-const sfxSnore = (v, p) => { noise(1.1, 0.16 * v, 'b', 220, p, 650, 0, 4); noise(0.9, 0.12 * v, 'b', 600, p, 200, 1.25, 4); };
-const sfxMurmur = (v, p) => { for (let i = 0; i < 4; i++) tone(rnd(170, 240), 0.14, 't', 0.07 * v, p, 0, i * 0.16); };
-const sfxType = (v, p) => { for (let i = 0; i < 4; i++) noise(0.02, 0.12 * v, 'h', 3000, p, 0, i * rnd(0.05, 0.11)); };
-const sfxDoor = (p) => { noise(0.25, 0.5, 'l', 500, p); tone(55, 0.3, 's', 0.5, p, 35); };
-const sfxKnock = (p) => { for (let i = 0; i < 3; i++) { noise(0.08, 0.4, 'l', 350, p, 0, i * 0.22); tone(90, 0.1, 's', 0.3, p, 60, i * 0.22); } };
-const sfxCam = () => noise(0.12, 0.18, 'h', 1500);
+const sfxChair = (v) => { noise(0.5, 0.25 * v, 'b', 900, 300, 0, 5); noise(0.3, 0.18 * v, 'b', 1400, 700, 0.35, 6); };
+const sfxStep = (v, dl) => { noise(0.07, 0.09 * v, 'l', 300, 0, dl); tone(70, 0.06, 's', 0.06 * v, 0, dl); };
+const sfxBlip = (v, f) => tone(f || rnd(260, 520), 0.06, 'q', 0.05 * v);
+const sfxBabble = (v, base) => { for (let i = 0; i < 5; i++) if (M.random() < 0.8) tone((base || 300) * rnd(0.8, 1.5), 0.05, 'q', 0.045 * v, 0, i * 0.075); };
+const sfxSnore = (v) => { noise(1.1, 0.16 * v, 'b', 220, 650, 0, 4); noise(0.9, 0.12 * v, 'b', 600, 200, 1.25, 4); };
+const sfxMurmur = (v) => { for (let i = 0; i < 4; i++) tone(rnd(170, 240), 0.14, 't', 0.07 * v, 0, i * 0.16); };
+const sfxType = (v) => { for (let i = 0; i < 4; i++) noise(0.02, 0.12 * v, 'h', 3000, 0, i * rnd(0.05, 0.11)); };
+const sfxDoor = () => { noise(0.25, 0.5, 'l', 500); tone(55, 0.3, 's', 0.5, 35); };
+const sfxKnock = () => { for (let i = 0; i < 3; i++) { noise(0.08, 0.4, 'l', 350, 0, i * 0.22); tone(90, 0.1, 's', 0.3, 60, i * 0.22); } };
 // a big rubber flashlight switch: a thunk and a click (on), just a click (off)
-const sfxFlash = (on) => { noise(0.03, 0.22, 'h', 2500); tone(on ? 1900 : 1500, 0.02, 'q', 0.07); if (on) tone(90, 0.07, 's', 0.2, 0, 60); };
+const sfxFlash = (on) => { noise(0.03, 0.22, 'h', 2500); tone(on ? 1900 : 1500, 0.02, 'q', 0.07); if (on) tone(90, 0.07, 's', 0.2, 60); };
 const sfxClick = () => { tone(1800, 0.02, 'q', 0.08); noise(0.02, 0.1, 'h', 3000); };
-const sfxCoffee = () => { for (let i = 0; i < 8; i++) noise(0.12, 0.12, 'b', rnd(300, 900), 0.3, 0, i * 0.14, 6); };
+const sfxCoffee = () => { for (let i = 0; i < 8; i++) noise(0.12, 0.12, 'b', rnd(300, 900), 0, i * 0.14, 6); };
 // the phone bell rings live (so it stops the moment you answer): two bells,
 // a clapper alternating between them, double ring then a pause
 let ringN = null;
@@ -154,22 +152,14 @@ function ringBell(on) {
   ringN.forEach(([, g], i) => g.gain.setTargetAtTime(on && k == i ? 0.1 : 0, AC.currentTime, 0.004));
 }
 function ringStop() { if (ringN) ringN.forEach(([o, g]) => { g.gain.value = 0; o.stop(); }); ringN = null; }
-// an old electromechanical bell: a clapper hammering two bells, double ring
-const sfxRing = () => {
-  for (let k = 0; k < 2; k++) for (let i = 0; i < 18; i++) {
-    const t = k * 0.62 + i * 0.024;
-    tone(i % 2 ? 1430 : 1190, 0.06, 't', 0.08, 0.2, 0, t); tone(i % 2 ? 2870 : 2380, 0.03, 's', 0.025, 0.2, 0, t);
-    if (i % 3 == 0) noise(0.02, 0.05, 'h', 4000, 0.2, 0, t);
-  }
-};
-const sfxYawn = () => { tone(330, 1.2, 'w', 0.05, 0, 160); noise(1.2, 0.08, 'b', 500, 0, 250, 0, 2); };
-const sfxHeart = (v) => { tone(55, 0.12, 's', 0.35 * v, 0, 40); tone(50, 0.14, 's', 0.25 * v, 0, 38, 0.2); };
-const sfxEat = () => { for (let i = 0; i < 5; i++) noise(0.06, 0.2, 'b', 500, 0, 0, i * 0.15, 3); };
+const sfxYawn = () => { tone(330, 1.2, 'w', 0.05, 160); noise(1.2, 0.08, 'b', 500, 250, 0, 2); };
+const sfxHeart = (v) => { tone(55, 0.12, 's', 0.35 * v, 40); tone(50, 0.14, 's', 0.25 * v, 38, 0.2); };
+const sfxEat = () => { for (let i = 0; i < 5; i++) noise(0.06, 0.2, 'b', 500, 0, i * 0.15, 3); };
 // the screamer (FNAF2-style): a stack of detuned saws, warbling fast, driven
 // into hard clipping, plus the hiss of a blown speaker and a hit. p = pitch per character
 const sfxScream = (p) => {
   if (!AC) return;
-  const t = AC.currentTime, ws = AC.createWaveShaper(), cv = new Float32Array(512), g = out(0), lfo = AC.createOscillator(), lg = AC.createGain();
+  const t = AC.currentTime, ws = AC.createWaveShaper(), cv = new Float32Array(512), g = out(), lfo = AC.createOscillator(), lg = AC.createGain();
   for (let i = 0; i < 512; i++) cv[i] = M.tanh((i / 256 - 1) * 8);
   ws.curve = cv; ws.connect(g);
   g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(0.75, t + 0.015); g.gain.setValueAtTime(0.75, t + 1.05); g.gain.exponentialRampToValueAtTime(0.0001, t + 1.7);
@@ -180,51 +170,35 @@ const sfxScream = (p) => {
     o.frequency.setValueAtTime(f * p * 0.6, t); o.frequency.exponentialRampToValueAtTime(f * p, t + 0.1); o.frequency.exponentialRampToValueAtTime(f * p * 0.85, t + 1.6);
     lg.connect(o.frequency); o.connect(og); og.connect(ws); o.start(t); o.stop(t + 1.8);
   }
-  noise(1.5, 0.5, 'b', 2400 * p, 0, 1100, 0, 0.9);
-  tone(60, 0.45, 's', 0.9, 0, 28); noise(0.25, 0.8, 'l', 300);
+  noise(1.5, 0.5, 'b', 2400 * p, 1100, 0, 0.9);
+  tone(60, 0.45, 's', 0.9, 28); noise(0.25, 0.8, 'l', 300);
 };
 const sfxSix = () => {
-  [523, 659, 784, 1046, 784, 1046].forEach((f, i) => tone(f, 0.5, 't', 0.22, 0, 0, i * 0.18));
-  for (let i = 0; i < 26; i++) noise(0.05, 0.18 * rnd(0.4, 1), 'b', rnd(1200, 3500), rnd(-0.3, 0.3), 0, rnd(0, 1.6), 2);
+  [523, 659, 784, 1046, 784, 1046].forEach((f, i) => tone(f, 0.5, 't', 0.22, 0, i * 0.18));
+  for (let i = 0; i < 26; i++) noise(0.05, 0.18 * rnd(0.4, 1), 'b', rnd(1200, 3500), 0, rnd(0, 1.6), 2);
 };
 const sfxStatic = (d) => noise(d || 0.5, 0.25, 'h', 800);
-const sfxErr = () => { tone(200, 0.15, 'q', 0.12); tone(150, 0.2, 'q', 0.12, 0, 0, 0.15); };
-const sfxSting = () => { tone(110, 1.6, 'w', 0.09, 0, 104); tone(116.5, 1.6, 'w', 0.07, 0, 110); tone(1760, 0.8, 's', 0.03, 0, 1700); };
-const sfxBreath = (v, p) => { noise(1.2, 0.07 * v, 'b', 700, p, 400, 0, 2); noise(1.0, 0.05 * v, 'b', 500, p, 800, 1.4, 2); };
+const sfxErr = () => { tone(200, 0.15, 'q', 0.12); tone(150, 0.2, 'q', 0.12, 0, 0.15); };
+const sfxBreath = (v) => { noise(1.2, 0.07 * v, 'b', 700, 400, 0, 2); noise(1.0, 0.05 * v, 'b', 500, 800, 1.4, 2); };
 const sfxFar = () => {
-  const p = rnd(-1, 1); // something far away: a thud or a few steps
-  if (M.random() < 0.5) { noise(0.5, 0.18, 'l', 400, p); tone(50, 0.4, 's', 0.2, p, 35); }
-  else for (let i = 0; i < 4; i++) sfxStep(0.5 + i * 0.15, p, i * 0.4);
+  if (M.random() < 0.5) { noise(0.5, 0.18, 'l', 400); tone(50, 0.4, 's', 0.2, 35); }
+  else for (let i = 0; i < 4; i++) sfxStep(0.5 + i * 0.15, i * 0.4);
 };
-// FNAF's pots in the kitchen: every room makes its own noise when someone
-// moves through it, so you hear WHERE something moved... not who. Louder the
-// closer it is to you, from its side of the building.
-function sfxRoom(r, v, p) {
-  const st = (n, k, gap) => { for (let i = 0; i < n; i++) { sfxStep(v * k, p, i * gap); sfxStep(v * k * 0.3, p, i * gap + 0.13); } }; // steps with an echo
-  if (r == 0) { sfxChair(v * 0.7, p); sfxType(v * 0.5, p); } // a chair rolls, keys
-  else if (r == 1) { noise(0.12, 0.3 * v, 'l', 500, p); tone(140, 0.15, 's', 0.2 * v, p); tone(2900, 0.5, 's', 0.02 * v, p, 3200, 0.1); } // a seat flips up, the mic whines
-  else if (r == 2) for (let i = 0; i < 3; i++) { tone(rnd(900, 1700), 0.35, 't', 0.08 * v, p, 0, i * 0.09); noise(0.05, 0.2 * v, 'h', 3000, p, 0, i * 0.09); } // pots and pans
-  else if (r == 3) { sfxChair(v, p); noise(0.2, 0.15 * v, 'l', 220, p, 0, 0.3); } // a chair scrapes, a table bumps
-  else if (r == 4) { noise(0.5, 0.15 * v, 'b', 600, p, 300, 0, 8); tone(90, 0.2, 's', 0.25 * v, p, 60, 0.5); } // a stall door creaks and bangs
-  else if (r == 5) noise(0.7, 0.2 * v, 'b', 1800, p, 900, 0, 1); // beanbags rustle
-  else if (r == 6) { tone(55, 0.3, 's', 0.4 * v, p, 35); noise(0.3, 0.25 * v, 'l', 250, p); tone(70, 0.2, 's', 0.2 * v, p, 45, 0.3); } // boxes fall
-  else if (r == 11) { for (let i = 0; i < 4; i++) tone(rnd(2500, 3500), 0.05, 't', 0.04 * v, p, 0, i * 0.04); noise(0.2, 0.12 * v, 'h', 4000, p); } // the glass doors rattle
-  else if (r == 8 || r == 10) st(2, 2, 0.3); // heavy, close
-  else st(3, 1.3, 0.32); // a hallway
+// Room movement uses the same footsteps, louder near the office.
+function sfxRoom(v) {
+  for (let i = 0; i < 3; i++) sfxStep(v, i * 0.32);
 }
 // the floorboard right outside a door: someone just stepped into your doorway
-const sfxCreak = (p) => { noise(0.7, 0.16, 'b', 320, p, 170, 0, 9); tone(150, 0.55, 't', 0.035, p, 105); };
+const sfxCreak = () => { noise(0.7, 0.16, 'b', 320, 170, 0, 9); tone(150, 0.55, 't', 0.035, 105); };
 // your chair turning
-const sfxSwivel = () => noise(0.16, 0.035, 'b', 1300, 0, 650, 0, 4);
-// a dead button: it clicks, nothing happens
-const sfxDead = () => { tone(2400, 0.015, 'q', 0.05); tone(2100, 0.015, 'q', 0.04, 0, 0, 0.08); };
+const sfxSwivel = () => noise(0.16, 0.035, 'b', 1300, 650, 0, 4);
 // the sleepwalker stirs: "mm...?"
 const sfxStir = () => {
-  noise(.24, .34, 'h', 1500, 0, 650);
-  noise(.15, .20, 'b', 960, 0, 330, .12, 2);
+  noise(.24, .34, 'h', 1500, 650);
+  noise(.15, .20, 'b', 960, 330, .12, 2);
 };
 // something is in the room with you
-const sfxGroan = () => { tone(46, 2.6, 's', 0.1, 0, 38); noise(2.6, 0.05, 'l', 160, 0, 60); };
+const sfxGroan = () => { tone(46, 2.6, 's', 0.1, 38); noise(2.6, 0.05, 'l', 160, 60); };
 
 // =====================================================================
 // WORLD — the venue is a graph of rooms joined by doorways (FNAF-style map).
@@ -279,7 +253,6 @@ NB[CTRL] = [8, 12, 10];
 const CDOOR = { W: { adj: 8 }, N: { adj: 12 }, E: { adj: 10 } };
 const ADOOR = ['W', 'N', 'E'], SIDES = ['W', 'E']; // N is the open front hallway: no door
 const ROAM = [0, 1, 2, 3, 4, 5, 6, 7, 9, 11]; // where people wander (never the corners or the front hallway)
-const dPan = (d) => (d == 'W' ? -0.8 : d == 'E' ? 0.8 : 0);
 const ek = (a, b) => (a < b ? a + '-' + b : b + '-' + a);
 // the spot just inside room a, at the doorway that leads to room b
 function exitPt(a, b) {
@@ -303,6 +276,7 @@ function bfs(a, b, blk) {
 const HOP = ROOMS.map((_, r) => bfs(r, CTRL, new Set()).length - 1).concat(0); // rooms away from your office
 const mapC = (r) => { const m = r == CTRL ? OFFICE_MAP : ROOMS[r][4]; return [m[0] + m[2] / 2, m[1] + m[3] / 2]; };
 const PITCH_HOME = [350, 130], SLEEP_HOME = [220, 250], CHEF_HOME = [150, 120], SEATS = { fe: 180, coder: 350, be: 520 };
+const CHEF_POS = [CHEF_HOME, [300, 250], [520, 250]];
 // the blind spot right outside each of your doors (no camera sees it)
 const blindPt = (d) => exitPt(CDOOR[d].adj, CTRL);
 const blindDoor = (e) => ADOOR.find((d) => e.r == CDOOR[d].adj && dist(e.x, e.y, ...blindPt(d)) < 110);
@@ -325,10 +299,10 @@ const NIGHTS = [
 const LV = { fe: 6, be: 7, pitcher: 8, sleeper: 9 };
 const FINAL_NIGHT_START = { coder: 15, fe: 34, mentora: 54, pitchDrain: 36, be: 92 };
 const CALLS = [
-  'RAFA|¿Aló? ¿Aló?|¿Tú eres el del aviso del diario? ¿El nuevo guardia? Perfecto. Soy Rafa, uno de los organizadores de Platanus Hack.|La hackathon terminó el domingo. Los ganadores, Nacho y yo vamos camino a San Francisco. Solo tienes que cuidar el edificio hasta que volvamos.|Es un trabajo tranquilo. Te sientas en la sala de vigilancia, revisas de vez en cuando, y a las seis te vas a tu casa.|...|Ehm... Hay un detalle. No todos los participantes se fueron a su casa.|Algunos no quisieron irse. Llevan días sin dormir y no están... del todo bien.|El equipo que perdió sigue codeando. Levanta la tableta con B3 y alumbra la sala de código con B1. Deberías ver a los tres en sus puestos.|Si el de la izquierda se levanta y se te acerca, cierra la puerta. No intentes razonar con él.|Y si escuchas a alguien respirando cerca, despacito, como dormido... no lo despiertes. Por nada del mundo. Ni un ruido.|La luz del edificio es limitada, así que no la malgastes. Y hay café. Te va a hacer falta.|Ya tengo que subir al avión. Mañana te llamo. Suerte.',
-  'RAFA|¿Aló? ¡Sobreviviste! Bueno, claro que sí, si era tranquilo.|Nosotros ya estamos en San Francisco. Todo carísimo, pero bonito.|...|Te cuento algo... El año pasado también contratamos a un guardia.|Duró dos noches. Lo último que dijo por la radio fue "me están dando feedback". Nunca entendimos qué quiso decir.|¿Te acuerdas de la silla vacía? Hoy también se va a levantar Backend. Frontend viene por la izquierda y Backend por la derecha.|Escucha de qué lado respiran antes de bajar una puerta. Si a esta hora alguien te dice que le falta un puro commit, no le creas.|¡Ups! Ya viene el Waymo. Chao.',
+  'RAFA|¿Aló? ¿Aló?|¿Tú eres el del aviso del diario? ¿El nuevo guardia? Perfecto. Soy Rafa, uno de los organizadores de Platanus Hack.|La hackathon terminó el domingo. Los ganadores, Nacho y yo vamos camino a San Francisco. Solo tienes que cuidar el edificio hasta que volvamos.|Es un trabajo tranquilo. Te sientas en la sala de vigilancia, revisas de vez en cuando, y a las seis te vas a tu casa.|...|Ehm... Hay un detalle. No todos los participantes se fueron a su casa.|Algunos no quisieron irse. Llevan días sin dormir y no están... del todo bien.|El equipo que perdió sigue codeando. Levanta la tableta con B3 para empezar. Si alumbras la sala de código con B1, verás a los tres en sus puestos.|Si el de la izquierda se levanta y se te acerca, cierra la puerta. No intentes razonar con él.|Y si escuchas a alguien respirando cerca, despacito, como dormido... no lo despiertes. Por nada del mundo. Ni un ruido.|La luz del edificio es limitada, así que no la malgastes. Y hay café. Te va a hacer falta.|Ya tengo que subir al avión. Mañana te llamo. Suerte.',
+  'RAFA|¿Aló? ¡Sobreviviste! Bueno, claro que sí, si era tranquilo.|Nosotros ya estamos en San Francisco. Todo carísimo, pero bonito.|...|Te cuento algo... El año pasado también contratamos a un guardia.|Duró dos noches. Lo último que dijo por la radio fue "me están dando feedback". Nunca entendimos qué quiso decir.|¿Te acuerdas de la silla vacía? Hoy también se va a levantar Backend. Frontend viene por la izquierda y Backend por la derecha.|Síguelos por las cámaras. Revisa la esquina izquierda (2B) y la derecha (4B) antes de cerrar una puerta. Si a esta hora alguien te dice que le falta un puro commit, no le creas.|¡Ups! Ya viene el Waymo. Chao.',
   'RAFA|Hola, hola. Acá en San Francisco hace un frío terrible. Nadie nos avisó.|Oye... ¿sigue ahí el cabro que no ha terminado su presentación? Lleva en la misma diapositiva desde el viernes.|Le da terror el silencio entre diapositivas. En la cámara de pitch, mantén B2 para pasárselas. Si nadie lo pesca, se pone nervioso y sale a buscar público.|Si viene hacia ti... luz en la cara. Varios destellos, como en un escenario.|Pero antes de alumbrar a alguien, asegúrate de quién es. Si son ronquidos, apaga la luz y deja quietas las puertas, la tableta y el café.|...|Otra cosa. Revisé las grabaciones del lunes. Había alguien en la bodega. Pero el lunes el edificio estaba cerrado.|Seguro es un error del sistema.|Seguro...|Tenemos demo con unos inversionistas. ¡Mañana te llamo!',
-  'RAFA|Hola... perdona la hora. Acá es de día y allá es de noche, me confundo.|Oye... ¿la mentora sigue ahí?|Nadie le pidió feedback en todo el fin de semana. Nadie. Eso a una mentora le hace mal.|Si la oyes preguntar por alguien, busca la sala que parpadea en morado. Ahí hay un altavoz. Abre esa cámara y pulsa B2 para llamarla a esa sala.|Anda buscando a quién darle feedback. Con que crea que alguien levantó la mano, parte para allá.|Si ya la tienes afuera, escucha de qué lado viene y cierra esa puerta.|...|El chef sigue en la cocina. Hizo el bajón del sábado para doscientas personas y nadie se lo comió entero. Si lo ves contando porciones, déjalo terminar.|Oye, ¿te puedo pedir un favor?|No le cuentes a nadie de esto. Platanus tiene una reputación que cuidar.|...|Gracias.',
+  'RAFA|Hola... perdona la hora. Acá es de día y allá es de noche, me confundo.|Oye... ¿la mentora sigue ahí?|Nadie le pidió feedback en todo el fin de semana. Nadie. Eso a una mentora le hace mal.|Si la oyes preguntar por alguien, busca la sala que parpadea en morado. Ahí hay un altavoz. Abre esa cámara y pulsa B2 para llamarla a esa sala.|Anda buscando a quién darle feedback. Con que crea que alguien levantó la mano, parte para allá.|Si ya la tienes afuera, escucha de qué lado viene y cierra esa puerta.|...|El chef sigue en la cocina contando las porciones del bajón. La tableta lo frena mientras sigue ahí. Si ves la cocina vacía o escuchas que viene corriendo, baja la tableta y cierra la puerta izquierda.|Oye, ¿te puedo pedir un favor?|No le cuentes a nadie de esto. Platanus tiene una reputación que cuidar.|...|Gracias.',
   'NACHO|¿Aló? Soy Nacho. Rafa se quedó dormido, le tomé el teléfono.|...|Él no te iba a decir esto, pero creo que tienes derecho a saber.|El guardia del año pasado no renunció. Entró a su quinta noche... y no supimos más de él.|Y hay un muchacho que se está colgando de la luz del edificio. Si la batería se va muy rápido, es su culpa.|Puedes cortarle el enchufe manteniendo B2 en la sala de código. Va a venir a reclamar a una de tus puertas. Sé rápido y ciérrala.|Mañana devolvemos el edificio, suerte!|Ah… y una cosa más—',
 ].map((s) => s.split('|'));
 
@@ -342,7 +316,7 @@ let NN, camLit, litN, night, hl, pitchOn, patience, flashes, pgrace, wakeH, drai
   blink, blinkT, blinkDur, dread, heartT, msgT, flick, scareT, phone, thought, thOnce, doomed, clicking, clickT, yawn1, yawn2,
   usage, lostTo, loseT, scrOn, scrDelay, E;
 // how many times each control has been used: prompts fade once learned
-const HINT = { light: 0, door: 0, cams: 0, slide: 0, camlight: 0 };
+const HINT = { light: 0, door: 0, slide: 0 };
 const learned = (k, n) => HINT[k] >= (n || 3);
 
 class HorrorPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline {
@@ -399,20 +373,17 @@ function canvasTex(key, w, h, draw) { const t = S.textures.createCanvas(key, w, 
 const spriteTex = (key, rows) => canvasTex(key, rows[0].length, rows.length, (c) => rows.forEach((row, y) => row.forEach((ch, x) => {
   if (CLR[ch] != null) { c.fillStyle = '#' + CLR[ch].toString(16).padStart(6, '0'); c.fillRect(x, y, 1, 1); }
 })));
-const SPRF = {};
 function buildSprites() {
   for (const role of ROLES) {
-    const fr = SPR[CAST[role]];
-    SPRF[role] = fr.map((s, i) => { spriteTex(role + i, parseCSEF(s, 24)); return role + i; });
-    const rows = parseCSEF(fr[0], 24);
+    const rows = parseCSEF(SPR[role], 24);
+    spriteTex(role + '0', rows);
     let top = 0; while (rows[top].every((c) => c == '.')) top++;
-    SPRF[role].top = top; // empty rows above the head
-    spriteTex(role + 'H', rows.slice(top, top + 14)); // the face, for scares and the lens
+    spriteTex(role + 'H', rows.slice(top, top + 14)); // the face in CCTV hallucinations
   }
 }
 // The banana. Not the inflatable one from the lobby. You only see it when you fall asleep.
-function bananaTex(key, rows) {
-  canvasTex(key, 24, rows, (c) => {
+function bananaTex() {
+  canvasTex('banana0', 24, 24, (c) => {
     const px = (col, x, y, w = 1, h = 1) => { c.fillStyle = col; c.fillRect(x, y, w, h); };
     for (let y = 1; y < 21; y++) {
       const t = (y - 1) / 19, cx = 13 - 4 * M.sin(PI * t), hw = M.round(1 + 4 * M.sin(PI * t) ** 0.6), a = M.round(cx - hw), b = M.round(cx + hw);
@@ -427,7 +398,7 @@ function bananaTex(key, rows) {
   });
 }
 function buildFxTex() {
-  bananaTex('banana0', 24); bananaTex('bananaH', 15);
+  bananaTex();
   const pix = (key, w, h, f) => canvasTex(key, w, h, (c) => {
     const img = c.createImageData(w, h);
     for (let i = 0; i < w * h; i++) { const v = f(i % w, (i / w) | 0); img.data.set([v[0], v[0], v[0], v[1]], i * 4); }
@@ -508,7 +479,10 @@ function shell(c, R) {
     poly(c, to == CTRL ? '#a22' : '#0c6', wq(R, s, o - 22, o + 22, 178, 196)); // exit sign (red: your office)
   }
 }
-const CHAIRS = (y, cols, col) => [100, 300, 500].map((x) => [x, y, 36, 30, 44, ...cols]);
+function hallPosters(c, R, side, positions, color, accent, accentColor) {
+  for (const y of positions) poly(c, color, wq(R, side, y, y + 70, 90, 180));
+  poly(c, accentColor, wq(R, side == 'W' ? 'E' : 'W', accent, accent + 70, 90, 180));
+}
 // props of each room (camera-dependent, so they live with the room)
 const PROPS = [
   // 1A CÓDIGO: the team's corner, banner and a whiteboard full of diagrams (the desk is foreground)
@@ -531,11 +505,11 @@ const PROPS = [
   // 3 BODEGA: shelves full of boxes
   (c, R) => { boxes(c, [[0, 0, 300, 50, 200, '#3a3020', '#4a4030', '#2a2010'], [0, 60, 50, 240, 200, '#3a3020', '#4a4030', '#2a2010'], [60, 10, 40, 30, 30, '#b94', '#ca5', '#a83', 100], [150, 10, 50, 30, 40, '#b94', '#ca5', '#a83', 150], [80, 220, 60, 50, 50, '#b94', '#ca5', '#a83']]); },
   // 2A PASILLO OESTE: posters along the walls
-  (c, R) => { for (const y of [120, 420, 760]) poly(c, '#c33', wq(R, 'E', y, y + 70, 90, 180)); poly(c, '#36c', wq(R, 'W', 380, 450, 90, 180)); wtext(c, R, 'N', 130, 200, 'COMEDOR', 18, '#9aa'); },
+  (c, R) => { hallPosters(c, R, 'E', [120, 420, 760], '#c33', 380, '#36c'); wtext(c, R, 'N', 130, 200, 'COMEDOR', 18, '#9aa'); },
   // 2B ESQUINA OESTE: water cooler next to your door
   (c, R) => { boxes(c, [[20, 230, 50, 50, 120, '#bcd', '#def', '#9ab']]); wtext(c, R, 'E', 150, 215, 'CONTROL', 18, '#a22'); },
   // 4A PASILLO ESTE: posters
-  (c, R) => { for (const y of [200, 560]) poly(c, '#3a3', wq(R, 'W', y, y + 70, 90, 180)); poly(c, '#c90', wq(R, 'E', 620, 690, 90, 180)); },
+  (c, R) => hallPosters(c, R, 'W', [200, 560], '#3a3', 620, '#c90'),
   // 4B ESQUINA ESTE: trash can and a forgotten chair
   (c, R) => { boxes(c, [[230, 230, 40, 40, 60, '#555', '#666', '#444'], [60, 220, 50, 50, 45, '#334', '#445', '#223']]); wtext(c, R, 'W', 150, 215, 'CONTROL', 18, '#a22'); },
   // 8 LOBBY: banner, sponsor stands, glass entrance
@@ -777,7 +751,7 @@ let wC, rC, oC, uC, uiCam;
 let bgImg, fgImg, dynG, emG, projTxt, askG, askTxt, lensImg, oBg, oG, oBeam, oDim, oLamp, oTop, oMask, oDesk, deskImg, oDG, fanS = 0, fanA = 0;
 const eImg = {}, oImg = {};
 // UI objects (u*) live in the uC layer, which the post-FX camera ignores
-let uC1, uC2, uCallName, uCallTxt, uPhone, uHandset, uSpk, uCallHint, uCam, uCamBar, uCardN, uG, uHour, uHud, uLPress, uLStat, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uVig, uVigCap, uVigImg, uVigIn, uW1, uW2, uWDone, uWarn;
+let uC1, uC2, uCallName, uCallTxt, uHandset, uCallHint, uCam, uCamBar, uCardN, uG, uHour, uHud, uLPress, uLStat, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uW1, uW2, uWDone, uWarn;
 let zR, zO, uZ, oBan, dozeHB, litA = 0, scrSide, scrPre; // the sleeper's z's (or !! when angry) · falling asleep
 let uLearn;
 const TS = (sz, col, extra) => Object.assign({ fontFamily: 'monospace', fontSize: sz + 'px', color: col || '#fff', fontStyle: 'bold' }, extra);
@@ -868,7 +842,7 @@ function buildUI() {
   const m = add(uMug, S.add.graphics());
   m.fillStyle(0xe8e2c8).fillRoundedRect(-110, -130, 220, 260, 24).lineStyle(26, 0xe8e2c8).strokeCircle(130, 0, 60).fillStyle(0x5a3416).fillEllipse(0, -120, 190, 34).fillStyle(0xc0392b).fillRect(-110, -20, 220, 40);
   txt(uMug, 0, 0, 'PLATANUS', 22);
-  uScr = img(uC, 'pitcherH', 400, 330).setVisible(false);
+  uScr = img(uC, 'pitcher0', 400, 330).setVisible(false);
   uScrT = txt(uC, 400, 520, '', 40, '#fff', 0.5, 0.5, { stroke: '#000', strokeThickness: 8 });
   uScreen = add(uC, S.add.container());
 }
@@ -915,45 +889,51 @@ function titleUpdate() {
   uTitleStat.setTilePosition(rnd(0, 200), rnd(0, 150)).setAlpha(tw ? 0.25 : rnd(0.06, 0.12));
   uT1.setAlpha(M.random() < 0.03 ? 0.3 : 1);
   if (saved.night > 1) {
-    if (pr('L')) menuNight = M.max(1, menuNight - 1), sfxBlip(1, 0, 400);
-    if (pr('R')) menuNight = M.min(saved.night, menuNight + 1), sfxBlip(1, 0, 500);
+    if (pr('L')) menuNight = M.max(1, menuNight - 1), sfxBlip(1, 400);
+    if (pr('R')) menuNight = M.min(saved.night, menuNight + 1), sfxBlip(1, 500);
     uTMenu.setText('◄ NOCHE ' + menuNight + ' ►  START');
   } else uTMenu.setText('PRESIONA START');
   uTMenu.setAlpha(0.6 + M.sin(modeT * 4) * 0.4);
   if (pr('S') || pr('1')) { sfxClick(); if (menuNight == 1) goPaper(0); else goCall(menuNight); }
 }
 // Newspaper: intro (0) or ending (1). It spins in and slams onto the table.
+const PAPERS = [
+  ['DOMINGO 22', '¡GANADORES VIAJAN A SAN FRANCISCO!', 'Platanus Hack 26 cierra tras 36 horas de código',
+    'SANTIAGO. — Tras 36 horas de código, siestas y completos, los ganadores de Platanus Hack 26 viajan a San Francisco con Rafa y Nacho. Algunos participantes habrían seguido dentro tras el cierre. La organización habla de rumores.',
+    'RECINTO CERRADO', 'El edificio cierra por cinco noches. Los vecinos reportan luces y teclados de madrugada.',
+    'CLASIFICADOS', 'Se busca guardia de 12 a 6 AM. Café ilimitado. No salgas de la sala de vigilancia. Llama a Rafa.'],
+  ['SÁBADO 28', 'HACKATHON CONCLUYE SIN INCIDENTES', 'El recinto fue devuelto tras cinco noches de guardia',
+    'SANTIAGO. — El guardia pidió el café más grande que tuvieran. Desde entonces duerme con la luz prendida. La organización asegura que los participantes rezagados descansan. Nadie los ha visto. Rafa y Nacho prefirieron no comentar las grabaciones.',
+    'VECINOS INSISTEN', 'Aún se oyen pasos, teclados y alguien pidiendo la siguiente diapositiva.',
+    'PLATANUS HACK 27', 'Las inscripciones abren en marzo. Ya se busca guardia nocturno.'],
+];
 function goPaper(end) {
   screen('paper'); uPaperEnd = end;
+  const [date, headline, subhead, story, briefTitle, brief, noticeTitle, notice] = PAPERS[end];
   sRect(0x0b0907);
   const pc = sAdd(S.add.container(400, 300));
   const T = (x, y, s, sz, ex, ox) => sText(x - 400, y - 300, s, sz, '#151515', ox ?? 0.5, 0, Object.assign({ fontFamily: 'Georgia, serif' }, ex), pc);
   const R = (x, y, w, h, col) => sAdd(S.add.rectangle(x - 400, y - 300, w, h, col).setOrigin(0), pc);
-  const col = (x, y, s, w, sz) => T(x, y, s, sz || 17, { wordWrap: { width: w }, lineSpacing: 5, align: 'justify' }, 0);
+  const col = (x, y, s, width = 326) => T(x, y, s, 21, { wordWrap: { width }, lineSpacing: 5, align: 'justify' }, 0);
   R(36, 8, 728, 584, 0xe9e2cc);
   T(400, 16, 'EL DIARIO DEL HACK', 48);
   R(56, 74, 688, 3, 0x151515);
-  T(400, 82, (end ? 'SÁBADO 28' : 'DOMINGO 22') + ' DE NOVIEMBRE, 2026  ·  SANTIAGO  ·  $500', 12);
+  T(400, 82, date + ' DE NOVIEMBRE, 2026  ·  SANTIAGO  ·  $500', 12);
   R(56, 100, 688, 1, 0x151515);
-  T(400, 108, end ? 'HACKATHON CONCLUYE SIN INCIDENTES' : '¡GANADORES VIAJAN A SAN FRANCISCO!', 33, { fontStyle: 'bold' });
-  T(400, 150, end ? 'El recinto fue devuelto tras cinco noches de guardia' : 'Platanus Hack 26 cierra tras 36 horas de código', 17, { fontStyle: 'italic' });
+  T(400, 108, headline, 33, { fontStyle: 'bold' });
+  T(400, 150, subhead, 20, { fontStyle: 'italic' });
   R(56, 178, 688, 2, 0x151515);
   R(400, 190, 1, 392, 0x151515);
-  if (end) {
-    col(58, 190, 'SANTIAGO. — Tras cinco noches de turno, el recinto de Platanus Hack 26 fue entregado a sus dueños sin daños aparentes. El guardia nocturno no quiso dar declaraciones, pero testigos aseguran que pidió "un café, el más grande que tengan" y que desde entonces no duerme con la luz apagada. Consultada por el estado de los participantes que permanecieron en el edificio durante esas noches, la organización respondió que "todos están bien, descansando". Ninguno ha sido visto desde entonces. Los organizadores, de regreso de San Francisco, prefirieron no comentar las grabaciones de seguridad.', 326);
-    col(414, 190, 'VECINOS INSISTEN\nAunque el edificio ya fue devuelto, vecinos aseguran que de noche todavía se escuchan teclados, pasos en los pasillos y, a veces, a alguien pidiendo la siguiente diapositiva.\n\nPLATANUS HACK 27\nLa organización confirmó una nueva edición para el próximo año. Las inscripciones abren en marzo. Ya se busca guardia nocturno.', 326);
-    T(570, 500, 'FIN', 64, { fontStyle: 'bold' });
-  } else {
-    col(58, 190, 'SANTIAGO. — Tras 36 horas sin dormir, Platanus Hack 26 cerró sus puertas el domingo con la premiación del equipo ganador, que viaja hoy a San Francisco junto a los organizadores Rafa y Nacho. "Fue la mejor edición hasta ahora", declaró Rafa antes de embarcar. "Lo que pasa en la hackathon, se queda en la hackathon". Durante el fin de semana se escribieron más de un millón de líneas de código, se sirvieron tres mil completos y se registraron diecisiete siestas no autorizadas. Algunos participantes, sin embargo, no habrían abandonado el recinto tras la ceremonia de cierre. La organización asegura que se trata de "rumores sin fundamento".', 326);
-    col(414, 190, 'RECINTO CERRADO\nEl edificio permanecerá cerrado al público durante cinco noches, hasta su devolución el próximo sábado. Vecinos reportan luces encendidas y ruido de teclados durante la madrugada.', 326);
-    T(570, 372, '— CLASIFICADOS —', 15, { fontStyle: 'bold' });
-    col(424, 400, 'SE BUSCA GUARDIA NOCTURNO. Turno de 12 a 6 AM, cinco noches. Café ilimitado. No se requiere experiencia. No abandonar la sala de vigilancia bajo ninguna circunstancia. Llamar a Rafa.', 296, 16);
-    // someone circled it in red marker
-    const g = sAdd(S.add.graphics(), pc);
-    g.lineStyle(4, 0xc0201a, 0.9).strokeEllipse(172, 172, 356, 196).lineStyle(2, 0xc0201a, 0.7).strokeEllipse(176, 168, 348, 204);
-  }
+  col(58, 190, story);
+  T(414, 190, briefTitle, 20, {}, 0);
+  col(414, 220, brief);
+  T(572, 370, noticeTitle, 20);
+  col(424, 410, notice, 296);
+  if (end) T(572, 546, 'FIN', 28);
+  const g = sAdd(S.add.graphics(), pc);
+  g.lineStyle(4, 0xc0201a, 0.9).strokeEllipse(172, 146, 342, 190);
   pc.setScale(3).setAngle(-540).setAlpha(0);
-  S.tweens.add({ targets: pc, scale: 1, angle: end ? 1.5 : -1.5, alpha: 1, duration: 1100, ease: 'Cubic.easeOut', onComplete: () => { sfxDoor(0); uiCam.shake(180, 0.008); } });
+  S.tweens.add({ targets: pc, scale: 1, angle: end ? 1.5 : -1.5, alpha: 1, duration: 1100, ease: 'Cubic.easeOut', onComplete: () => { sfxDoor(); uiCam.shake(180, 0.008); } });
   uPPress = sText(400, 596, 'START · CONTINUAR', 11, '#888', 0.5, 1);
 }
 function paperUpdate() {
@@ -970,7 +950,7 @@ function goCall(n) {
   sAdd(S.add.rectangle(0, 430, W, 170, 0x1c130c).setOrigin(0)); // the desk
   sAdd(S.add.rectangle(0, 430, W, 6, 0x2c2016).setOrigin(0));
   sAdd(S.add.image(400, -40, 'cone').setOrigin(0, 0.5).setBlendMode(1).setRotation(PI / 2).setScale(2.6, 2.2).setTint(0xffe2a0).setAlpha(0.18)); // desk lamp
-  uPhone = sAdd(S.add.container(400, 470));
+  const uPhone = sAdd(S.add.container(400, 470));
   const g = add(uPhone, S.add.graphics()), cord = add(uPhone, S.add.graphics());
   g.fillStyle(0x000000, 0.4).fillEllipse(0, 34, 360, 40); // shadow
   g.fillStyle(0x6a0c0c).fillRoundedRect(-150, -46, 300, 84, 20).fillStyle(0x8e1414).fillRoundedRect(-136, -62, 272, 64, 22); // body
@@ -979,7 +959,6 @@ function goCall(n) {
   g.fillStyle(0x8e1414).fillCircle(0, -26, 14).fillStyle(0xe6dcc4).fillCircle(0, -26, 5);
   g.fillStyle(0x2a0606); for (let i = 0; i < 4; i++) g.fillRect(96, -34 + i * 9, 34, 4); // speaker grille
   cord.lineStyle(5, 0x5a0a0a); for (let i = 0; i < 9; i++) cord.strokeCircle(150 + i * 14, 30 + M.sin(i) * 3, 9); // coiled cord
-  uSpk = add(uPhone, S.add.graphics());
   uHandset = add(uPhone, S.add.container(0, -86));
   add(uHandset, S.add.graphics()).fillStyle(0x7a1010).fillRoundedRect(-150, -12, 300, 30, 14).fillStyle(0x8e1414).fillRoundedRect(-170, -2, 76, 36, 14).fillRoundedRect(94, -2, 76, 36, 14);
   uCallName = sText(400, 52, '¡RIIIING!', 22, '#ffd400');
@@ -988,15 +967,13 @@ function goCall(n) {
 }
 function callUpdate(dt) {
   const c = phone, ringing = c.i < 0;
-  uSpk.clear();
   if (ringing) {
     // the handset jumps on its cradle while it rings
     const ph = modeT % 3, on = ph < 0.4 || (ph > 0.6 && ph < 1); // it never stops until you answer
     ringBell(on);
     uHandset.setY(-86 - (on ? rnd(0, 6) : 0)).setAngle(on ? rnd(-3, 3) : 0);
-    uCallName.setAlpha(on ? 1 : 0.3);
     uCallHint.setText('B1 · CONTESTAR');
-    if (modeT > 0.5 && (pr('1') || pr('S'))) { ringStop(); c.i = 0; sfxClick(); uHandset.setY(-86).setAngle(0); uCallName.setText('☎ ' + c.nm + ' · ALTAVOZ').setAlpha(1); }
+    if (modeT > 0.5 && (pr('1') || pr('S'))) { ringStop(); c.i = 0; sfxClick(); uHandset.setY(-86).setAngle(0); uCallName.setText('☎ ' + c.nm + ' · ALTAVOZ'); }
     return;
   }
   if (c.i >= c.ln.length) {
@@ -1006,11 +983,9 @@ function callUpdate(dt) {
   }
   if (hd('S')) { if ((c.skip += dt) > 0.7) return hangUp(c); } else c.skip = 0;
   const line = c.ln[c.i], prev = c.ch | 0;
-  c.ch = M.min(line.length, c.ch + dt * (line == '...' ? 4 : 36)); // silences are slow
+  c.ch = M.min(line.length, c.ch + dt * (line == '...' ? 4 : 36) / .85); // silences are slow
   const talking = c.ch < line.length;
-  if ((c.ch | 0) != prev && (c.ch | 0) % 2 == 0 && line[c.ch | 0] != ' ') sfxBlip(1, 0.3, c.nm == 'NACHO' ? rnd(180, 300) : rnd(320, 520));
-  // the speaker glows while the voice comes out of it, with a little tail to the text
-  if (talking) uSpk.fillStyle(0xffd27a, 0.25 + M.random() * 0.2).fillRoundedRect(90, -40, 46, 42, 8);
+  if ((c.ch | 0) != prev && (c.ch | 0) % 2 == 0 && line[c.ch | 0] != ' ') sfxBlip(1, c.nm == 'NACHO' ? rnd(155, 255) : rnd(275, 445));
   uCallTxt.setText(line.slice(0, c.ch | 0));
   if (!talking && uCardN == 5 && c.i == c.ln.length - 1) {
     uCallHint.setText('');
@@ -1048,9 +1023,10 @@ function cardUpdate() {
 const mkE = (role, r, [x, y], st, o) => Object.assign({ role, r, x, y, st, fx: 1, t: 0, anim: 0, snd: rnd(0, 2), shake: 0, ot: rnd(1, 3), kd: null, at: 0 }, o);
 function startNight(n) {
   clearScreen();
+  if (FX) S.cameras.main.hasPostPipeline = true;
   night = n; NN = NIGHTS[n - 1]; [hl, drain, sueRate, wakeH, patience, flashes] = NN; nightLen = hl * 6; now = 0; power = 99; sueno = n == 1 ? 0 : 8; blackout = 0;
   pitchOn = patience > 0; mentoraOn = n >= 4; coderOn = n == 5; pgrace = 4.2 - n * 0.3;
-  lesson = { tabletOpened: false, sawTeam: false, blocked: false, rested: false };
+  lesson = { tabletOpened: false, blocked: false, rested: false };
   firstDeparture = Infinity; scareTablet = 0; camLit = 0;
   view = 'office'; va = 0; pan = (PW - W) / 2; panV = 0; litN = 0; prevCam = null; focus = 'N'; camR = 0; statA = light = plug = cutH = cof = cofT = cofHold = drink = lidY = 0;
   doors = { W: 0, E: 0 }; doorP = { W: 0, E: 0 }; plug = -1; flash = hallu = 0;
@@ -1061,7 +1037,7 @@ function startNight(n) {
     pitcher: mkE('pitcher', 1, PITCH_HOME, 'PITCH', { slide: 1, bar: 1 }),
     sleeper: mkE('sleeper', 5, SLEEP_HOME, 'SLEEP', { wakeAt: rnd(wakeH, wakeH + 1) * hl }),
     mentora: mkE('mentora', 9, [130, 300], 'REST', { t: n == 5 ? FINAL_NIGHT_START.mentora : hl / 2, target: -1, visits: 0, side: 'E' }),
-    chef: mkE('chef', 2, CHEF_HOME, 'COOK', { p: 0, bang: 4, lock: 0 }),
+    chef: mkE('chef', 2, CHEF_HOME, 'COOK', { p: 0, bang: 4, t: n == 4 ? 24 : 30 }),
     coder: mkE('coder', 0, [350, 170], 'TYPE', { plugT: FINAL_NIGHT_START.coder }),
     fe: mkE('fe', 0, [SEATS.fe, 170], 'SEAT', { t: [2, 21, 55, 45, FINAL_NIGHT_START.fe][n - 1] }),
     be: mkE('be', 0, [SEATS.be, 170], 'SEAT', { t: 0 }),
@@ -1096,8 +1072,8 @@ function update(time, delta) {
   for (const k in pressed) pressed[k] = 0;
 }
 function playUpdate(dt) {
-  // Give a first-time player time to find the tablet and count the team.
-  const briefing = night == 1 && !lesson.sawTeam;
+  // Give a first-time player time to find the tablet.
+  const briefing = night == 1 && !lesson.tabletOpened;
   if (!briefing || now < 10) now += dt;
   if (now >= nightLen) return winNight();
   input(dt);
@@ -1116,7 +1092,7 @@ function playUpdate(dt) {
   }
   updateBlink(dt);
   revealDoorway();
-  aiPitcher(dt); aiSleeper(dt); aiMentora(dt); aiCoder(dt); aiTeam(E.fe, 'W', dt);
+  aiPitcher(dt); aiSleeper(dt); aiMentora(dt); aiCoder(dt); aiChef(dt); aiTeam(E.fe, 'W', dt);
   if (mode == 'play') aiTeam(E.be, 'E', dt);
   if (mode != 'play') return;
   updateDoom(dt);
@@ -1149,9 +1125,9 @@ function input(dt) {
   // B1 = light · B2 = do something · B3 = the tablet · B4 = previous camera
   if (office) {
     if (drink > 0) return; // drinking: cup in front of your face
-    if (pr('3') && !blackout) { view = 'cams'; statA = 0.9; sfxCam(); HINT.cams++; makeNoise(0.15); return; }
+    if (pr('3') && !blackout) { view = 'cams'; statA = 0.9; sfxStatic(.12); makeNoise(0.15); return; }
     // somebody got in: nothing in the office responds any more (FNAF1)
-    if (doomed) { if (pr('1') || pr('2')) sfxDead(); return; }
+    if (doomed) { if (pr('1') || pr('2')) sfxClick(); return; }
     if (va > 0) { lightSnd(was); return; }
     if (focus == 'C') {
       lightSnd(was);
@@ -1162,23 +1138,20 @@ function input(dt) {
       return;
     }
     light = hd('1') && !blackout && focus ? 1 : 0;
-    if (pr('1') && light) {
-      HINT.light++; flash = focus;
-      if (night != 1 || lesson.sawTeam) power -= .6 * (night == 5 ? FINAL_NIGHT_POWER_USE : 1);
-    }
+    if (pr('1') && light) { HINT.light++; flash = focus; }
     if (pr('2') && focus) { toggleDoor(focus); HINT.door++; }
     lightSnd(was);
     return;
   }
   if (blackout) { view = 'office'; lightSnd(was); return; }
-  if (pr('3')) { view = 'office'; sfxCam(); makeNoise(0.15); return; }
+  if (pr('3')) { view = 'office'; sfxStatic(.12); makeNoise(0.15); return; }
   if (va < 1) return;
   lesson.tabletOpened = true;
   // The stick follows the rows and columns drawn on the camera map.
   const direction = ['L','R','U','D'].find(pr);
   let n = direction ? CAMERA_LINKS[camR][direction] ?? -1 : -1;
-  if (pr('4') && prevCam != null) { [camR, prevCam] = [prevCam, camR]; n = -1; sfxCam(); statA = 0.85; }
-  if (n >= 0) { prevCam = camR; camR = n; sfxCam(); statA = 0.85; if (now > hl * 2 && !hd('1') && M.random() < 0.035) hallu = 0.14; } // sometimes a face that is not there
+  if (pr('4') && prevCam != null) { [camR, prevCam] = [prevCam, camR]; n = -1; sfxStatic(.12); statA = 0.85; }
+  if (n >= 0) { prevCam = camR; camR = n; sfxStatic(.12); statA = 0.85; if (now > hl * 2 && !hd('1') && M.random() < 0.035) hallu = 0.14; } // sometimes a face that is not there
   // FNAF2: the feed is almost black. B1 = the camera's flashlight (costs power)
   camLit = hd('1') && va >= 1 ? 1 : 0;
   if (camLit) litN = 1;
@@ -1204,7 +1177,7 @@ function toggleDoor(d) {
   if (d == 'N') return think('Aquí no hay puerta...', 'nodoor');
   if (blackout) { sfxErr(); think('No hay energía... las puertas no responden.', 'outdoor'); return; }
   doors[d] ^= 1;
-  sfxDoor(dPan(d)); makeNoise(0.35);
+  sfxDoor(); makeNoise(0.35);
 }
 // noise stirs the sleepwalker while he stands in the front hallway (UCN-style
 // meter): it adds up and drains slowly, so one thing at a time is fine.
@@ -1226,7 +1199,7 @@ const doorBlocks = (d) => SIDES.includes(d) && (doors[d] || doorClosed(d));
 // ---- Resources ----
 function updateResources(dt, briefing) {
   for (const d of SIDES) doorP[d] = clamp(doorP[d] + (doors[d] ? dt : -dt) / 0.45, 0, 1);
-  if (cof == 1 && (cofT -= dt) <= 0) { cof = 2; tone(880, 0.25, 's', 0.12, 0.3); } // ding
+  if (cof == 1 && (cofT -= dt) <= 0) { cof = 2; tone(880, 0.25, 's', 0.12); } // ding
   if (drink > 0 && (drink -= dt) <= 0) { sueno = M.max(0, sueno - 60); setMsg('☕  -SUEÑO', 1.2); }
   if (!blackout) {
     // FNAF-style power: doors, door light, cameras and the coder's extension cord all drain
@@ -1254,7 +1227,7 @@ function powerOut() {
     ambG.gain.setTargetAtTime(0, AC.currentTime, .5);
     droneG.gain.setTargetAtTime(0, AC.currentTime, .95);
   }
-  sfxErr(); noise(2, 0.4, 'l', 200, 0, 60);
+  sfxErr(); noise(2, 0.4, 'l', 200, 60);
 }
 function updateBlink(dt) {
   if (blink > 0) { blink -= dt; return; }
@@ -1265,19 +1238,19 @@ function updateBlink(dt) {
 }
 const blinking = () => blink > 0;
 function setMsg(s, t) { uMsg.setText(s); msgT = t; }
-function discoverySound(pan) {
+function discoverySound() {
   // Let the bulb click clear before the low impact and detuned, metallic tail.
-  tone(148, .76, 's', .83, pan, 52, .055);
-  tone(246, .93, 'w', .32, pan, 105, .07);
-  tone(258, 1.14, 't', .32, pan, 112, .09);
-  noise(.26, .48, 'b', 1380, pan, 380, .06, 2);
+  tone(148, .76, 's', .83, 52, .055);
+  tone(246, .93, 'w', .32, 105, .07);
+  tone(258, 1.14, 't', .32, 112, .09);
+  noise(.26, .48, 'b', 1380, 380, .06, 2);
 }
 function revealDoorway() {
   if (view != 'office' || !light || blinking() || doorClosed(focus)) return;
   const e = Object.values(E).find(visitor => visitor.role != 'sleeper' && visitor.kd == focus && !visitor.revealed);
   if (!e) return;
   e.revealed = true;
-  discoverySound(dPan(focus) * .72);
+  discoverySound();
 }
 function updateThoughts(dt) {
   if (thought && (thought.t -= dt) <= 0) thought = null;
@@ -1298,7 +1271,6 @@ const lvl = (k) => { const b = NN[LV[k]]; return b ? M.min(20, b + clamp(hourOf(
 function roll(e, iv, dt, L) {
   if ((e.ot -= dt) > 0) return 0;
   e.ot = iv * rnd(0.8, 1.2);
-  if (e.force) return 1;
   return rnd(0, 20) < (L ?? lvl(e.role));
 }
 // Nobody moves while you watch them: they don't leave the room on your screen
@@ -1310,7 +1282,7 @@ function canGo(e, n) {
   if (e.role == 'fe' || e.role == 'be' || e.role == 'coder') {
     if (view == 'cams' && va >= 1 && (camR == n || camR == e.r)) return false;
   }
-  return !(looking(e.r) && !blindDoor(e) && !e.hid) && !looking(n);
+  return !(looking(e.r) && !blindDoor(e)) && !looking(n);
 }
 function move(e, n, s) {
   if (!canGo(e, n)) return (e.ot = 0.25), 0; // try again as soon as you look away
@@ -1323,8 +1295,8 @@ function hop(e, n, s) {
   glitch(e.r); glitch(n);
   s = s || pick(ROOMS[n][11]);
   e.fx = s[0] < ROOMS[n][2] / 2 ? 1 : -1; // facing into the room
-  e.r = n; e.x = s[0]; e.y = s[1]; e.force = 0;
-  sfxRoom(n, [1.2, 1, 0.65, 0.45, 0.35][HOP[n]] ?? 0.3, panOf(e));
+  e.r = n; e.x = s[0]; e.y = s[1];
+  sfxRoom([1.2, 1, 0.65, 0.45, 0.35][HOP[n]] ?? 0.3);
 }
 // one room closer to room t (s: where to stand once there). True once there.
 function stepTo(e, t, s) {
@@ -1347,11 +1319,11 @@ function toDoor(e, d) {
   if (e.r != a) { if (!move(e, a, b)) return 0; }
   else if (canGo(e, a)) [e.x, e.y] = b;
   else return (e.ot = 0.25), 0;
-  Object.assign(e, { kd: d, at: 0, kt: 0, kn: 0.4, bt: 0.8, th: 0, revealed: false, attackIn: 0 });
-  sfxCreak(dPan(d));
+  Object.assign(e, { kd: d, at: 0, kt: 0, kn: 0.4, bt: 0.8, revealed: false, attackIn: 0 });
+  sfxCreak();
   if (night == 2 && (e.role == 'fe' || e.role == 'be')) {
-    sfxStep(2.1, dPan(d), .12);
-    sfxStep(1.65, dPan(d), .4);
+    sfxStep(2.1, .12);
+    sfxStep(1.65, .4);
   }
   if (e.role == 'pitcher') think('¡Está pidiendo preguntas! Suelta y pulsa B1 varias veces en el centro.', 'frontPitch', 4);
   return 1;
@@ -1361,7 +1333,7 @@ function toDoor(e, d) {
 function atDoor(e, dt) {
   if (!doorBlocks(e.kd)) return (e.at += dt), 1;
   e.at = 0; e.kt += dt;
-  if ((e.kn -= dt) <= 0) { e.kn = rnd(3, 6); sfxKnock(dPan(e.kd)); }
+  if ((e.kn -= dt) <= 0) { e.kn = rnd(3, 6); sfxKnock(); }
   return 0;
 }
 const leaveDoor = (e) => (e.kd = null);
@@ -1375,8 +1347,8 @@ const leaveDoor = (e) => (e.kd = null);
 // your doorway. Door closed on their next opportunity = back to the dining
 // room. Door open = they are in.
 const ROUTE = { fe: [0, 3, 7, 8], be: [0, 3, 9, 10] };
-// Night 2 gives the three active threats separate parts of the map.
-const NIGHT_TWO_ROUTE = { fe: [0, 2, 6, 7, 8], be: [0, 4, 11, 9, 10] };
+// Night 2 tours the side rooms through the corridors shown on the camera map.
+const NIGHT_TWO_ROUTE = { fe: [0, 3, 2, 3, 7, 6, 7, 8], be: [0, 3, 4, 3, 9, 11, 9, 10] };
 const DETOUR = { fe: { 3: 2, 7: 6 }, be: { 3: 4, 9: 11 } };
 const STARE = { 8: [92, 96], 10: [208, 96] }; // right under the corner camera
 const NIGHT_TWO_OPEN_WINDOW = 4.5;
@@ -1394,27 +1366,25 @@ function teamAtDoor(e, dt, ready, openWindow) {
     }
   } else if (ready && e.at >= openWindow && !doomed) {
     e.attackIn = 1.5;
-    sfxStep(2.2, dPan(e.kd));
+    sfxStep(2.2);
   }
   return true;
 }
 function aiTeam(e, d, dt) {
   e.anim += dt;
   const firstLesson = night == 1 && e.role == 'fe';
-  const route = (night == 2 ? NIGHT_TWO_ROUTE : ROUTE)[e.role];
+  const tour = night == 2;
+  const route = (tour ? NIGHT_TWO_ROUTE : ROUTE)[e.role];
   const firstStop = route[1];
   if (e.st == 'SEAT') {
-    if (firstLesson) {
-      if (camR == 0 && camLit && va == 1 && !blinking()) lesson.sawTeam = true;
-      if (!lesson.sawTeam || modeT < 12) return;
-    }
+    if (firstLesson && (!lesson.tabletOpened || modeT < 12)) return;
     if (e.role == 'be' && (night == 1 || now < firstDeparture + (night == 2 ? 34 : 21))) return;
     if (e.role == 'be' && night == 5 && now < FINAL_NIGHT_START.be) return;
     e.t -= dt;
     if (e.t > 0 || !canGo(e, firstStop)) return;
-    sfxChair(.9, panOf(e));
+    sfxChair(.9);
     hop(e, firstStop);
-    e.st = 'ROAM'; e.ot = firstLesson ? 4 : 5;
+    e.st = 'ROAM'; e.ot = firstLesson ? 4 : 5; e.routeIndex = 1;
     if (e.role == 'fe') firstDeparture = now;
     return;
   }
@@ -1439,15 +1409,34 @@ function aiTeam(e, d, dt) {
     else move(e, e.r == 3 ? 7 : 8, e.r == 7 ? STARE[8] : null);
     return;
   }
+  if (e.st == 'RETREAT') {
+    if ((e.ot -= dt) <= 0) {
+      e.ot = 2.6;
+      if (stepTo(e, firstStop)) { e.st = 'ROAM'; e.routeIndex = 1; }
+    }
+    return;
+  }
   if (e.st != 'ROAM') return;
-  const go = roll(e, 4.5, dt);
+  const go = roll(e, tour && !e.kd ? 2.6 : 4.5, dt);
   if (e.kd) {
-    const openWindow = night == 2 ? NIGHT_TWO_OPEN_WINDOW : 2.5;
-    if (!teamAtDoor(e, dt, go, openWindow) && go && move(e, firstStop)) leaveDoor(e);
+    const openWindow = tour ? NIGHT_TWO_OPEN_WINDOW : 2.5;
+    if (!teamAtDoor(e, dt, go, openWindow) && go) {
+      if (tour) {
+        const previous = route[route.length - 2];
+        if (move(e, previous)) { leaveDoor(e); e.st = 'RETREAT'; e.ot = 2.6; }
+      } else if (move(e, firstStop)) leaveDoor(e);
+    }
     return;
   }
   if (!go) return;
-  const i = route.indexOf(e.r), dr = night == 2 ? null : DETOUR[e.role][e.r];
+  const i = tour ? e.routeIndex : route.indexOf(e.r);
+  if (tour) {
+    const next = route[i + 1];
+    if (next == null) { if (doorFree(d, e)) toDoor(e, d); }
+    else if (move(e, next, STARE[next])) e.routeIndex++;
+    return;
+  }
+  const dr = DETOUR[e.role][e.r];
   if (i < 0) move(e, e.from); // back from a detour
   else if (i == route.length - 1) { if (doorFree(d, e)) toDoor(e, d); }
   else if (dr != null && M.random() < 0.25) { const f = e.r; if (move(e, dr)) e.from = f; }
@@ -1467,7 +1456,7 @@ function aiPitcher(dt) {
     if (!pitchOn) return;
     if (!clicking && (night != 5 || now >= FINAL_NIGHT_START.pitchDrain)) p.bar -= dt / patience;
     p.shake = p.bar < 0.35 ? (0.35 - p.bar) * 4 : 0;
-    if (p.bar <= 0) { p.bar = p.shake = 0; p.st = 'SEARCH'; p.ot = 1.5; tone(330, 0.5, 't', 0.1, panOf(p), 220); }
+    if (p.bar <= 0) { p.bar = p.shake = 0; p.st = 'SEARCH'; p.ot = 1.5; tone(330, 0.5, 't', 0.1, 220); }
   } else if (p.st == 'SEARCH') {
     // he just stepped off the stage: passing slides now still calls him back
     if (p.r == 1 && p.bar > 0.3) return back(p, '"¡AH! ¡SIGUIENTE DIAPOSITIVA!"');
@@ -1496,15 +1485,14 @@ function aiSleeper(dt) {
   s.anim += dt;
   if (s.st == 'SLEEP') {
     s.shake = 0;
-    if ((night != 1 || lesson.blocked) && now > s.wakeAt) { s.st = 'WALK'; s.ot = 2; tone(300, 0.3, 't', 0.1, panOf(s), 500); }
+    if ((night != 1 || lesson.blocked) && now > s.wakeAt) { s.st = 'WALK'; s.ot = 2; tone(300, 0.3, 't', 0.1, 500); }
   } else if (s.st == 'WALK') {
     if (night == 1 && !lesson.rested) {
       if ((s.ot -= dt) > 0) return;
       s.ot = 2;
-    } else if (!roll(s, 3, dt)) return;
+    } else if (!roll(s, night == 2 ? 2.25 : 3, dt)) return;
     if (s.r != 12) {
-      if (night == 2) move(s, s.r == 5 ? 3 : 12);
-      else if (night != 1 && M.random() < 0.2) move(s, nextRoam(s));
+      if (night >= 3 && M.random() < 0.2) move(s, nextRoam(s));
       else stepTo(s, 12);
     }
     else if (doorFree('N', s) && toDoor(s, 'N')) Object.assign(s, { st: 'FRONT', t: rnd(7, 11), stir: 0, lit: 0, warn: false });
@@ -1524,8 +1512,8 @@ function aiSleeper(dt) {
       } s.ot = 1.5; }
   } else if (s.st == 'HOME') {
     if ((s.ot -= dt) <= 0) {
-      s.ot = 2.2;
-      if (night == 2 ? move(s, 5, SLEEP_HOME) : stepTo(s, 5, SLEEP_HOME)) {
+      s.ot = night == 2 ? 1.3 : 2.2;
+      if (stepTo(s, 5, SLEEP_HOME)) {
         s.st = 'SLEEP';
         [s.x, s.y] = SLEEP_HOME;
         s.wakeAt = now + hl * rnd(0.5, 1) * (1.2 - night * 0.1);
@@ -1533,13 +1521,13 @@ function aiSleeper(dt) {
     }
   } else if (s.st == 'ANGRY' && (s.t -= dt) <= 0) doom('sleeper', s, s.why);
 }
-function wakeUp(s) { s.st = 'ANGRY'; s.t = 0.7; s.shake = 1.4; tone(140, 0.6, 'w', 0.35, 0, 70); setMsg('"¡¿QUIÉN ANDA AHÍ?!"', 1.5); }
+function wakeUp(s) { s.st = 'ANGRY'; s.t = 0.7; s.shake = 1.4; tone(140, 0.6, 'w', 0.35, 70); setMsg('"¡¿QUIÉN ANDA AHÍ?!"', 1.5); }
 
 // A lit speaker marks the room where the mentor can be called away.
 function divertMentora(m) {
   m.st = 'DIVERT'; m.ot = .75;
-  tone(620, .12, 's', .15); tone(840, .18, 's', .15, 0, 0, .13);
-  sfxStep(.75, dPan(m.side)); sfxStep(.35, dPan(m.side), .4);
+  tone(620, .12, 's', .15); tone(840, .18, 's', .15, 0, .13);
+  sfxStep(.75); sfxStep(.35, .4);
   setMsg('«Se solicita a la mentora en ' + ROOMS[m.target][0].toLowerCase() + '».', 2.4);
   think('Los pasos se alejan.', 0, 3);
 }
@@ -1552,7 +1540,7 @@ function aiMentora(dt) {
     m.side = m.visits ? pick(SIDES) : 'E';
     m.target = m.visits ? pick([2, 3, 4, 5, 11]) : 3;
     m.visits++; m.st = 'CALL'; m.t = m.visits == 1 ? 17 : 11;
-    m.ot = 1; sfxMurmur(1.4, dPan(m.side));
+    m.ot = 1; sfxMurmur(1.4);
     setMsg('«¿Hay alguien por aquí?»', 2.5);
   }
   if (m.st == 'CALL' && (m.t -= dt) <= 0) { m.st = 'APPROACH'; m.ot = .2; }
@@ -1573,6 +1561,40 @@ function aiMentora(dt) {
   }
 }
 
+// The Chef counts portions while the tablet is down, then charges the west shutter.
+function aiChef(dt) {
+  if (night < 4) return;
+  const c = E.chef;
+  if (c.st == 'COOK') {
+    if (view != 'office' || (c.t -= dt) > 0) return;
+    if (++c.p < CHEF_POS.length) {
+      [c.x, c.y] = CHEF_POS[c.p]; c.shake = c.p * .35;
+      c.t = night == 4 ? 18 : 15;
+    } else {
+      c.st = 'RUN'; c.t = c.snd = c.step = 0;
+      setMsg('¡EL CHEF CORRE HACIA LA IZQUIERDA!', 3);
+    }
+  } else if (c.st == 'RUN') {
+    const t = (c.t += dt);
+    if ((c.step -= dt) <= 0) { c.step = .24; sfxStep(lerp(.7, 2.4, t / 4.2)); }
+    if (t < .8) Object.assign(c, { r: 3, x: lerp(130, 250, t / .8), y: 280 });
+    else if (t < 3.4) Object.assign(c, { r: 7, x: 130, y: lerp(60, 760, (t - .8) / 2.6) });
+    else if (t < 4.2) {
+      const [x, y] = blindPt('W'), k = (t - 3.4) / .8;
+      Object.assign(c, { r: 8, x: lerp(150, x, k), y: lerp(40, y, k) });
+    } else if (doorBlocks('W')) {
+      power -= c.bang; c.bang = M.min(10, c.bang + 3);
+      makeNoise(.3); sfxKnock(); setMsg('*¡BAM!*  −ENERGÍA', 1.6);
+      c.st = 'BACK'; c.ot = 1.5;
+    } else if (!doomed) {
+      c.kd = 'W'; doom('chef', c);
+    }
+  } else if (c.st == 'BACK' && (c.ot -= dt) <= 0) {
+    c.ot = 1.5;
+    if (stepTo(c, 2, CHEF_HOME)) Object.assign(c, { st: 'COOK', p: 0, t: 18, shake: 0 });
+  }
+}
+
 // THE CODER (FNAF1 Freddy at the power-out): plugs his rig into your power on
 // the last night. Cut the cord and he comes to complain at one of your doors.
 function coderAngry() {
@@ -1583,7 +1605,7 @@ function coderAngry() {
 function aiCoder(dt) {
   const c = E.coder;
   c.anim += dt;
-  if (c.st == 'TYPE') { if (coderOn && plug < 0 && (c.plugT -= dt) <= 0) { plug = 0; setMsg('SOBRECARGA · CAM 1A', 3); sfxType(0.8, panOf(c)); } }
+  if (c.st == 'TYPE') { if (coderOn && plug < 0 && (c.plugT -= dt) <= 0) { plug = 0; setMsg('SOBRECARGA · CAM 1A', 3); sfxType(0.8); } }
   else if (c.st == 'WAIT') {
     if (!looking(c.r) && (c.t -= dt) <= 0) { c.st = 'COMPLAIN'; c.side = pick(SIDES); c.ot = 1; }
   }
@@ -1634,7 +1656,6 @@ function audible(e) {
   if (h == 1) { const d = ADOOR.find((q) => CDOOR[q].adj == e.r); return 0.3 + 0.5 * clamp(1 - dist(e.x, e.y, ...blindPt(d)) / 400, 0, 1); }
   return [1, 0, 0.12, 0.03, 0.01][h] ?? 0; // far away you hear nothing at all
 }
-const panOf = (e) => clamp((mapC(e.r)[0] - 150) / 110, -1, 1);
 function audioCues(dt) {
   // no music that rises when danger is near: the dread only follows the clock and your sleepiness
   const d = M.max(0.15 + (now / nightLen) * 0.25, (sueno - 80) / 25);
@@ -1649,33 +1670,33 @@ function audioCues(dt) {
   for (const k in E) {
     const e = E[k];
     if ((e.snd -= dt) > 0) continue;
-    const v = audible(e), pn = panOf(e), st = e.st == 'DOOM' ? e.ps : e.st; // sounds as if still on the way
+    const v = audible(e), st = e.st == 'DOOM' ? e.ps : e.st; // sounds as if still on the way
     if (k == 'pitcher') {
       if (st == 'PITCH') {
-        if (pitchOn && e.bar < 0.35) { sfxBabble(v * (1.6 - e.bar * 2), pn, 420 + (0.35 - e.bar) * 400); e.snd = 0.5 + e.bar * 2; } // "eh... eh..."
-        else { if (pitchOn) sfxBabble(v * 0.8, pn, 300); e.snd = rnd(0.6, 1.4); }
-      } else if (st == 'SEARCH') { sfxBabble(v * 1.3, pn, 380); e.snd = 0.9; }
-      else if (st == 'FRONT') { sfxBabble(0.9, 0, 480); e.snd = rnd(0.5, 0.9); } // right in your hallway: questions
+        if (pitchOn && e.bar < 0.35) { sfxBabble(v * (1.6 - e.bar * 2), 420 + (0.35 - e.bar) * 400); e.snd = 0.5 + e.bar * 2; } // "eh... eh..."
+        else { if (pitchOn) sfxBabble(v * 0.8, 300); e.snd = rnd(0.6, 1.4); }
+      } else if (st == 'SEARCH') { sfxBabble(v * 1.3, 380); e.snd = 0.9; }
+      else if (st == 'FRONT') { sfxBabble(0.9, 480); e.snd = rnd(0.5, 0.9); } // right in your hallway: questions
       else e.snd = 1;
     } else if (k == 'sleeper') {
-      if (st == 'SLEEP') { sfxSnore(v, pn); e.snd = 2.8; }
-      else if (st == 'FRONT') { sfxSnore(1.1, 0); e.snd = 2.6; } // standing in your hallway, snoring
+      if (st == 'SLEEP') { sfxSnore(v); e.snd = 2.8; }
+      else if (st == 'FRONT') { sfxSnore(1.1); e.snd = 2.6; } // standing in your hallway, snoring
       else e.snd = 2;
     } else if (k == 'mentora') {
       if (!mentoraOn) e.snd = 5;
-      else if (st == 'APPROACH' && !e.kd) { sfxStep(v * 1.6, pn); tone(2400, 0.03, 'q', 0.04 * v, pn); e.snd = 0.2; } // fast heels
-      else { sfxMurmur(v * 0.7, pn); e.snd = rnd(2.5, 4.5); }
+      else if (st == 'APPROACH' && !e.kd) { sfxStep(v * 1.6); tone(2400, 0.03, 'q', 0.04 * v); e.snd = 0.2; } // fast heels
+      else { sfxMurmur(v * 0.7); e.snd = rnd(2.5, 4.5); }
     } else if (k == 'chef') {
-      if (st == 'COOK') { noise(0.4, 0.05 * v, 'b', 2500, pn, 0, 0, 2); e.snd = rnd(1, 2); } // sizzling
+      if (st == 'COOK') { noise(0.4, 0.05 * v, 'b', 2500, 0, 0, 2); e.snd = rnd(1, 2); } // sizzling
       else e.snd = 1; // gone quiet: he is out
-    } else if (k != 'coder') { if (st == 'SEAT') sfxType(v * 0.4, pn); e.snd = st == 'SEAT' ? rnd(0.4, 1) : 1; } // the team
-    else if (st == 'TYPE') { sfxType(v * 0.6, pn); e.snd = rnd(0.3, 0.8); }
+    } else if (k != 'coder') { if (st == 'SEAT') sfxType(v * 0.4); e.snd = st == 'SEAT' ? rnd(0.4, 1) : 1; } // the team
+    else if (st == 'TYPE') { sfxType(v * 0.6); e.snd = rnd(0.3, 0.8); }
     else e.snd = 1;
   }
   // breathing right behind an open side door, from the moment each one got there
   for (const k in E) {
     const e = E[k];
-    if (e.kd && e.kd != 'N' && !doorClosed(e.kd) && (e.bt -= dt) <= 0) { e.bt = 3.2; sfxBreath(0.8, dPan(e.kd)); }
+    if (e.kd && e.kd != 'N' && !doorClosed(e.kd) && (e.bt -= dt) <= 0) { e.bt = 3.2; sfxBreath(0.8); }
   }
   if ((scareT -= dt) <= 0) { scareT = rnd(16, 34); sfxFar(); }
   if (dread > 0.35 && (heartT -= dt) <= 0) { sfxHeart(dread); heartT = lerp(1.1, 0.42, dread); }
@@ -1685,20 +1706,6 @@ function audioCues(dt) {
 // RENDER
 // =====================================================================
 const tick = (f) => ((now * f) | 0) % 2;
-// when each character strikes its action pose (frame 1)
-const POSE = {
-  pitcher: (e) => e.st == 'PITCH' && tick(0.6), // points the clicker at the screen
-  sleeper: (e) => e.st == 'SLEEP', // snoring
-  mentora: (e) => e.st == 'CALL', // points at you
-  chef: (e) => e.p >= 1 || e.st == 'RUN', // knife up
-  coder: (e) => e.st != 'TYPE', // laptop shut under his arm
-  fe: (e) => e.st == 'SEAT', // typing
-  be: (e) => e.st == 'SEAT',
-};
-function frameOf(e) {
-  const fr = SPRF[e.role];
-  return fr[+!!POSE[e.role](e)];
-}
 function render(dt) {
   const camMode = view == 'cams' && va >= 1;
   rC.setVisible(camMode); oC.setVisible(!camMode);
@@ -1741,14 +1748,14 @@ function renderCam(r) {
   // people in the shot, far to near
   const order = [];
   for (const k in E) {
-    const e = E[k], im = eImg[k], q = (k != 'mentora' || mentoraOn) && e.r == r && !blindDoor(e) && !e.hid && P(e.x, e.y, 0);
+    const e = E[k], im = eImg[k], q = (k != 'mentora' || mentoraOn) && e.r == r && !blindDoor(e) && P(e.x, e.y, 0);
     if (!q) continue;
     const [sx, sy, s] = q, sc = 7 * s, lying = k == 'sleeper' && e.st == 'SLEEP';
     const unplugged = k == 'coder' && e.st == 'WAIT';
     const sh = unplugged ? 1.8 * sc * M.sin(e.anim * 95) : e.shake ? e.shake * sc * rnd(-1, 1) : 0;
     const tilt = unplugged ? .10 * M.sin(e.anim * 77) : 0;
-    im.setVisible(true).setTexture(frameOf(e)).setScale(sc).setFlipX(e.fx < 0).setRotation(lying ? -PI / 2 : tilt).setOrigin(0.5, lying ? 0.5 : 1).setPosition(sx + sh, sy - (lying ? 10 * sc : 0));
-    im.setTint((k == 'mentora' && !mentoraOn) || k == 'chef' || (k == 'coder' && !coderOn) ? 0x888888 : 0xffffff);
+    im.setVisible(true).setScale(sc).setFlipX(e.fx < 0).setRotation(lying ? -PI / 2 : tilt).setOrigin(0.5, lying ? 0.5 : 1).setPosition(sx + sh, sy - (lying ? 10 * sc : 0));
+    im.setTint((k == 'chef' && night < 4) || (k == 'coder' && !coderOn) ? 0x888888 : 0xffffff);
     im.depth = -cs(e.x, e.y, 0)[2]; im.hx = sx; im.hy = sy - (lying ? 6 : 19) * sc; im.sc = sc;
     order.push(im);
   }
@@ -1803,7 +1810,7 @@ function renderOffice() {
       sc = 15; sx = west ? 94 : PW - 94; sy = wBot(sx) + 4;
       rot = (west ? 1 : -1) * (.2 + M.sin(now * 1.3) * .02);
     }
-    im.setVisible(true).setTexture(frameOf(e)).setScale(sc).setRotation(rot).setPosition(sx + (e.shake ? (M.random() - 0.5) * e.shake * 10 : 0), sy)
+    im.setVisible(true).setScale(sc).setRotation(rot).setPosition(sx + (e.shake ? (M.random() - 0.5) * e.shake * 10 : 0), sy)
       .setFlipX(rot ? rot < 0 : e.fx < 0).setTint(0xffffff);
     im.setCrop(); oC.moveBelow(im, oMask);
   }
@@ -1836,7 +1843,7 @@ function renderOffice() {
   oDG.fillStyle(0x3a3a3e).fillCircle(FAN[0], FAN[1], 34).fillStyle(0x6a6d74);
   for (let i = 0; i < 3; i++) { const a = fanA + i * 2.094; oDG.fillTriangle(FAN[0], FAN[1], FAN[0] + M.cos(a) * 32, FAN[1] + M.sin(a) * 32, FAN[0] + M.cos(a + 0.7) * 32, FAN[1] + M.sin(a + 0.7) * 32); }
   oDG.fillStyle(0x111111).fillCircle(FAN[0], FAN[1], 6).lineStyle(2, 0x222226).strokeCircle(FAN[0], FAN[1], 34);
-  if (!blackout) for (const mx of CRT) { oDG.fillStyle(0x2a5a90, 0.16 + M.random() * 0.05).fillRect(mx + 10, 356, 108, 70); for (let i = 0; i < 4; i++) oDG.fillStyle(0x9ab, 0.12).fillRect(mx + 14, 358 + ((now * 40 + i * 17) % 66), 100, 2); }
+  if (!blackout) for (const mx of CRT) { oDG.fillStyle(0x2a5a90, 0.185).fillRect(mx + 10, 356, 108, 70); for (let i = 0; i < 4; i++) oDG.fillStyle(0x9ab, 0.12).fillRect(mx + 14, 358 + ((now * 40 + i * 17) % 66), 100, 2); }
   const fill = cof == 1 ? 1 - cofT / BREW : cof / 2;
   oDG.fillStyle([0x331111, 0xff3322, 0x33ff55][cof]).fillRect(COFFEE_X + 16, 412, 6, 6);
   if (drink <= 0) oDG.fillStyle(0xe8e2c8).fillRect(COFFEE_X - 12, 448, 24, 22).fillStyle(0x5a3416).fillRect(COFFEE_X - 10, 468 - 18 * fill, 20, 18 * fill);
@@ -1847,10 +1854,10 @@ function renderOffice() {
   oBeam.setVisible(!!light);
   if (light) {
     const [x, y, w, h] = ODOOR[focus], tx = x + w / 2, ty = y + h * 0.55;
-    oBeam.setPosition(PCX, 570).setRotation(M.atan2(ty - 570, tx - PCX)).setScale(dist(PCX, 570, tx, ty) / 230, 1).setAlpha(0.22 + M.random() * 0.04);
+    oBeam.setPosition(PCX, 570).setRotation(M.atan2(ty - 570, tx - PCX)).setScale(dist(PCX, 570, tx, ty) / 230, 1).setAlpha(0.24);
   }
   const sw = M.sin(now * 0.9) * 0.12;
-  oLamp.setRotation(PI / 2 + sw).setAlpha(fl ? 0.02 : 0.14 + M.random() * 0.01).setPosition(PCX + sw * 60, 40);
+  oLamp.setRotation(PI / 2 + sw).setAlpha(fl ? 0.02 : 0.145).setPosition(PCX + sw * 60, 40);
   oDim.fillStyle(0, blackout ? 0.85 : fl ? 0.6 : 0.3).fillRect(0, 0, PW, H).fillStyle(0, 0.3).fillRect(0, 0, 60, H).fillRect(PW - 60, 0, 60, H);
 }
 
@@ -1932,6 +1939,10 @@ function renderHud(dt) {
     } else if (camR == 0 && plug >= 0) {
       prompt(0, 240, 120, cutH > 0 ? 'CORTANDO...' : 'MANTÉN B2 · CORTAR SU ENCHUFE', '#ff8888');
       gr.fillStyle(0xff8888).fillRect(190, 134, 100 * cutH / 1.2, 5);
+    } else if (camR == 2 && night >= 4) {
+      const c = E.chef;
+      if (c.st == 'COOK') prompt(0, 220, 120, 'PORCIONES · ' + (c.p + 1) + '/3', c.p == 2 ? '#ffd400' : '#fff');
+      else if (c.st == 'RUN') prompt(0, 220, 120, '¡COCINA VACÍA! · PUERTA IZQUIERDA', '#ff5555');
     }
   }
   const sl = E.sleeper;
@@ -1958,7 +1969,7 @@ function renderHud(dt) {
       const cx = COFFEE_X + oDesk.x - pan;
       prompt(0, cx, 372, ['MANTÉN B1 · PREPARAR CAFÉ', 'PREPARANDO... ' + M.ceil(cofT), 'B1 · TOMAR CAFÉ'][cof], cof > 1 ? '#7f7' : '#c9b6ff');
       gr.fillStyle(0xc9b6ff).fillRect(cx - 50, 386, 100 * cofHold / 0.6, 5);
-    } else if (sueno > 45 || cof > 1) prompt(2, COFFEE_X + oDesk.x - pan, 372, cof > 1 ? '☕ LISTO' : '☕ CAFÉ', sueno > 70 ? '#ff77ff' : '#c9b6ff', 0.75);
+    }
   }
   const mentor = E.mentora;
   let cue = '';
@@ -1968,10 +1979,7 @@ function renderHud(dt) {
       (cm ? 'BUSCA LA SALA MORADA · ' : 'B3 · BUSCA EL ALTAVOZ EN ') + room[0] + ' · CAM ' + room[1];
   } else if (mentor.st == 'APPROACH' && !(office && light && mentor.side == focus)) cue = 'MENTORA · PUERTA ' + (mentor.side == 'W' ? 'IZQUIERDA' : 'DERECHA');
   else if (plug >= 0 && (!cm || camR != 0)) cue = 'CONSUMO EXTRA · ENCHUFE EN CAM 1A';
-  else if (night == 1 && !lesson.sawTeam && modeT >= 7) {
-    if (cm && camR != 0) cue = 'BUSCA CAM 1A · SALA DE CÓDIGO';
-    if (cm && camR == 0 && litN) cue = 'B1 · ILUMINA LA SALA DE CÓDIGO';
-  } else if (night == 1 && E.fe.kd && !lesson.blocked && !(office && light && focus == 'W')) {
+  else if (night == 1 && E.fe.kd && !lesson.blocked && !(office && light && focus == 'W')) {
     cue = doors.W ? 'ESPERA A QUE SE ALEJE' : cm ? 'B3 · BAJA LA CÁMARA. HAY PASOS A LA IZQUIERDA.' :
       focus != 'W' ? '◄ GIRA HACIA LOS PASOS' : E.fe.revealed ? 'B2 · CIERRA LA PUERTA IZQUIERDA' : 'B1 · ILUMINA EL MARCO';
   } else if (night == 3 && now > 5 && now < 18 && !learned('slide', 2) && (!cm || camR != 1)) cue = 'EL PROYECTOR SIGUE ENCENDIDO · CAM 1C';
@@ -1998,7 +2006,7 @@ function renderHud(dt) {
 const LOSE = {
   pitcher: ['pitcher', '¡¿PREGUNTAS?!', 'En el pasillo, encandílalo varias veces.'],
   sleeper: ['sleeper', '¡¿QUÉ HORA ES?!', 'Nunca despiertes a un sonámbulo.'],
-  chef: ['chef', '¡A COMER!', 'Cocina vacía: ya viene corriendo.'],
+  chef: ['chef', '¡A COMER!', 'Si el chef viene corriendo, cierra la puerta izquierda.'],
   fe: ['fe', '¡REVISA MI PULL REQUEST!', 'Revisa tu puerta izquierda con la luz.'],
   be: ['be', '¡FALTA UN COMMIT!', 'Revisa tu puerta derecha con la luz.'],
   coder: ['coder', '¡¿QUIÉN ME CORTÓ LA LUZ?!', 'Cuando lo desenchufas, viene a reclamar.'],
@@ -2010,6 +2018,7 @@ const LOSE = {
 const SCRP = { pitcher: 1.25, sleeper: 0.8, mentora: 1.35, chef: 0.75, coder: 1, fe: 1.15, be: 0.9, banana: 0.62 };
 function lose(why, hint, side) {
   if (mode != 'play') return;
+  if (FX) S.cameras.main.hasPostPipeline = false;
   scareTablet = 0;
   if (AC) { buzzG.gain.value = fanG.gain.value = 0; ambG.gain.setTargetAtTime(0, AC.currentTime, 0.08); droneG.gain.setTargetAtTime(0, AC.currentTime, 0.08); } // half a second of silence
   lostTo = why; lostHint = hint || LOSE[why][2]; loseT = now; scrOn = 0; scrSide = side || 0;
@@ -2024,7 +2033,7 @@ function lose(why, hint, side) {
     view = 'office'; va = 0; rC.setVisible(false); oC.setVisible(true); hudOff(); uStat.setAlpha(0);
     scrPre = M.random() < 0.7; scrDelay = scrPre ? rnd(0.45, 0.85) : rnd(0.05, 0.2);
   }
-  uScr.setTexture(LOSE[why][0] + 'H').setVisible(false);
+  uScr.setTexture(LOSE[why][0] + '0').setVisible(false);
 }
 // Falling asleep: your eyes close, the building goes quiet, your own z's
 // float up... then you open your eyes and something is standing right in
@@ -2051,7 +2060,7 @@ function dozeUpdate() {
     flick = M.random() < 0.15 ? 0.1 : 0;
     renderOffice();
     oBan.setTexture('banana0').setPosition(pan + 400, 650).setScale(15).setTint(0x8a8470); oC.bringToTop(oBan);
-    if (!dozeHB) { dozeHB = 1; sfxHeart(1); tone(52, 1.6, 's', 0.12, 0, 46); }
+    if (!dozeHB) { dozeHB = 1; sfxHeart(1); tone(52, 1.6, 's', 0.12, 46); }
   }
   oBan.setVisible(open);
   if (t > 6.9) { mode = 'play'; lose('sleep'); }
@@ -2060,7 +2069,6 @@ function screamUpdate() {
   const t = modeT - scrDelay, sl = lostTo == 'sleep';
   if (t < 0) {
     // the moment before: silence, the lights dying... something standing there
-    if (FX) Object.assign(FX, { no: 0.03, ab: 0.15, nv: 0, lit: 0, wp: 0, of: 1 });
     if (!sl && lostTo != 'power') {
       flick = M.random() < 0.35 ? 0.2 : 0; renderOffice();
       oBan.setVisible(scrPre).setTexture(LOSE[lostTo][0] + '0').setScale(19).setPosition(pan + 400, 700).setTint(0x34302a); oC.bringToTop(oBan);
@@ -2076,15 +2084,17 @@ function screamUpdate() {
     scareTablet = M.max(0, scareTablet - 1 / .17 * (S.game.loop.delta / 1000));
     drawTablet(scareTablet);
   }
-  // it lunges at you from where it came in, then fills the screen, shaking
+  // Keep the full sprite in view during the lunge and clear of the caption.
   const k = clamp(t / 0.16, 0, 1), e = 1 - (1 - k) ** 3, hit = t > 0.16, x0 = scrSide == 'W' ? 170 : scrSide == 'E' ? 630 : 400, a0 = scrSide == 'W' ? -28 : scrSide == 'E' ? 28 : 0;
-  uScr.setVisible(t < 1.2).setScale(lerp(10, 36, e) + (hit ? M.sin(t * 70) * 2.5 : 0))
-    .setPosition(lerp(x0, 400, e) + (hit ? rnd(-18, 18) : 0), lerp(scareTablet ? 140 : 420, 330, e) + (hit ? rnd(-16, 16) : 0))
-    .setAngle(hit ? rnd(-7, 7) : lerp(a0, 0, e)).setTint(hit && M.random() < 0.3 ? 0xff4040 : 0xffffff);
+  const x = lerp(x0, 400, e) + (hit ? rnd(-18, 18) : 0), y = lerp(scareTablet ? 140 : 420, 330, e) + (hit ? rnd(-16, 16) : 0);
+  const angle = hit ? rnd(-7, 7) : lerp(a0, 0, e), rotation = angle * PI / 180;
+  const half = M.max(uScr.width, uScr.height) * (M.abs(M.cos(rotation)) + M.abs(M.sin(rotation))) / 2;
+  const available = M.min(x - 24, W - 24 - x, y - 18, (hit ? 486 : H - 18) - y);
+  uScr.setVisible(t < 1.2).setScale(M.min(lerp(10, 18, e) + (hit ? M.sin(t * 70) * 1.3 : 0), available / half))
+    .setPosition(x, y).setAngle(angle).setTint(hit && M.random() < 0.3 ? 0xff4040 : 0xffffff);
   uScrT.setText(hit && t < 1.2 ? LOSE[lostTo][1] : '').setScale(1 + M.random() * 0.15).setPosition(400 + rnd(-8, 8), 525 + rnd(-6, 6));
   uStat.setAlpha(t > 1.2 ? 1 : hit ? 0.12 + M.random() * 0.2 : 0).setTilePosition(rnd(0, 200), rnd(0, 150));
   if (t > 1.2 && scrOn == 1) { scrOn = 2; sfxStatic(1); } // cut to static
-  if (FX) Object.assign(FX, { ab: hit ? 2.5 + M.random() * 2 : 1, no: hit ? 0.35 : 0.1, dk: 0.1, nv: 0, lit: 0, wp: hit && t < 1.2 ? 1.5 : 0 });
   if (t > 2.3) goLose();
 }
 function goLose() {
