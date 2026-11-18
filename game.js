@@ -133,7 +133,14 @@ const sfxCam = () => noise(0.12, 0.18, 'h', 1500);
 const sfxLight = () => tone(120, 0.05, 'q', 0.05);
 const sfxClick = () => { tone(1800, 0.02, 'q', 0.08); noise(0.02, 0.1, 'h', 3000); };
 const sfxCoffee = () => { for (let i = 0; i < 8; i++) noise(0.12, 0.12, 'b', rnd(300, 900), 0.3, 0, i * 0.14, 6); };
-const sfxRing = () => { for (let i = 0; i < 2; i++) { tone(440, 0.9, 's', 0.07, 0, 0, i * 1.3); tone(480, 0.9, 's', 0.07, 0, 0, i * 1.3); } };
+// an old electromechanical bell: a clapper hammering two bells, double ring
+const sfxRing = () => {
+  for (let k = 0; k < 2; k++) for (let i = 0; i < 18; i++) {
+    const t = k * 0.62 + i * 0.024;
+    tone(i % 2 ? 1430 : 1190, 0.06, 't', 0.08, 0.2, 0, t); tone(i % 2 ? 2870 : 2380, 0.03, 's', 0.025, 0.2, 0, t);
+    if (i % 3 == 0) noise(0.02, 0.05, 'h', 4000, 0.2, 0, t);
+  }
+};
 const sfxYawn = () => { tone(330, 1.2, 'w', 0.05, 0, 160); noise(1.2, 0.08, 'b', 500, 0, 250, 0, 2); };
 const sfxHeart = (v) => { tone(55, 0.12, 's', 0.35 * v, 0, 40); tone(50, 0.14, 's', 0.25 * v, 0, 38, 0.2); };
 const sfxEat = () => { for (let i = 0; i < 5; i++) noise(0.06, 0.2, 'b', 500, 0, 0, i * 0.15, 3); };
@@ -425,53 +432,96 @@ function buildRooms() {
   });
 }
 
-// ---- Office panorama (first person, FNAF-style) 1600x600 ----
+// ---- The security office (first person, FNAF-style) 1600x600 ----
+// A cramped room in perspective: a back wall with the dark front hallway in
+// the middle, two side walls with a heavy shutter door each and a big button
+// panel next to it, a checkered floor and the desk in front of you.
 function quad(c, col, pts) { c.fillStyle = col; c.beginPath(); pts.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); c.fill(); }
-const PW = 1600, PCX = 800;
-const ODOOR = { W: [150, 140, 180, 300], N: [710, 150, 180, 255], E: [1270, 140, 180, 300] };
-const OPANEL = { W: [348, 250], N: [906, 238], E: [1212, 250] };
-const OCENTER = { W: 240, N: 800, E: 1360 };
-const COFFEE_X = 1000, BREW = 5, SIP = 1.8; // coffee maker on the desk: look at it, it is focusable like a door
+const PW = 1600, PCX = 800, LW = 330, RW = 1270, TOPY = 90, FLY = 470;
+// the ceiling and floor lines along the walls (side walls are in perspective)
+const wTop = (x) => (x < LW ? (TOPY * x) / LW : x > RW ? (TOPY * (PW - x)) / (PW - RW) : TOPY);
+const wBot = (x) => (x < LW ? H - ((H - FLY) * x) / LW : x > RW ? H - ((H - FLY) * (PW - x)) / (PW - RW) : FLY);
+const DX = { W: [70, 250], E: [1350, 1530] };
+// a doorway as 4 points; k < 1 cuts it at that height (how far the shutter is down)
+function dq(d, k = 1) {
+  if (d == 'N') return [[700, 150], [900, 150], [900, 150 + 320 * k], [700, 150 + 320 * k]];
+  const [a, b] = DX[d], t = (x) => wTop(x) + (wBot(x) - wTop(x)) * 0.16, f = (x) => wBot(x) - 6;
+  return [[a, t(a)], [b, t(b)], [b, lerp(t(b), f(b), k)], [a, lerp(t(a), f(a), k)]];
+}
+const ODOOR = { W: [70, 110, 180, 455], N: [700, 150, 200, 320], E: [1350, 110, 180, 455] }; // bounding boxes
+const OPANEL = { W: [272, 226], N: [918, 250], E: [1288, 226] };
+const OCENTER = { W: 160, N: 800, E: 1440 };
+const COFFEE_X = 1000, BREW = 5, SIP = 1.8, FAN = [650, 400]; // coffee maker on the desk: look at it, it is focusable like a door
 function buildOffice() {
   canvasTex('office', PW, H, (c) => {
     const R = (col, x, y, w, h) => { c.fillStyle = col; c.fillRect(x, y, w, h); };
-    const T = (col, sz, s, x, y) => { c.fillStyle = col; c.font = 'bold ' + sz + 'px monospace'; c.fillText(s, x, y); };
-    const g = c.createLinearGradient(0, 0, 0, H);
-    g.addColorStop(0, '#1b1d22'); g.addColorStop(0.68, '#2a2d33'); g.addColorStop(0.681, '#111214'); g.addColorStop(1, '#060607');
-    R(g, 0, 0, PW, H);
-    R('#0c0d10', 0, 0, PW, 60);
-    for (let x = 0; x < PW; x += 120) R('#16181c', x + 4, 6, 112, 46);
-    for (let x = 0; x < PW; x += 16) { const k = (x / 16) % 2; R(k ? '#d8d8d0' : '#141414', x, 352, 16, 10); R(k ? '#141414' : '#d8d8d0', x, 362, 16, 10); }
-    for (let row = 0; row < 8; row++) {
-      const y0 = 408 + row * row * 3.2 + row * 8, y1 = 408 + (row + 1) * (row + 1) * 3.2 + (row + 1) * 8, s0 = 1 + row * 0.35, s1 = s0 + 0.35;
-      for (let col = -24; col < 24; col++) quad(c, (row + col) % 2 ? '#1d1d1f' : '#0b0b0c', [[PCX + col * 40 * s0, y0], [PCX + (col + 1) * 40 * s0, y0], [PCX + (col + 1) * 40 * s1, y1], [PCX + col * 40 * s1, y1]]);
+    const T = (col, sz, s, x, y) => { c.fillStyle = col; c.font = 'bold ' + sz + 'px monospace'; c.textAlign = 'center'; c.fillText(s, x, y); };
+    const ln = (col, w, pts) => { c.strokeStyle = col; c.lineWidth = w; c.beginPath(); pts.forEach((p, i) => (i ? c.lineTo(p[0], p[1]) : c.moveTo(p[0], p[1]))); c.closePath(); c.stroke(); };
+    // ceiling with beams running to the back
+    quad(c, '#0a0b0e', [[0, 0], [PW, 0], [RW, TOPY], [LW, TOPY]]);
+    c.strokeStyle = '#16181d'; c.lineWidth = 6;
+    for (let i = -3; i <= 3; i++) { c.beginPath(); c.moveTo(PCX + i * 135, TOPY); c.lineTo(PCX + i * 420, 0); c.stroke(); }
+    // walls: back wall, then the two side walls in perspective
+    quad(c, '#2b2e34', [[LW, TOPY], [RW, TOPY], [RW, FLY], [LW, FLY]]);
+    quad(c, '#212329', [[0, 0], [LW, TOPY], [LW, FLY], [0, H]]);
+    quad(c, '#212329', [[PW, 0], [RW, TOPY], [RW, FLY], [PW, H]]);
+    // the black-and-white checker stripe running around the room at waist height
+    const band = (k) => (x) => wTop(x) + (wBot(x) - wTop(x)) * k;
+    for (let x = 0; x < PW; x += 16) for (let r = 0; r < 2; r++) {
+      const a = band(0.6 + r * 0.04), b = band(0.64 + r * 0.04);
+      quad(c, ((x / 16) + r) % 2 ? '#d8d8d0' : '#141414', [[x, a(x)], [x + 16, a(x + 16)], [x + 16, b(x + 16)], [x, b(x)]]);
     }
-    quad(c, 'rgba(0,0,0,.45)', [[0, 0], [110, 60], [110, 470], [0, 600]]);
-    quad(c, 'rgba(0,0,0,.45)', [[PW, 0], [PW - 110, 60], [PW - 110, 470], [PW, 600]]);
-    for (const d of ADOOR) {
-      const [x, y, w, h] = ODOOR[d], [px, py] = OPANEL[d];
-      R('#000', x, y, w, h);
-      R('#41454c', x - 14, y - 16, w + 28, 16); R('#41454c', x - 14, y, 14, h); R('#41454c', x + w, y, 14, h);
-      R('#0c6', x + w / 2 - 30, y - 40, 60, 18); T('#000', 12, 'SALIDA', x + w / 2 - 23, y - 26);
-      T('#9aa', 11, d == 'W' ? '← ESQUINA O.' : d == 'E' ? 'ESQUINA E. →' : '↑ PASILLO CENTRAL', x + (d == 'N' ? 30 : 46), y + h + 26);
-      R('#2a2c30', px - 4, py - 4, 48, 104); R('#4c5058', px, py, 40, 96); // door + light buttons
+    quad(c, 'rgba(0,0,0,.25)', [[LW, band(0.68)(LW)], [RW, band(0.68)(RW)], [RW, FLY], [LW, FLY]]);
+    // checkered floor converging to the back
+    c.save(); c.beginPath(); [[LW, FLY], [RW, FLY], [PW, H], [0, H]].forEach((p, i) => (i ? c.lineTo(...p) : c.moveTo(...p))); c.clip();
+    for (let row = 0; row < 6; row++) {
+      const y0 = FLY + row * row * 4 + row * 10, y1 = FLY + (row + 1) * (row + 1) * 4 + (row + 1) * 10, s0 = 1 + row * 0.4, s1 = s0 + 0.4;
+      for (let col = -30; col < 30; col++) quad(c, (row + col) % 2 ? '#1e1e20' : '#0a0a0b', [[PCX + col * 48 * s0, y0], [PCX + (col + 1) * 48 * s0, y0], [PCX + (col + 1) * 48 * s1, y1], [PCX + col * 48 * s1, y1]]);
     }
-    R('#e6c21a', 470, 120, 110, 150); T('#000', 15, 'PLATANUS', 480, 150); T('#000', 15, 'HACK 26', 488, 170);
-    R('#d9dcd3', 960, 110, 200, 130); T('#245', 22, '¡NO DORMIR!', 990, 182);
-    R('#c0392b', 1180, 90, 70, 90); ['¿YA', 'HICISTE', 'DEPLOY?'].forEach((s, i) => T('#fff', 10, s, 1190, 120 + i * 14));
-    // desk, monitors, keyboard, pizza, coffee maker, rubber banana, phone
-    R('#2f2922', 440, 470, 720, 130); R('#4a4034', 440, 460, 720, 14); R('#1d1914', 440, 474, 720, 6);
-    for (const mx of [470, 1090]) { R('#0b0b0d', mx, 368, 130, 96); R('#16304e', mx + 8, 376, 114, 76); R('#0b0b0d', mx + 55, 462, 20, 8); }
-    R('#1a1a1c', 630, 486, 160, 30); for (let i = 0; i < 28; i++) R('#333', 636 + (i % 14) * 11, 492 + (i > 13) * 10, 8, 6);
-    R('#a33', 1050, 500, 80, 50); R('#d8b06a', 1056, 494, 68, 10); T('#fff', 10, 'PIZZA', 1072, 530);
-    R('#1b1b1b', COFFEE_X - 30, 400, 60, 72); R('#333', COFFEE_X - 24, 408, 48, 20); R('#111', COFFEE_X - 14, 440, 28, 6); T('#fff', 9, 'CAFÉ', COFFEE_X - 12, 422);
-    c.fillStyle = '#e6c21a'; c.beginPath(); c.ellipse(1250, 470, 16, 30, 0.4, 0, PI * 2); c.fill();
-    R('#222', 800, 430, 60, 38); R('#444', 804, 434, 30, 30);
-  });
-  canvasTex('door', 180, 300, (c) => {
-    c.fillStyle = '#4b4f57'; c.fillRect(0, 0, 180, 300);
-    c.fillStyle = '#5d626b'; for (let y = 10; y < 300; y += 40) c.fillRect(8, y, 164, 4);
-    c.fillStyle = '#d4a017'; for (let x = 0; x < 180; x += 30) c.fillRect(x, 262, 15, 22);
+    c.restore();
+    // the front hallway: a long dark corridor going away from you
+    quad(c, '#000', dq('N'));
+    for (let i = 1; i < 8; i++) {
+      const k = 0.82 ** i;
+      c.strokeStyle = 'rgba(70,74,84,' + (0.55 - i * 0.06) + ')'; c.lineWidth = 3 * k;
+      c.strokeRect(PCX - 100 * k, 300 - 150 * k, 200 * k, 320 * k * 0.95);
+    }
+    ln('#3a3d44', 12, dq('N'));
+    // side doorways, with heavy frames
+    for (const d of SIDES) { quad(c, '#000', dq(d)); ln('#3c4048', 14, dq(d)); }
+    // signs above the doors
+    R('#0c6', 120, 50, 80, 20); T('#000', 12, 'ESQUINA O.', 160, 65);
+    R('#0c6', 1400, 50, 80, 20); T('#000', 12, 'ESQUINA E.', 1440, 65);
+    R('#e6c21a', 690, 104, 220, 34); T('#000', 18, 'PLATANUS HACK 26', 800, 128);
+    // big button panels next to each doorway (the hallway only has a light)
+    for (const d of ADOOR) { const [px, py] = OPANEL[d], h = d == 'N' ? 60 : 110; R('#151619', px - 7, py - 7, 54, h + 14); R('#4c5058', px, py, 40, h); }
+    // the back wall: a whiteboard, posters, drawings
+    R('#cfd2c8', 370, 128, 270, 140); R('#e8eae2', 376, 134, 258, 128);
+    T('#245', 15, 'DÍAS SIN INCIDENTES:', 505, 160); T('#c22', 64, '0', 505, 235);
+    c.strokeStyle = '#c22'; c.lineWidth = 3; c.beginPath(); c.moveTo(455, 245); c.lineTo(560, 200); c.stroke();
+    R('#d9dcd3', 950, 118, 180, 110); T('#245', 24, '¡NO', 1040, 165); T('#245', 24, 'DORMIR!', 1040, 195);
+    R('#c0392b', 1150, 112, 90, 110); ['¿YA', 'HICISTE', 'DEPLOY?'].forEach((s, i) => T('#fff', 12, s, 1195, 150 + i * 18));
+    // the team's crayon drawings taped to the wall
+    [['#e8a', 960], ['#93f', 1020], ['#4c4', 1080], ['#fa3', 1140]].forEach(([col, x], i) => {
+      R('#ece7da', x, 250 + (i % 2) * 10, 48, 54); c.strokeStyle = col; c.lineWidth = 3;
+      c.beginPath(); c.arc(x + 24, 268 + (i % 2) * 10, 8, 0, PI * 2); c.moveTo(x + 24, 276 + (i % 2) * 10); c.lineTo(x + 24, 292 + (i % 2) * 10); c.moveTo(x + 12, 284 + (i % 2) * 10); c.lineTo(x + 36, 284 + (i % 2) * 10); c.stroke();
+    });
+    for (const [x, y, col] of [[600, 300, '#ff6'], [625, 312, '#f9c'], [1250, 270, '#9cf']]) R(col, x, y, 26, 24); // sticky notes
+    // the desk in front of you
+    quad(c, '#3a2f24', [[380, 448], [1220, 448], [1310, 545], [290, 545]]);
+    quad(c, '#221a13', [[290, 545], [1310, 545], [1310, H], [290, H]]);
+    R('#4a3c2e', 380, 444, 840, 6);
+    for (const mx of [440, 1090]) { R('#0b0b0d', mx, 350, 150, 104); R('#16304e', mx + 10, 360, 130, 80); R('#0b0b0d', mx + 65, 454, 20, 10); R('#111', mx + 30, 462, 90, 8); }
+    R('#1a1a1c', 720, 484, 180, 34); for (let i = 0; i < 32; i++) R('#333', 728 + (i % 16) * 10.5, 490 + (i > 15) * 12, 8, 8);
+    R('#a33', 1180, 474, 90, 52); R('#d8b06a', 1186, 468, 78, 10); T('#fff', 11, 'PIZZA', 1225, 506);
+    // the red desk phone Rafa calls you on
+    R('#6a0c0c', 520, 486, 110, 34); R('#8e1414', 530, 470, 90, 22); c.fillStyle = '#e6dcc4'; c.beginPath(); c.arc(575, 500, 13, 0, PI * 2); c.fill();
+    R('#7a1010', 516, 462, 118, 12);
+    // fan stand, coffee maker, a rubber banana, cans
+    R('#2a2a2a', FAN[0] - 6, FAN[1] + 30, 12, 40); R('#222', FAN[0] - 32, FAN[1] + 66, 64, 10);
+    R('#1b1b1b', COFFEE_X - 30, 400, 60, 72); R('#333', COFFEE_X - 24, 408, 48, 20); R('#111', COFFEE_X - 14, 440, 28, 6); T('#fff', 9, 'CAFÉ', COFFEE_X, 422);
+    for (const x of [930, 950]) { R('#2a6', x, 452, 14, 26); R('#ccc', x, 452, 14, 3); }
+    c.fillStyle = '#e6c21a'; c.beginPath(); c.ellipse(1150, 500, 14, 28, 0.9, 0, PI * 2); c.fill();
   });
 }
 
@@ -480,7 +530,7 @@ function buildOffice() {
 // =====================================================================
 let wC, rC, oC, uC, uiCam;
 let bgImg, fgImg, dynG, emG, projTxt, askTxt, lensImg, oBg, oG, oBeam, oDim, oLamp, oTop;
-const eImg = {}, oImg = {}, oDoors = {};
+const eImg = {}, oImg = {};
 // UI objects (u*) live in the uC layer, which the post-FX camera ignores
 let uC1, uC2, uCallName, uCallTxt, uPhone, uHandset, uSpk, uCallHint, uCam, uCamBar, uCardN, uG, uHour, uHud, uLPress, uLStat, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uVig, uVigCap, uVigImg, uVigIn, uW1, uW2, uWDone, uWarn;
 let zR, zO; // the sleeper's z's (or !! when angry)
@@ -511,7 +561,6 @@ function create() {
   oBg = img(oC, 'office', 0, 0, 0, 0);
   oG = add(oC, S.add.graphics());
   for (const r of ROLES) oImg[r] = img(oC, r + '0', 0, 0, 0.5, 1);
-  for (const d of SIDES) oDoors[d] = img(oC, 'door', ODOOR[d][0], ODOOR[d][1], 0, 0);
   oTop = add(oC, S.add.graphics());
   oBeam = img(oC, 'cone', 0, 0, 0, 0.5).setBlendMode(1).setTint(0xfff0c0).setVisible(false);
   oLamp = img(oC, 'cone', PCX, 40, 0, 0.5).setBlendMode(1).setTint(0xffe2a0).setScale(1.9, 2.6);
@@ -537,11 +586,12 @@ function buildUI() {
   uG = add(h, S.add.graphics());
   uStat = add(h, S.add.tileSprite(0, 0, W, H, 'noise').setOrigin(0).setAlpha(0));
   uTab = rect(0, H, W, H, 0x0e1612);
-  uHour = T(24, 22, '', 30, '#fff', 0, 0);
-  uNight = T(26, 58, '', 14, '#aab', 0, 0);
-  uPow = T(776, 22, '', 16, '#fff', 1, 0);
-  uSue = T(776, 70, '', 12, '#c9b6ff', 1, 0);
-  uCam = [T(40, 34, '', 20, '#bfffcf', 0, 0), T(600, 34, '● REC', 16, '#ff4444', 1, 0), T(40, 60, '', 13, '#8fdc9f', 0, 0), T(655, 568, 'STICK: CÁMARA · B3 BAJAR', 10, '#8fdc9f')];
+  // FNAF corners: the time top right, power and usage bottom left
+  uHour = T(776, 16, '', 30, '#fff', 1, 0);
+  uNight = T(776, 52, '', 14, '#aab', 1, 0);
+  uSue = T(24, 474, '', 12, '#c9b6ff', 0, 0);
+  uPow = T(24, 512, '', 16, '#fff', 0, 0);
+  uCam = [T(40, 34, '', 20, '#bfffcf', 0, 0), T(40, 82, '● REC', 14, '#ff4444', 0, 0), T(40, 60, '', 13, '#8fdc9f', 0, 0), T(655, 568, 'STICK: CÁMARA · B3 BAJAR', 10, '#8fdc9f')];
   uMapT = [...ROOMS.map((R) => R[1]), 'TÚ'].map((s) => T(0, 0, s, 9, '#bfffcf'));
   uPr = [0, 1, 2].map(() => T(0, 0, '', 13, '#fff', 0.5, 0.5, { backgroundColor: '#000000cc', padding: { x: 6, y: 3 } }));
   uCamBar = T(400, 580, '▲  CÁMARAS', 14, '#cfe', 0.5, 0.5, { backgroundColor: '#1f3b2acc', padding: { x: 70, y: 4 } });
@@ -671,7 +721,7 @@ function callUpdate(dt) {
   uSpk.clear();
   if (ringing) {
     // the handset jumps on its cradle while it rings
-    const on = modeT % 2.6 < 1.9;
+    const on = modeT % 2.6 < 1.05;
     uHandset.setY(-86 - (on ? rnd(0, 6) : 0)).setAngle(on ? rnd(-3, 3) : 0);
     uCallName.setAlpha(on ? 1 : 0.3);
     if (modeT > (c.rang || 0)) { c.rang = (c.rang || 0) + 2.6; sfxRing(); }
@@ -923,27 +973,36 @@ function blocked(all) {
   for (const d of ADOOR) if (all || doorClosed(d)) b.add(ek(CTRL, CDOOR[d].adj));
   return b;
 }
-// walk towards (x, y) in room r through the doorways: 1 = arrived, -1 = no path
+// People never walk on screen (that would give away where they are going).
+// They stay put for the time the trip would take and then they are simply
+// somewhere else, FNAF-style: one hop per room. Watching either room when it
+// happens makes the camera glitch. 1 = arrived, 0 = on the way, -1 = no path.
 function go(e, r, x, y, sp, dt, blk) {
   e.mv = 0;
-  if (e.r != r) {
-    const p = bfs(e.r, r, blk || blocked());
-    if (!p) return (e.stuck = 1), -1;
-    e.stuck = 0;
-    const [ex, ey] = exitPt(e.r, p[1]);
-    if (walk(e, ex, ey, sp, dt)) { [e.x, e.y] = exitPt(p[1], e.r); e.r = p[1]; }
-    return 0;
-  }
-  return walk(e, x, y, sp, dt);
-}
-function walk(e, x, y, sp, dt) {
-  const d = dist(e.x, e.y, x, y), s = sp * dt;
+  if (e.r == r) return walk(e, x, y, sp, dt);
+  const p = bfs(e.r, r, blk || blocked());
+  if (!p) return (e.stuck = 1), -1;
+  e.stuck = 0;
+  const n = p[1];
+  if (!e.ns || e.ns[0] != n) e.ns = [n, ...(n == r ? [x, y] : pick(ROOMS[n][11]))]; // where it shows up next
+  const [ex, ey] = exitPt(e.r, n), [ix, iy] = exitPt(n, e.r);
   e.mv = 1;
-  if (M.abs(x - e.x) > 2) e.fx = x > e.x ? 1 : -1;
-  if (d <= s) { e.x = x; e.y = y; return 1; }
-  e.x += (x - e.x) / d * s; e.y += (y - e.y) / d * s;
+  if ((e.tr = (e.tr || 0) + sp * dt) >= dist(e.x, e.y, ex, ey) + dist(ix, iy, e.ns[1], e.ns[2])) {
+    glitch(e.r); glitch(n);
+    e.fx = e.ns[1] > ix ? 1 : -1; e.r = n; e.x = e.ns[1]; e.y = e.ns[2]; e.tr = 0; e.ns = null;
+  }
   return 0;
 }
+function walk(e, x, y, sp, dt) {
+  const d = dist(e.x, e.y, x, y);
+  if (d < 1) return 1;
+  e.mv = 1;
+  if ((e.tr = (e.tr || 0) + sp * dt) < d) return 0;
+  glitch(e.r); e.fx = x > e.x ? 1 : -1; e.x = x; e.y = y; e.tr = 0;
+  return 1;
+}
+// the camera you are watching cuts out for a moment when someone moves in it
+function glitch(r) { if (view == 'cams' && camR == r && va >= 1) { statA = 1; sfxStatic(0.25); } }
 // Hunters walk (never through your office) to the nearest of your doors and
 // stop in the doorway. If the door is still open after a short beat, they are
 // in: the scare happens right there, nobody strolls up to your desk.
@@ -981,7 +1040,7 @@ function aiPitcher(dt) {
   const p = E.pitcher;
   p.anim += dt;
   if (p.st == 'PITCH') {
-    go(p, 1, PITCH_HOME[0] + M.sin(now * 0.4) * 70, PITCH_HOME[1], 22, dt);
+    go(p, 1, PITCH_HOME[0], PITCH_HOME[1], 22, dt);
     if (!pitchOn) return; // night 1: he just pitches to the empty room
     // his patience runs out unless someone keeps passing slides
     if (!clicking) p.bar -= dt / patience;
@@ -1069,7 +1128,7 @@ function aiChef(dt) {
   c.anim += dt;
   if (c.st == 'COOK') {
     const st = c.p | 0, [x, y] = CHEF_POS[st];
-    go(c, 2, x + (st ? 0 : M.sin(now) * 40), y, 60, dt);
+    go(c, 2, x, y, 120, dt);
     c.shake = st * 0.4; if (st) c.fx = 1;
     if (!cookOn) return;
     // watching the kitchen holds him (and slowly pushes him back)
@@ -1211,7 +1270,7 @@ const POSE = {
 };
 function frameOf(e) {
   const fr = SPRF[e.role];
-  return fr[e.mv && ((e.anim * 5) | 0) % 2 ? 2 : +!!POSE[e.role](e)];
+  return fr[e.st == 'LENS' && ((e.anim * 5) | 0) % 2 ? 2 : +!!POSE[e.role](e)]; // only the mentora walks, up to the lens
 }
 function render(dt) {
   const camMode = view == 'cams' && va >= 1;
@@ -1296,11 +1355,9 @@ function renderOffice() {
   const fl = flick > 0 || blackout;
   oC.x = -pan;
   oG.clear(); oDim.clear(); oTop.clear();
-  for (const d of ADOOR) {
-    const [x, y, w, h] = ODOOR[d], q = doorP[d];
-    if (light && focus == d && !doorClosed(d)) oG.fillStyle(0xfff0b0, 0.22).fillRect(x, y, w, h).fillStyle(0x4a463c, 0.5).fillRect(x, y + h - 60, w, 60);
-    if (q != null) oDoors[d].setVisible(q > 0.01).setCrop(0, h * (1 - q), 180, h).setY(y - h * (1 - q)); // rolls down
-  }
+  const pts = (a) => a.map(([x, y]) => ({ x, y }));
+  // your light shows the doorway (and whoever is standing in it)
+  if (light && !doorClosed(focus)) oG.fillStyle(0xfff0b0, 0.2).fillPoints(pts(dq(focus)), true);
   zO.setVisible(false);
   for (const k in E) {
     const e = E[k], im = oImg[k], bd = blindDoor(e);
@@ -1311,7 +1368,7 @@ function renderOffice() {
     if (out || (bd && !doorClosed(bd) && seen(e) == 2)) {
       // only your door light reveals who is standing there
       const [x, y, w, h] = ODOOR[out ? 'W' : bd];
-      sx = x + w / 2 + (e.x - 400) * 0.05; sy = y + h - 6; sc = 3.6;
+      sx = x + w / 2; sy = y + h - 12; sc = out || bd != 'N' ? 11 : 7;
       if (out) tint = M.random() < 0.2 ? 0x1a4028 : 0x3aa060;
     } else continue;
     im.setVisible(true).setTexture(frameOf(e)).setScale(sc).setPosition(sx + (e.shake ? (M.random() - 0.5) * e.shake * 10 : 0), sy).setFlipX(e.fx < 0).setTint(tint).setRotation(k == 'sleeper' && e.st == 'SLEEP' ? -PI / 2 : 0);
@@ -1319,13 +1376,29 @@ function renderOffice() {
     if (k == 'coder') oG.fillStyle(0x45ff7a, 0.18 + (e.st == 'HUNT' ? M.random() * 0.15 : 0)).fillCircle(sx, top + 10 * sc, 9 * sc); // glasses glow
     if (k == 'sleeper') zzz(zO, e, sx, top, sc / 2.6);
   }
-  // props drawn on top: door buttons, phone LED, coffee maker, lamp
-  for (const d of ADOOR) {
-    const [bx, by] = OPANEL[d], [x, y, w, h] = ODOOR[d];
-    if (d != 'N') oTop.fillStyle(blackout ? 0x220000 : doors[d] ? 0xff2a2a : 0x5a1010).fillCircle(bx + 20, by + 26, 11); // the hallway has no door button
-    oTop.fillStyle(blackout ? 0x111111 : light && focus == d ? 0xffffee : 0x4a4a44).fillCircle(bx + 20, by + 70, 11);
-    if (focus == d) oTop.lineStyle(2, 0xffd400, pulse()).strokeRect(bx - 6, by - 6, 52, 108).strokeRect(x - 4, y - 4, w + 8, h + 8);
+  // the shutters roll down inside the doorways, with a hazard stripe at the bottom edge
+  for (const d of SIDES) {
+    const q = doorP[d];
+    if (q < 0.01) continue;
+    const p = dq(d, q), [a, b] = DX[d];
+    oTop.fillStyle(0x4b4f57).fillPoints(pts(p), true).lineStyle(3, 0x30333a);
+    for (let j = 1; j < 9; j++) { const k = j / 9; oTop.lineBetween(a, lerp(p[0][1], p[3][1], k), b, lerp(p[1][1], p[2][1], k)); }
+    oTop.fillStyle(0xd4a017).fillPoints(pts([[a, p[3][1] - 14], [b, p[2][1] - 14], [b, p[2][1]], [a, p[3][1]]]), true);
   }
+  // button panels: door (red) and light (white); the hallway only has a light
+  for (const d of ADOOR) {
+    const [bx, by] = OPANEL[d], ly = by + (d == 'N' ? 30 : 80);
+    if (d != 'N') oTop.fillStyle(blackout ? 0x220000 : doors[d] ? 0xff2a2a : 0x6a1010).fillCircle(bx + 20, by + 30, 14);
+    oTop.fillStyle(blackout ? 0x111111 : light && focus == d ? 0xffffee : 0x55554e).fillCircle(bx + 20, ly, 14);
+    if (focus == d) oTop.lineStyle(2, 0xffd400, pulse()).strokePoints(pts(dq(d)), true, true).strokeRect(bx - 8, by - 8, 56, (d == 'N' ? 60 : 110) + 16);
+  }
+  // the desk fan, always spinning
+  const fa = now * 24;
+  oTop.fillStyle(0x3a3a3e).fillCircle(FAN[0], FAN[1], 34).fillStyle(0x6a6d74);
+  for (let i = 0; i < 3; i++) { const a = fa + i * 2.094; oTop.fillTriangle(FAN[0], FAN[1], FAN[0] + M.cos(a) * 32, FAN[1] + M.sin(a) * 32, FAN[0] + M.cos(a + 0.7) * 32, FAN[1] + M.sin(a + 0.7) * 32); }
+  oTop.fillStyle(0x111111).fillCircle(FAN[0], FAN[1], 6).lineStyle(2, 0x222226).strokeCircle(FAN[0], FAN[1], 34);
+  // monitors glow
+  if (!blackout) { oTop.fillStyle(0x2a6ab0, 0.12 + M.random() * 0.04); for (const mx of [450, 1100]) oTop.fillRect(mx, 360, 130, 80); }
   // coffee maker: LED (red = brewing, green = ready), the cup filling up, steam when ready
   const fill = cof == 1 ? 1 - cofT / BREW : cof / 2;
   oTop.fillStyle([0x331111, 0xff3322, 0x33ff55][cof]).fillRect(COFFEE_X + 16, 412, 6, 6);
@@ -1335,16 +1408,17 @@ function renderOffice() {
   if (focus == 'C') oTop.lineStyle(2, 0xffd400, pulse()).strokeRect(COFFEE_X - 36, 396, 72, 80);
   oBeam.setVisible(!!light);
   if (light) {
-    const [x, y, w, h] = ODOOR[focus], tx = x + w / 2, ty = y + h * 0.6;
+    const [x, y, w, h] = ODOOR[focus], tx = x + w / 2, ty = y + h * 0.55;
     oBeam.setPosition(PCX, 570).setRotation(M.atan2(ty - 570, tx - PCX)).setScale(dist(PCX, 570, tx, ty) / 230, 1).setAlpha(0.22 + M.random() * 0.04);
   }
   const sw = M.sin(now * 0.9) * 0.12;
   oLamp.setRotation(PI / 2 + sw).setAlpha(fl ? 0.02 : 0.14 + M.random() * 0.01).setPosition(PCX + sw * 60, 40);
-  oDim.fillStyle(0, blackout ? 0.85 : fl ? 0.6 : 0.26).fillRect(0, 0, PW, H).fillStyle(0, 0.35).fillRect(0, 0, 120, H).fillRect(PW - 120, 0, 120, H);
+  oDim.fillStyle(0, blackout ? 0.85 : fl ? 0.6 : 0.3).fillRect(0, 0, PW, H).fillStyle(0, 0.3).fillRect(0, 0, 60, H).fillRect(PW - 60, 0, 60, H);
   oC.bringToTop(oDim);
   // only what your light shows (or the coder's glow in the dark) is drawn over the darkness
   for (const k in oImg) if (oImg[k].visible && (oImg[k].tintTopLeft == 0xffffff || (k == 'coder' && blackout))) oC.bringToTop(oImg[k]);
   oC.bringToTop(oBeam);
+  oC.bringToTop(oTop);
   oC.bringToTop(zO);
 }
 
@@ -1359,11 +1433,11 @@ function renderHud(dt) {
   const gr = uG, p = E.pitcher, office = view == 'office', cm = !office && va >= 1;
   gr.clear();
   uPr.forEach((t) => t.setVisible(false));
-  uHour.setText((hourOf(now) || 12) + ' AM').setVisible(!cm);
-  uNight.setText('NOCHE ' + night).setVisible(!cm);
-  uPow.setText(blackout ? 'SIN ENERGÍA' : 'ENERGÍA ' + M.ceil(power) + '%').setColor(power < 20 ? '#ff5555' : '#fff');
-  if (!blackout) { const u = M.min(usage, 5); for (let i = 0; i < 5; i++) gr.fillStyle(i < u ? (i < 2 ? 0x44dd66 : i < 4 ? 0xeecc33 : 0xee4444) : 0x222222).fillRect(668 + i * 22, 46, 18, 12); }
-  gr.fillStyle(0x1a1430).fillRect(626, 88, 150, 10).fillStyle(sueno > 70 ? 0xb44dff : 0x7a5cff).fillRect(626, 88, 150 * clamp(sueno / 100, 0, 1), 10);
+  uHour.setText((hourOf(now) || 12) + ' AM');
+  uNight.setText('NOCHE ' + night);
+  uPow.setText(blackout ? 'SIN ENERGÍA' : 'ENERGÍA: ' + M.ceil(power) + '%\nUSO:').setColor(power < 20 ? '#ff5555' : '#fff');
+  if (!blackout) { const u = M.min(usage, 5); for (let i = 0; i < 5; i++) gr.fillStyle(i < u ? (i < 2 ? 0x44dd66 : i < 4 ? 0xeecc33 : 0xee4444) : 0x222222).fillRect(70 + i * 20, 536, 16, 14); }
+  gr.fillStyle(0x1a1430).fillRect(24, 492, 150, 10).fillStyle(sueno > 70 ? 0xb44dff : 0x7a5cff).fillRect(24, 492, 150 * clamp(sueno / 100, 0, 1), 10);
   uSue.setText(sueno > 70 ? 'SUEÑO ¡¡CAFÉ!!' : 'SUEÑO').setColor(sueno > 70 && M.sin(now * 8) > 0 ? '#ff77ff' : '#c9b6ff');
   uTab.setVisible(!office && va < 1).y = H * (1 - (office ? 0 : va)); // the tablet flipping up
   for (const t of [...uCam, ...uMapT]) t.setVisible(cm);
@@ -1412,7 +1486,6 @@ function renderHud(dt) {
     } else if (sueno > 45 || cof > 1) prompt(2, COFFEE_X - pan, 372, cof > 1 ? '☕ LISTO' : '☕ CAFÉ', sueno > 70 ? '#ff77ff' : '#c9b6ff', 0.75);
   }
   // static flickers when someone moves on the camera you are watching
-  if (cm && Object.values(E).some((e) => e.r == camR && e.mv && !blindDoor(e))) statA = M.max(statA, 0.16);
   statA = M.max(0, statA - dt * 2.2);
   uStat.setAlpha(clamp(statA * 0.9 + blackout * 0.03, 0, 1)).setTilePosition(rnd(0, 200), rnd(0, 150));
   uMsg.setAlpha(clamp((msgT -= dt) * 2, 0, 1));
