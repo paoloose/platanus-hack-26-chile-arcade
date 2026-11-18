@@ -230,12 +230,13 @@ const NIGHTS = [
   [42, 1.8, 1, 42, 225, 1.2, 0.13, 34, 1, 0, 68, 100],
   [46, 1.6, 1, 36, 240, 1, 0.14, 30, 1, 20, 72, 95],
 ];
+// the phone calls before each night: the guy who hired you, from far away
 const CALLS = [
-  'RAFA|¿Aló? Soy Rafa, te llamo desde el aeropuerto, rapidito.|El equipo que perdió sigue codeando en la sala de código, la cámara 1A. A veces se paran a estirar las piernas... si alguno llega a las esquinas de tus puertas, ciérralas.|El pasillo del frente no tiene puerta. En la siesta quedó un sonámbulo: si llega al frente, no hagas NADA, y nunca lo alumbres más de una vez.|Cuida la energía, que se acaba rápido. Y tómate un café. ¡Chao!',
-  'RAFA|¡Sobreviviste! Ojo, que esta noche el de backend también se va a levantar. Y en la sala de pitch hay un cabro que no termina de presentar.|Si nadie le pasa las diapositivas se pone nervioso y viene por el pasillo del frente. El clicker funciona desde su cámara: mantén el botón 1.|Si llega al pasillo, encandílalo con la luz hasta que se vaya. Pero primero fíjate que no sea el sonámbulo.',
-  'RAFA|Ya embarcamos. La mentora se quedó: nadie le pidió feedback en todo el finde.|No la mires mucho por la cámara... si te ve, corre a darte feedback.',
-  'RAFA|Aterrizamos. El chef sigue en la cocina, afilando cuchillos.|Revisa su cámara seguido: si no lo miras, se acerca... y si sale corriendo, va directo a la puerta izquierda.',
-  'NACHO|Hola, soy Nacho. Rafa se quedó dormido en el avión.|El de código dice que le faltan cinco minutos. Desde el sábado. Si la energía baja muy rápido, mira su cámara.|Es la última noche. Creo que ellos también lo saben. Así que—',
+  'RAFA|¿Aló? ¿Aló? Hola, hola. Soy Rafa, uno de los organizadores. Te llamo desde la puerta de embarque, así que voy a ser rápido.|Bienvenido al turno de noche de Platanus Hack. Nada del otro mundo: cinco noches cuidando el edificio hasta que lo devolvamos.|Ehm... hay un detalle. No todos los participantes se fueron. Algunos se quedaron. Llevan tres días sin dormir y no están... del todo bien.|El equipo que perdió sigue en la sala de código, la cámara 1A. Si alguno deja su puesto, síguelo por las cámaras. Si llega a la esquina de una de tus puertas, ciérrala.|El pasillo del frente no tiene puerta. Por ahí anda un sonámbulo. Si llega, no hagas NADA: ni puertas, ni cámaras, ni café. Y no lo alumbres más de una vez.|La energía es limitada y se va rápido. Úsala con cuidado. Ah, y hay café en el escritorio. Tómalo, en serio.|Me llaman a embarcar. Mañana te llamo. ¡Suerte!',
+  'RAFA|¡Hola! Sobreviviste. Te dije que era tranquilo... más o menos.|Te cuento algo: el año pasado también contratamos a un guardia. Duró dos noches. Lo último que dijo por radio fue "me están dando feedback". Nunca entendimos.|Hoy el de backend también se va a levantar. Y en la sala de pitch hay un cabro que no ha terminado su presentación. Desde el viernes.|Si nadie le pasa las diapositivas, se pone nervioso y viene por el pasillo del frente. El clicker funciona desde su cámara, la 1C: mantén el botón 1.|Si llega al pasillo, encandílalo con la luz hasta que se vaya. Pero primero fíjate bien quién es... no vaya a ser el sonámbulo.|Están sirviendo la comida del avión. ¡Chao!',
+  'RAFA|Hola, hola. Ya aterrizamos en San Francisco. Hace un frío terrible.|Oye, ¿la mentora sigue ahí? Nadie le pidió feedback en todo el fin de semana. Nadie. Eso a una mentora le hace mal.|No te quedes mirándola por las cámaras. Si se da cuenta, camina hacia el lente... y si se pega a la cámara, sale corriendo a darte feedback.|Si ves que viene, cierra la puerta de ese lado. Golpea un rato, se aburre y se va.|Y una cosa rara: las cámaras grabaron a alguien en la bodega el lunes. Pero el lunes no había nadie en el edificio. Seguro es un error del sistema.|Nos vamos al hotel. Mañana te llamo.',
+  'RAFA|Hola... perdona la hora. Acá es de día y allá es de noche, me confundo.|Te tengo que contar del chef. Cocinó el bajón del sábado para doscientas personas. Nadie se lo comió entero. Se lo tomó muy personal.|Sigue en la cocina, la cámara 6, afilando cuchillos. Revísalo seguido: mientras lo miras, se queda quieto.|Si no lo miras, se va acercando. Y si sale corriendo, va directo a tu puerta izquierda. Ciérrala. Va a golpear fuerte, y cada golpe te cuesta energía.|Oye... ¿te puedo pedir un favor? No le cuentes a nadie de esto. Platanus tiene una reputación que cuidar. Gracias.',
+  'NACHO|¿Hola? Soy Nacho. Rafa se quedó dormido, le tomé el teléfono.|El de código dice que le faltan cinco minutos para terminar. Lleva diciendo eso desde el sábado.|Se enchufa a la red del edificio con su laptop. Si la energía baja muy rápido, mira la cámara 1A y córtale el enchufe. Se va a enojar, pero bueno.|Escucha... Rafa no te contó todo. El guardia del año pasado no renunció. Simplemente no volvió a salir.|Mañana devolvemos el edificio. Creo que ellos también lo saben. Esta noche van a estar más activos que nunca.|Así que—',
 ].map((s) => s.split('|'));
 
 // =====================================================================
@@ -481,7 +482,7 @@ let wC, rC, oC, uC, uiCam;
 let bgImg, fgImg, dynG, emG, projTxt, askTxt, lensImg, oBg, oG, oBeam, oDim, oLamp, oTop;
 const eImg = {}, oImg = {}, oDoors = {};
 // UI objects (u*) live in the uC layer, which the post-FX camera ignores
-let uC1, uC2, uCall, uCallName, uCallTxt, uCam, uCamBar, uCardN, uG, uHour, uHud, uLPress, uLStat, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uVig, uVigCap, uVigImg, uVigIn, uW1, uW2, uWDone, uWarn;
+let uC1, uC2, uCallName, uCallTxt, uPhone, uHandset, uSpk, uCallHint, uCam, uCamBar, uCardN, uG, uHour, uHud, uLPress, uLStat, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uVig, uVigCap, uVigImg, uVigIn, uW1, uW2, uWDone, uWarn;
 let zR, zO; // the sleeper's z's (or !! when angry)
 const TS = (sz, col, extra) => Object.assign({ fontFamily: 'monospace', fontSize: sz + 'px', color: col || '#fff', fontStyle: 'bold' }, extra);
 const add = (c, o) => { c.add(o); return o; };
@@ -555,12 +556,6 @@ function buildUI() {
   txt(v, 5, 5, 'MIENTRAS TANTO...', 11, '#111', 0, 0, { backgroundColor: '#ffd400', padding: { x: 5, y: 2 } });
   uVigCap = txt(v, 120, 150, '', 11, '#fff', 0.5, 1, { backgroundColor: '#000000dd', padding: { x: 5, y: 3 }, wordWrap: { width: 216 }, align: 'center' });
   v.setAngle(-2).setVisible(false);
-  // phone call
-  uCall = add(h, S.add.container());
-  add(uCall, S.add.rectangle(20, 470, 760, 96, 0x05060a, 0.88).setOrigin(0).setStrokeStyle(2, 0x3a4150));
-  uCallName = txt(uCall, 40, 478, '', 14, '#ffd400', 0, 0);
-  uCallTxt = txt(uCall, 40, 500, '', 15, '#e8e8f0', 0, 0, { wordWrap: { width: 720 }, lineSpacing: 4 });
-  txt(uCall, 770, 562, 'MANTÉN START PARA COLGAR', 10, '#667', 1, 1);
   // drinking: a big mug rises in front of your face
   uMug = add(h, S.add.container(400, H + 200));
   const m = add(uMug, S.add.graphics());
@@ -618,7 +613,7 @@ function titleUpdate() {
     uTMenu.setText('◄ NOCHE ' + menuNight + ' ►  START');
   } else uTMenu.setText('PRESIONA START');
   uTMenu.setAlpha(0.6 + M.sin(modeT * 4) * 0.4);
-  if (pr('S') || pr('1')) { sfxClick(); if (menuNight == 1) goPaper(0); else goCard(menuNight); }
+  if (pr('S') || pr('1')) { sfxClick(); if (menuNight == 1) goPaper(0); else goCall(menuNight); }
 }
 // Newspaper: intro (0) or ending (1). It spins in and slams onto the table.
 function goPaper(end) {
@@ -643,7 +638,69 @@ function goPaper(end) {
 }
 function paperUpdate() {
   uPPress.setAlpha(modeT > 1.6 ? 0.5 + M.sin(modeT * 4) * 0.5 : 0);
-  if (modeT > 1.6 && anyPr()) { sfxClick(); if (uPaperEnd) goTitle(); else goCard(1); }
+  if (modeT > 1.6 && anyPr()) { sfxClick(); if (uPaperEnd) goTitle(); else goCall(1); }
+}
+// The call: a red desk phone alone in the dark. It rings, the speaker turns
+// on, and the voice comes out of it line by line. B1 next line, hold START hangs up.
+function goCall(n) {
+  screen('call'); uCardN = n;
+  const [nm, ...ln] = CALLS[n - 1];
+  phone = { nm, ln, i: -1, ch: 0, hold: 0, skip: 0 };
+  sRect(0x060508);
+  sAdd(S.add.rectangle(0, 430, W, 170, 0x1c130c).setOrigin(0)); // the desk
+  sAdd(S.add.rectangle(0, 430, W, 6, 0x2c2016).setOrigin(0));
+  sAdd(S.add.image(400, -40, 'cone').setOrigin(0, 0.5).setBlendMode(1).setRotation(PI / 2).setScale(2.6, 2.2).setTint(0xffe2a0).setAlpha(0.18)); // desk lamp
+  uPhone = sAdd(S.add.container(400, 470));
+  const g = add(uPhone, S.add.graphics()), cord = add(uPhone, S.add.graphics());
+  g.fillStyle(0x000000, 0.4).fillEllipse(0, 34, 360, 40); // shadow
+  g.fillStyle(0x6a0c0c).fillRoundedRect(-150, -46, 300, 84, 20).fillStyle(0x8e1414).fillRoundedRect(-136, -62, 272, 64, 22); // body
+  g.fillStyle(0xe6dcc4).fillCircle(0, -26, 44).fillStyle(0x1a1a1a);
+  for (let i = 0; i < 10; i++) { const a = -2.2 + i * 0.47; g.fillCircle(M.cos(a) * 31, -26 + M.sin(a) * 31, 6); } // rotary dial
+  g.fillStyle(0x8e1414).fillCircle(0, -26, 14).fillStyle(0xe6dcc4).fillCircle(0, -26, 5);
+  g.fillStyle(0x2a0606); for (let i = 0; i < 4; i++) g.fillRect(96, -34 + i * 9, 34, 4); // speaker grille
+  cord.lineStyle(5, 0x5a0a0a); for (let i = 0; i < 9; i++) cord.strokeCircle(150 + i * 14, 30 + M.sin(i) * 3, 9); // coiled cord
+  uSpk = add(uPhone, S.add.graphics());
+  uHandset = add(uPhone, S.add.container(0, -86));
+  add(uHandset, S.add.graphics()).fillStyle(0x7a1010).fillRoundedRect(-150, -12, 300, 30, 14).fillStyle(0x8e1414).fillRoundedRect(-170, -2, 76, 36, 14).fillRoundedRect(94, -2, 76, 36, 14);
+  uCallName = sText(400, 52, '¡RIIIING!', 22, '#ffd400');
+  uCallTxt = sText(400, 92, '', 20, '#ece6d8', 0.5, 0, { wordWrap: { width: 660 }, align: 'center', lineSpacing: 7, fontStyle: 'bold' });
+  uCallHint = sText(400, 588, '', 11, '#776');
+}
+function callUpdate(dt) {
+  const c = phone, ringing = c.i < 0;
+  uSpk.clear();
+  if (ringing) {
+    // the handset jumps on its cradle while it rings
+    const on = modeT % 2.6 < 1.9;
+    uHandset.setY(-86 - (on ? rnd(0, 6) : 0)).setAngle(on ? rnd(-3, 3) : 0);
+    uCallName.setAlpha(on ? 1 : 0.3);
+    if (modeT > (c.rang || 0)) { c.rang = (c.rang || 0) + 2.6; sfxRing(); }
+    uCallHint.setText('B1 · CONTESTAR');
+    if (modeT > 5.5 || (modeT > 0.8 && (pr('1') || pr('S')))) { c.i = 0; sfxClick(); uHandset.setY(-86).setAngle(0); uCallName.setText('☎ ' + c.nm + ' · ALTAVOZ').setAlpha(1); }
+    return;
+  }
+  if (c.i >= c.ln.length) {
+    // the call ends: on the last night it is cut off by static
+    if ((c.hold += dt) > (uCardN == 5 ? 1.6 : 0.6)) goCard(uCardN);
+    return;
+  }
+  if (hd('S')) { if ((c.skip += dt) > 0.7) return hangUp(c); } else c.skip = 0;
+  const line = c.ln[c.i], prev = c.ch | 0;
+  c.ch = M.min(line.length, c.ch + dt * 36);
+  const talking = c.ch < line.length;
+  if ((c.ch | 0) != prev && (c.ch | 0) % 2 == 0 && line[c.ch | 0] != ' ') sfxBlip(1, 0.3, c.nm == 'NACHO' ? rnd(180, 300) : rnd(320, 520));
+  // the speaker glows while the voice comes out of it, with a little tail to the text
+  if (talking) uSpk.fillStyle(0xffd27a, 0.25 + M.random() * 0.2).fillRoundedRect(90, -40, 46, 42, 8);
+  uCallTxt.setText(line.slice(0, c.ch | 0));
+  uCallHint.setText((talking ? '' : 'B1 · SIGUIENTE      ') + 'MANTÉN START · COLGAR');
+  if (pr('1')) { if (talking) c.ch = line.length; else c.hold = 99; }
+  if (!talking && (c.hold += dt) > 3.5 + line.length * 0.05) { c.i++; c.ch = c.hold = 0; if (c.i >= c.ln.length) hangUp(c, uCardN == 5); }
+}
+function hangUp(c, cut) {
+  c.i = c.ln.length; c.hold = 0;
+  if (cut) { sfxStatic(1.4); uCallTxt.setText('Así que—\n\n*kshhhhh*'); uCallName.setText('☎ LLAMADA PERDIDA').setColor('#ff5555'); }
+  else { sfxClick(); uCallTxt.setText(''); uCallName.setText('*click*'); }
+  uCallHint.setText('');
 }
 function goCard(n) {
   screen('card'); uCardN = n;
@@ -668,8 +725,7 @@ function startNight(n) {
   view = 'office'; va = 0; pan = 400; panV = 0; focus = 'N'; camR = 0; statA = light = plug = cutH = cof = cofT = cofHold = drink = lidY = 0;
   doors = { W: 0, E: 0 }; doorP = { W: 0, E: 0 }; plug = -1; flash = 0;
   blink = 0; blinkT = rnd(8, 14); dread = heartT = msgT = flick = 0; scareT = rnd(14, 24); breathT = 3;
-  const [nm, ...ln] = CALLS[n - 1];
-  phone = { i: -1, ch: 0, t: -1.5, skip: 0, nm, ln }; thought = vigOn = doomed = null; thOnce = {}; vigQ = [];
+  thought = vigOn = doomed = null; thOnce = {}; vigQ = [];
   clicking = clickT = yawn1 = yawn2 = scrOn = 0; lastView = view;
   E = {
     pitcher: mkE('pitcher', 1, PITCH_HOME, 'PITCH', { slide: 1, bar: 1 }),
@@ -733,13 +789,12 @@ function update(time, delta) {
   modeT += dt;
   if (FX) { FX.t += dt; if (mode != 'play' && mode != 'scream') Object.assign(FX, { nv: 0, no: mode == 'title' ? 0.06 : 0.02, ab: 0.2, dk: 0.2, wp: 0 }); }
   if (mode == 'play') { playUpdate(dt); }
-  else ({ title: titleUpdate, paper: paperUpdate, card: cardUpdate, scream: screamUpdate, lose: loseUpdate, win: winUpdate })[mode](dt);
+  else ({ title: titleUpdate, paper: paperUpdate, call: callUpdate, card: cardUpdate, scream: screamUpdate, lose: loseUpdate, win: winUpdate })[mode](dt);
   for (const k in pressed) pressed[k] = 0;
 }
 function playUpdate(dt) {
   now += dt;
   if (now >= nightLen) return winNight();
-  updateCall(dt);
   input(dt);
   updateResources(dt);
   if (mode != 'play') return;
@@ -753,24 +808,6 @@ function playUpdate(dt) {
   updateVignette(dt);
   render(dt);
 }
-
-// ---- Phone call ----
-function updateCall(dt) {
-  const c = phone;
-  if (c.i >= c.ln.length) return;
-  c.t += dt;
-  if (c.i < 0) {
-    if (c.t > 0 && !c.rang) { c.rang = 1; sfxRing(); }
-    if (c.t > 2.6) { c.i = 0; c.ch = 0; }
-    return;
-  }
-  if (hd('S')) { if ((c.skip += dt) > 0.7) { c.i = c.ln.length; sfxClick(); return; } } else c.skip = 0;
-  const line = c.ln[c.i], prev = c.ch | 0;
-  c.ch = M.min(line.length, c.ch + dt * 34);
-  if ((c.ch | 0) != prev && (c.ch | 0) % 2 == 0 && line[c.ch | 0] != ' ') sfxBlip(1, 0, c.nm == 'NACHO' ? rnd(180, 300) : rnd(320, 520));
-  if (c.ch >= line.length && (c.hold = (c.hold || 0) + dt) > 1.6 + line.length * 0.025) { c.i++; c.ch = 0; c.hold = 0; if (c.i >= c.ln.length && night == 5) sfxStatic(1.2); }
-}
-const callOn = () => { const c = phone; return c.i < c.ln.length && (c.i >= 0 || c.t > 0); };
 
 // =====================================================================
 // INPUT — office (look around, doors, lights, coffee) and cameras
@@ -868,7 +905,6 @@ const blinking = () => blink > 0;
 function setMsg(s, t) { uMsg.setText(s); msgT = t; }
 function updateThoughts(dt) {
   if (thought && (thought.t -= dt) <= 0) thought = null;
-  if (callOn()) return;
   // somebody is standing in the front hallway: you only know who with the light
   if (view == 'office' && Object.values(E).some((e) => e.kd == 'N' && e.at > 0.3)) think('Algo respira en el pasillo del frente... (B1 una vez para ver quién es)', 'front', 4.5);
 }
@@ -1290,7 +1326,6 @@ function renderOffice() {
     oTop.fillStyle(blackout ? 0x111111 : light && focus == d ? 0xffffee : 0x4a4a44).fillCircle(bx + 20, by + 70, 11);
     if (focus == d) oTop.lineStyle(2, 0xffd400, pulse()).strokeRect(bx - 6, by - 6, 52, 108).strokeRect(x - 4, y - 4, w + 8, h + 8);
   }
-  if (callOn() && tick(3)) oTop.fillStyle(0x33ff55).fillRect(842, 438, 8, 8);
   // coffee maker: LED (red = brewing, green = ready), the cup filling up, steam when ready
   const fill = cof == 1 ? 1 - cofT / BREW : cof / 2;
   oTop.fillStyle([0x331111, 0xff3322, 0x33ff55][cof]).fillRect(COFFEE_X + 16, 412, 6, 6);
@@ -1382,12 +1417,7 @@ function renderHud(dt) {
   uStat.setAlpha(clamp(statA * 0.9 + blackout * 0.03, 0, 1)).setTilePosition(rnd(0, 200), rnd(0, 150));
   uMsg.setAlpha(clamp((msgT -= dt) * 2, 0, 1));
   uTh.setVisible(!!thought);
-  if (thought) uTh.setText(thought.s).setPosition(400, callOn() ? 452 : 548).setAlpha(clamp(thought.t * 3, 0, 1));
-  const c = phone;
-  if (uCall.setVisible(callOn()).visible) {
-    uCallName.setText(c.i < 0 ? '☎ LLAMADA ENTRANTE...' : '☎ ' + c.nm);
-    uCallTxt.setText(c.i < 0 ? '' : c.ln[c.i].slice(0, c.ch | 0));
-  }
+  if (thought) uTh.setText(thought.s).setPosition(400, 548).setAlpha(clamp(thought.t * 3, 0, 1));
   // eyelids hang lower the sleepier you are; blinks close them all the way
   const bl = blink > 0 ? M.sin(clamp(1 - blink / blinkDur, 0, 1) * PI) : 0;
   lidY = lerp(lidY, clamp((sueno - 45) / 55, 0, 1) * (150 + M.sin(now * 1.3) * 18), 1 - M.pow(0.1, dt));
@@ -1454,6 +1484,6 @@ function winNight() {
 function winUpdate() {
   if (modeT > 1.6 && !uWDone) { uWDone = 1; uW1.setText('6:00 AM'); uW2.setText('NOCHE ' + night + ' SUPERADA'); sfxSix(); S.cameras.main.flash(300, 255, 255, 255); }
   if (modeT < 1.6) uW1.setText(M.random() < 0.15 ? '6:00 AM' : '5:59 AM');
-  if (modeT > 4 && (anyPr() || modeT > 8)) { if (night >= 5) goPaper(1); else goCard(night + 1); }
+  if (modeT > 4 && (anyPr() || modeT > 8)) { if (night >= 5) goPaper(1); else goCall(night + 1); }
 }
 })();
