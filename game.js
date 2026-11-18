@@ -4,90 +4,37 @@
 // Nacho. Tú te quedaste con el turno de noche. No todos se fueron.
 // You never leave the chair: cameras are your eyes, doors your last line.
 // =====================================================================
-(() => {
-// Shared Phaser and canvas keys. SWC can shorten the local constants while bracket calls keep the original receiver.
-const DRAW_ADD_COLOR_STOP = "addColorStop";
-const DRAW_BEGIN_PATH = "beginPath";
-const DRAW_BRING_TO_TOP = "bringToTop";
-const DRAW_CLEAR = "clear";
-const DRAW_CONTAINER = "container";
-const DRAW_FILL_CIRCLE = "fillCircle";
-const DRAW_FILL_POINTS = "fillPoints";
-const DRAW_FILL_RECT = "fillRect";
-const DRAW_FILL_ROUNDED_RECT = "fillRoundedRect";
-const DRAW_FILL_STYLE = "fillStyle";
-const DRAW_GLOBAL_COMPOSITE_OPERATION = "globalCompositeOperation";
-const DRAW_GRAPHICS = "graphics";
-const DRAW_LINE_BETWEEN = "lineBetween";
-const DRAW_LINE_STYLE = "lineStyle";
-const DRAW_RECTANGLE = "rectangle";
-const DRAW_SET_ALPHA = "setAlpha";
-const DRAW_SET_ANGLE = "setAngle";
-const DRAW_SET_BLEND_MODE = "setBlendMode";
-const DRAW_SET_COLOR = "setColor";
-const DRAW_SET_ORIGIN = "setOrigin";
-const DRAW_SET_POSITION = "setPosition";
-const DRAW_SET_ROTATION = "setRotation";
-const DRAW_SET_SCALE = "setScale";
-const DRAW_SET_TEXT = "setText";
-const DRAW_SET_TEXTURE = "setTexture";
-const DRAW_SET_TILE_POSITION = "setTilePosition";
-const DRAW_SET_TINT = "setTint";
-const DRAW_SET_VISIBLE = "setVisible";
-const DRAW_STROKE_CIRCLE = "strokeCircle";
+(async () => {
+// Release data is raw DEFLATE over UTF-8 JSON, stored as Base64url.
+// Decode the bytes and inflate them offline to inspect or edit the tables.
+// The bundle holds assets, dialogue, room drawing arguments and shared names.
+const packedData = 'nXvLchtHtuCvpMsbgkrnrcx6y6N2ACAo0U0BNAFK7aHpiURVgqxWoRKqB23KdEffZS9v9P0BbW6EFlrc8GIivHGE8Cf9JRPnZBYAUrJnOJIAZGZlnjzvF6CfnErrZb9qnMfn5-cudT7Pssyh5-eRS12aBBf03HPvDYXrXlCzAYYXFxQPCj-Egwms8wC2iPjjsX9Buy0-HhXUGTs0cF3Ko4A602dHJ-Ro5lAPYCbpwrmg55yen4cuXEdjl4Yu5SHeKIRDnc89z4MPzrlzgSARHZjS83OeBHAZohy498eCw9jsgfEWIc4tQgej5xNy0P_WocKnzueLheowQooCHyEadHnIQz4HZMRczC1aLne5D2cC4dLApT7-i2F_GAawJUli-AgCvyPA4OAhU1zqDPpfr_85JsL_t8ihIqTO50pt0AAsvNilkUsTABpncRQhwHkwd6ULozALoyCGEz7KDaiLUXwg8Rj-OhYqdT6XUsJWwd0NCpHF-I-AbxQBxHJ-DlzhLk04gPLvjkM7hj1mvEs3KgNcd3Lcn_XHZ1PyrD_8MxGh1YrFIvNdt6M_cCn3DS3ABQFYylD6EkmJYz9AomBFIF2BkRgcECHIwvk8kB48tNs8HMF23h0Qnv-wA178QJQ8_4Eo-dFDUPIezCbvwXzyHswo78Gc8h7MKu_BvAofzKvwwbwKH8yr8MG8Ch_Mq_CBvNq622Q-B6P3rHcBO3c_GicuBhE77PxFmik46pvtMTrkj8axAOfVDS-s7RtYEfrVOOii18aRzedzx3oc5BkX1qF-HslYxrgnkVJKHAUylCG6Vc974AFfPOhAR3mcJin40PNzEdizQKbHPzUxYTTYzj6GAsLeHPTdT00QymbfJ6H43u7B5FMThLLZF-wGzk5FnZdDhwpQ0nmaOvejGsTv6dHxaDw8mtiQFseogoCL5_sykg5GfXMFyNu_O4ZLYBx2w4uPTvOd48K_O-6O8z84L3bOe_7dcXde_MF5b-e8798dd-e9Pzjv75wP_Lvj7rx_5zwYBeif8EyQj2xmkvqYjGSBj87CE53WgqonqLpo7J4M0b7nEWYxSQD7YuN4dralYYrgIrQ2cEHWFWwSEhdt0iQYnvRc4Rq_4bsejoQULneNwEOz1_9_2b_1OCnkV1sZoW_BSXJvwuPNTJjZxvNsQfi7IPzk3mQLwv99EFG4cyr27k22IGDfLggPmAk0GSbjqh_cGZrDZkd31OapnuXacPJ8dDA5dSiPjc9xNgIRRh8C_Ac8AJtEyWVqYTzU3OlgjhwwaCp4ADDHs9PJsYUphXA23PekZ5CGyy2mIroz7JAW7j16u6NBuNkfeneG3dHgHqvSxO24He4KLEzuTbbcDjcC27DDM_wwiThWEkGAiXgYGu33MV8HwxId2_wAKw3fPMfdQngbrr38v3PNer_gd3Jb8uF_k2l_PDvqP-084jbPxWJBzk1hhh6XmhrMRYC74646M7tMgWavn-6oy3T09Oz06KB_sIumuSgIwq1oTbUE2cC9cbQj3Ggroc1hP9geCPi9cbSj2nj44oI69arKG1U7j39yVnmTXqnKeez87W8xi_oJi1jSj1nERD8awCfv8wEf8gOB7_wTa2IQwdoosZ8R7ooZH3jDP8WMj4IDPkhYwvjIGyRMsIh5h_5TcRizkPmH_Cl_Jp56hxH7HqY-DkMmBuLQf8oPAXrM-GFwxA8TFrPoCN69I868o4R9_33MvK8587-O2d8c6tSFUitLT8DE0GP-nxPGGYyTPwPu9n2I70iNGIgDeBnagsGfIsRUHHiGjJHZcJcCccyfm1fCQubZWXgsBh7Q4e08_n67mx8DMt9H8Jx5m8lzzrznMImYN-DMHyRIzFKVja4kEBMwbwyyCVgy5mO4Ej6Bgd4Y5BQyMfYP-cA3vBvzQwHSsu92beAdwksMQjMfiYH3TBgejPkouE_ihJ-IIT8REyTRzvjE_ybs5hOY82_EkONaPOGD7Rj2RSyaGMKiQ_MZoxTFQDBgKUcJimeCec8M0emVWjiPnZhFw8QK6vuY8SH_evtCPTDvgwQ1zUjQjO9qa8z8AWphdBAjeYbM4JlBxx_yZ_4QGTnkB-YF7EqGAj_vropBNDQKKYb81EcU-FDYkTflzJtapTzgzD8wSpnqbGtiU6CKT6NDPoVb-TQ55NMIR-IwHAgci0M-EDMgAN-NbYhDPooGRpreIR_5B3zAD2M0J1TYQ6AW-ByBWU19NLDgkE-9w-DMt2MAzc-8F_zeCn_BZ9yuJrh_KzNAGpXTEghSi5j3lDP_qZHaQgF9MYtOUGgnSNpZcsLPQGfFmTgJBuJEnIU44yd3pITr38MBfhIN-Am6mBO0u2fCzsUJH_kDcYIWecLRKjnjeF38EhQ0eMmH_ssYACUv-Uu0iUH40ug3bIlYfATv3pGwvgOIGAoG8gci5h0RL5CIF4iHYcvOa-s4DBHermPcWTFu0ez0_uIdeH_Bk39BIf0FTfhUnCJ7TvlB9_JPgUXJqfn8gyeD5NQYcjIFnQHheMybxpasA4_5BxH7m_MzdVayUE2jnMfnzuehEtx1TUoi0wT7egu1yBZYN7n4B1PNeczDBKOvL4QpSxfRfG66bhnnETeZa-CniUl5vTRTke0TZrFNWLP5AjMfN57HCqF4iRubO-LMdRd4hy9cV2KsT_ncjSNzlqccs19f-fMA7429hQrnBj_ppxwh88TivAhDkeC9ySIIoUtJsetaQ8_VmfaP--RgRIbrfx4cQeh3eN-hEebPLj2HJB7zbi-8ACxT3_Wx_-b5XuQhd0TouVCWQwPCdDswAQpMrgE5VgCwIAnwMAnwoGCDmekoYOze4HFyNBs-AyyGBgvou55DXiOgwvbFBdaxXJreqy-54IlN0AWk6pFLz0PI6GNsqWKBAUhELvW9HSS4MEiYVgPWk3DC1pLOcDI8Gvcd6oQOooDMcHeRSJM0SZHBnvRsXyJUoQxSB_gFWS8wAsoKTJttHrfBYeSY27CN0OVNtiTqcLAptcMHyF4XOQKJYSAwiwsMO9JABrGtV2I_tDj5XmyFkmBNjKhA0Wx6sL4RiYtpocCKmuM4MpU-JpUWK4OtyewM98x-k9QZ4SY4jndJwiQYuOcLBBNgRg1AQpd6wpI56K__YzJ1qBM5FHrUUJ2eCz-mhk6jeFmcpVlq2xlC-jvtDNh0HphbqBCByQk9rDy37H6Jlb9JwgNzOz3HZoF3TwOnR6PpDEQf3BE95z4NQuojOnwhUtP4Er7nBTgCuxSpZXlgKl_ULs_Uoxtsoo-E7yEHeWykYrgyORg9BSw807LwLBam2WSY4ktv4XUqKAQKXighhQ-Y03OogoTth4TdPy_eQYIHW5Z0X6Y4J_3p0fHxhExG09nIoY7oO5hzJ6h8PuVcQGeFu6h9QnmuqUuEL0LjEj3pLYA9YUDPQRKxRQLHxhbDTjCmiISugtE41KwQxyGyJe4qB4Opt2GXZ9QJcR5Nvzk7Gve3OA922Bb6VHAQHRX-hfEVqS3rXWH55vme9H3QfmwReqb4wj5GYixXdHwbb_Tfu8tE4Ro0d5lo8fF3eSj4_w8ThUEJeSiMdn_MRM4RJWPc3H0I6zpMdzkHtD-IdSLa8C66z7rkHute7rAu3mHd8WQw-NahTrwTh4TvUy5itMD4rtMLw9APzTdxCho21gLDyHg6YWnhRv2tDSYbZbvngIOOR3juvjSHo_HstH_sUCcx8kSHzL2kk2dsuBSKWKC34kq4wrfhP4SA-Qlxhv7vitP7SIJCdBL0bXHtpHKpKnmcl68gpv_kHDuPBXVOncecOgfOY-9nimsuznyYnXaz7pnZ71PnrHvChX3k4aIBxbk9HeGiwMXwzlqAa7E9HBg8BD7y7jwKzSMXH0V2kVvE-c4B7tqH8e6zxC4mOPPv7oxwZ3Ln1gvqlPnlVYN5jxDUZRx7lIKCb47wHZoDzA_wC2Pm3fnTHQg2B8LugMBGuc94uPvHhwP2BBPUjyF7oBEe4ZQzN8QIdO-asDslKGch9T3q0YTGeARQSGL7RQSDHYA-8wPqxdTDbzhhE_eoyyIvvrCJ3jFQ7Tw-d5kPEAJADO_x7AtJC-3AvTPwzOiCOnqxyFP1XK6cx-ecxyao-NR3ga_qh3olV6oyOeXB5PnR-OmEYI724e3T_rh_MDkdTcmLo_7X_THpQ6eJHJ72x8Oj6XDymUOdk0I2smxr8kymr6AdleaqqiRpKlkTLyRXGgaZIun6lyy_1A51um4VI__6-3-S2e9spKTOVd3ImtyQVC9XhWp0TUmha3IpS5npSuH2jxC4zuVfZUkkmcqSHFayTPM61STVJTmVC0luyFimV5qRfnHZlromK1k1eZqvZNmomlzJebV-L0tSq8s2zzTJVNlU2hCkCkOfYuRYEl1dyjJ_I9N8_UsJBwsJGFXtEpBjDnVOR8Oj8Qzcz-lp_wCS9FFBVJYv8jTXHatWuiJpXqaalDq9UjUjx7om1yrNAbtKrXTVyJIUbaqAGY1KC5lpJH4ps6q9lJmEy4bH_enR4dGwf4BZ2VSReVunkly2sspyRI0LIklI-s8ZGcrF-h3Ji3yZNzLTjIw1qWVxaYRQSJjgmev8Mi-Ai5KR40IuJZHISOZg8rX-90H_YEIEuHRoSfZnzyZjMpyMh8dn30JSNiZH4-HRwWg8G00NAyogrdFk0SqSqetWFY3l7y4b4G6L-kdKMyo2VK3yLF__gpJBipbrtzW5rGSZKfK6VaRpr3NVyZKRA1VnikATqgROZq2qlgr1opCkaN-QVaXKLM_kJ4QrQRsqiRCLj3SmUm_kpZVJncqyhuvGMsvN5itJrvO60eyOAsJ1i7zKVaVLUoKCQoNMVqSQSMBcprkujR69AD2aTMnReHo0nY3GDnX6619BR4m-USVZyRqMY6MaN0QWl20OT_IsV2WmUaI5rjWKZLlc6Tpv8mvUnHs9ZahXj2VN8rJOq3xl0CByXqmSqJIsZfVGM_KthOvvqlip06atSs0cbMymslIn0JK905vlTAQ7rU2XxTu9Qc68YNNi4qYTwxm0x6Gd4bKEOnNZylLCJBQ_U6fQdX2v-3u-GYIb-_Dbyeno6dl41p9-BS5rVIK2rGSdF4WmRJWpLLP1-0IWmlzLKpdofMD4ix00zzdDA_Obs_U_yLPJKeRfCHbclikYTL3KVQVaIUlbklqX67fLeVtoBLfAtgV2Jz68PR29OJr2yfMjcnJ2fExOR9-cjaYzgHWqrvNakqYlq1ZVjST5m9dtrqpM7ugrApwjwLkBeNg_nvXJGZjf8-dHn4aUqUqlVx_BsRw_t4OOxqP1P8bk-YgMJ6ez9T_JcZ8cn_1PJHfYSlQrcJC1KtOrdiFrSq5zVSoiwcbBV1QIfCPd880QLpiNINicjcnhaHQw6A__DHAHqFCFJOn67VJWkix1JTOwmlVb1JIMBBifJAWCL4z7lEUjr_UbRqY5KQp1CT5qQzIlab5-V1WykFuRIteMIgEqB6PpydHodNYHFGboOTJZg6XoapmDe5zppTQuBoGs9A-GXztA-if9p-t_jj8zzlemcr7-BSiZy0ZBTGHkrJZo3gYxsFOYGc9e60KT1HJV1qQEHYQvNphz8TPkikUBUdo57R_2bz_81i_Wv3xF7Ofth99m61-JgpioCpKpgsjrvNY4ynJZ5Rr2jgpStupad_b6FTlR1UKl4Jqm-gbdEyVtqTEE6HrjBD8dbdntsSRXMn0lmytdkkZVy7w0vjjTy7y81CaUbeI1tZ7vhtyAqS11TVK5zEt9P1oDOoUmDShTjU43bfNMVgB6Ez6vZN0Yj3ytC4TGbkc1GF0D3vOvGFPK121egPgU5BMlMF2Vnw5vlFRoLEjotXoDG408KDhUFEqt8po0ilzL2qhYKmvJbhljt6OrJWOMPJM3gEKmGlkUCsNqo8Enfxw2agUhENy_JHUHqstKSk1et3ltwkNe1ZByFOpaliRbvwdM8tIoZ0VuYLOqm_XbEjAAmcOVZJ6rkt1CxvG6zVcaWbVSFcZLiAUQ_DIFBDJyDKAbNLxGzgvVGA8x8Iy1qeVKvZEVGpgs2uUcovUOF23SZs5wSq5VBXFYItUNqmVJ6hY1v25AUtPcaCpA2Xq3WpHCYnIDkwbsSFUpGjFmS2DxaD3I2rxslAnB8o0uZYUIrN8V7PZbUudE1WmbXqGsuoBYgYOu0MosYHDZMs0bTSEG643JMwZ8NQ7O-nRGTnRFSvBHwOVli7wb5yDxCrJFNAnIJbJdTVU1sXmWpETW6_coihKD8hJzLoT9LbmSN9bHgMJegxu7AvrJAjwcu_1WkkaVl0aUdTvPwfWBqa9_KRl5Ltf_LUvYgt4RrAg4pTATveM13k71HJQd0hL1GRm0qgTqC1lZ0Ov3FPlnMnlrRLdjXeumgvxCgr6hAavyvunOQPdSWa3f1_lSU1A5Tea6zBttLGUG5gxxAISCfB4VRK7_W0NQlpkmjVzO8_W7EqTZVNJchOHUOi52e9BW619IhobSJc1k_WvR5EtDQpb_VWNsKCSpZJabdPM7Z6msqZAMlWChVDaX6avvHEZMCAeFKrMc7nzdrt-hGYISpHnFwNGCSragrZtMOS8KSa5lun4vvyLP9M2WgNpK0Sp1RQYyfaXKjJHDSuM9NmJaTLeWcNNt7R7ZwM1up-v3l61Cd6JNtmhDZc2IDfcFyOd1m5e7EPfEoIcRZ5MD7PmDHjG-CGwY7Ksibbm1MLB2lDSWZxsbwgwyNfl1oYxygnRWbYV57DJvKKq3ImmlZM1uP7w9W9WfQc5oyFUFeSlvQEWHV1JvFPSZLiQlV7qQjPTT9duPtAvNAa5aVOv3GkJOlc_RzWK2DY4TAt_6F3Y7uVGgWh9-M65OXq3fmyphbpW8BGg2aoHW1S2k5DUECUz6vzIO18aLZV4v5W7iDG4hQ0qgwIBE_fZYkQwhVhpDVZ0XqkQHUDbVnay7ZmRU7mY5mSKYs1KylGUDqtMlOitZr99WtSrg0DQH74N1BVlBrUFBxVa6VKRU1XWua4iutSwgB8PcvCKr9a_zIk81-lzD_iuZ5pI0OTAIvJUhMZWVZOQFZAtYyTSqKKCsQK-oSmC7qlNVwgZ2ewJmvVEeGxSqraelWDStf60kqAsoC1qEMlTUuiSVBseSwRVyJS9lV4fdkEz9FSJ7rhoMM5uEie7Gp5tN0WfcyqSpIGjV0prB-t39Ugq9ctGCrMgzOV-_36q04cBcZ-pSMoK0dXvJXVfeyLk0tgLufgp1IXp44A4KPkPJ141ayu658XqlWiJjlyZOYpjPy2tV1bkuc-h1MPLh7X0v_tmucYDAIITrErkFVtlZCooBcgOs_orNEvpHSkypu8CItbUNUGyTkZOtmXx1a2tX1VXXnZMENmFqoQqygAREkVotZSmtATIyqjV66i3cQhmjXcoCNbCQULPWYGuXLfpEk8FbpZl3-T-mFpiyyGolM4WGiMUA9G7Amq9MqrVJ_vvzCpz71qh-t2aQuA1uYLf9MrOmAuFAdnqayQpcmyWckaEuTSJaKYNWpznGtZtMfykhjkKWp8yNKAgk-8bkViajlZD3SdrlJ8Y8UF8zbU30pkt4AFPrj42a3yhKPvwGN7QqAzeQ5RW6RHmtq69ux8bvtiYvktZfZBj2NNtm8IgKSqpSq9b6vJ1c29z2tAJXgU2IcX_4bLLJIaBesI007GrUpmjCoIz5EwU0Gr1cvwNtaVSxfrfQpU0B1v8owP82iuRzEAdGV8TQ5gtppYyXthwzIQvkU8u5qjCt3Ta27qYPpSaVKtsSKAI_20CqgCk2hMRGGpMAA8DMuW5XGOyxc5SpLn202rUEAcHNmBfZ5IGkurhEfTEZwP2MzxSi28rP5gHL9oZU67cr5A4UAC1J22Il2e1JqzJVkxRafaB3AAtraoXxQJWmiTMQ96oXm3eD1yaSXKsSMsJN8W0tMYMu2MaHMjJdv-vQQDXriuPbzvVkCioq9FY7RFFSYzr52W3_6l9__y9yg8DB4SLr_vX3_8Tq-kqanwetoM0Hno0sVZa3yxVZFFo2X35XtmW-0NWS1BLaupU4IO1zmZdTM_2ye4zbSTujbXlN21LTVs5pm72i7Q8r2hZ5Q1u5nNNWL768ltVNXl5C30YQ3TYz9eNQ6yr78rvSQDndw0dp76dKQYeKLCqZNnt1Xu5lutlLKTze44IlcRLTKGbC83q93r7vRUHMAj_wel_-_F15rfOMLGVe7vV-QoDt9ZPd68wl6ZP2-gsWAKXXT1jwKE339zh7hBelNE17-3vMDR8xvt-W170e7mM3sHMPBl-woAcHvmj1Yp8F-2nKfsQ3u_PHR0_aH1b7zHX9fSAAzuz7LnvUzvYT1tvQXM2fGCpxA4vgOeO8R-fZk3qpdXNVN2q1x1zK3IBW897-7ioXlLkRLG9vLa8Bc5eL7b3CMxf7Lus9mmeAVbS_Z9i9tyi0rsw-LlzWo3Zhti981uv1gFIAj2x7_WSZ_7jXXtPNsX0E4gmXwU8gWK_3iAW9f7u3CNqxpVk-Ya7rxo-WgJ-cUw68ZK7rBY8Ae-a6IjAX-iR90qgfm7ZS4mBvVwHp696XKat-9-kjxEBSwIhVX6Zs_rtbv9jdOt9gWTxBXWDV5RwUz9tjHmVBQkE6W1rq1RPOvrgvkyimhSovm6u9NDUMwn4qB34ayjzyClmJkIseNfcwT_T2cYkzyhLKIr-3jxwHI2LBIxYH-7UxLAD06slK_7D3itojPO71HhlcXVQNTpnrxlbmwFO8Bi82F77qJIPTR0_2Tv9AsFZRZ739hLOesQDmgtC0FVy0AbUPbGHc29_baGHiuqy3D0TgwU7a4c4Z8IgrsKpdM-SMP2qzV_uC-eZE3KMuA2Z--V2ZLwD4j__DZbe3MPgTN4ObbuXmT5z1DNnIGRePXRb_67CSl0Nd6ArWfcsPAPqzgw6yUtm0qfLyEht6Mstw87TRK_zZ3mVensjmCsawaaZn-CAtlKzw95dlI_MSu7SLvCiGeZUWyk5OdF42tZ2cqrTphrotM5XtrEybGzx1Wei5LIZ6ibWJmqxUJZtcl_CokqurPAVwRV6qgWp-UKq0s-58pdJGlpc4rlXTL1ZX0g63q4NCldlzndkp0muGkyq_zEszPsHqSNvZqW7kdjZNZQdspn5stqO26pbzQt2FMMtLu_FFXkOdCJOm0q_UhmepLkvDE0jsGjVoFwtVTXVbpWqz-FQihmYyqVOo9xskIG2rSpXNLF_CbvUjVGJlk8viVC5XM_1CFq3qd48XlXrdqjK9AdbKjuiZrC5Vs9kEyN45VTeyAvyuYdWhjqzr_BLOzgudvlLwA0HzOwKUuq5GMgXVWbU1fGCna4liqhvc3OSFmuJP5mGij6GRPZR194NJ_NViMg_N7xztfyXAESxUl3O55-L36EwEvXsrAa70T05OJ338MeCwf3y8-cUwdQ5PJ-PZzi_Buy-n4Sso-_PB7Rc3q0ICo6bHo9HJzk_hqTPIX7cyO8yLBqcpJLowONab1iRWnEtZ51AsONS5I7OP_nfwxc__Bw';
+const packedBytes = Uint8Array.from(atob(packedData.replace(/-/g, '+').replace(/_/g, '/')), (c) => c.charCodeAt(0));
+const arcadeData = await new Response(new Response(packedBytes).body
+  .pipeThrough(new DecompressionStream('deflate-raw'))).json();
 
-// Shared Web Audio keys. These still call the native AudioParam and AudioNode methods.
-const AUDIO_CONNECT = "connect";
-const AUDIO_CREATE_BUFFER_SOURCE = "createBufferSource";
-const AUDIO_CREATE_GAIN = "createGain";
-const AUDIO_CREATE_OSCILLATOR = "createOscillator";
-const AUDIO_CURRENT_TIME = "currentTime";
-const AUDIO_EXPONENTIAL_RAMP_TO_VALUE_AT_TIME = "exponentialRampToValueAtTime";
-const AUDIO_FREQUENCY = "frequency";
-const AUDIO_GAIN = "gain";
-const AUDIO_SET_TARGET_AT_TIME = "setTargetAtTime";
-const AUDIO_SET_VALUE_AT_TIME = "setValueAtTime";
-const AUDIO_START = "start";
-const AUDIO_VALUE = "value";
-
-// Other repeated property keys. A local alias keeps the actual property name at runtime.
-const KEY_ASSIGN = "assign";
-const KEY_BLOCKED = "blocked";
-const KEY_CAMERAS = "cameras";
-const KEY_FOR_EACH = "forEach";
-const KEY_PUSH = "push";
-const KEY_RANDOM = "random";
-const KEY_RESTED = "rested";
-const KEY_TILE_SPRITE = "tileSprite";
-const KEY_TO_LOWER_CASE = "toLowerCase";
-
-// Repeated colors used by canvas art and the HUD.
-const COLOR_000 = "#000";
-const COLOR_C9B6FF = "#c9b6ff";
-const COLOR_FFD400 = "#ffd400";
-const COLOR_FFF = "#fff";
-const COLOR_RGBA_0_0_0_25 = "rgba(0,0,0,.25)";
-const COLOR_RGBA_0_0_0_55 = "rgba(0,0,0,.55)";
-
-// Repeated mode and character names. The strings match the keys in scene data and sprite names.
-const STATE_APPROACH = "APPROACH";
-const STATE_CALL = "CALL";
-const STATE_CODER = "coder";
-const STATE_FRONT = "FRONT";
-const STATE_MENTORA = "mentora";
-const STATE_OFFICE = "office";
-const STATE_PITCH = "PITCH";
-const STATE_PITCHER = "pitcher";
-const STATE_PLAY = "play";
-const STATE_SLEEP = "SLEEP";
-const STATE_SLEEPER = "sleeper";
-
-// Repeated strings shared by audio setup, controls and the HUD.
-const TEXT_BIQUAD_FILTER = "BiquadFilter";
-const TEXT_CENTER = "center";
-const TEXT_LO_ALUMBRASTE_DEMASIADO = "Lo alumbraste demasiado.";
-const TEXT_OSCILLATOR = "Oscillator";
-const TEXT_PLATANUS_HACK_26 = "PLATANUS HACK 26";
+// Phaser and Web Audio use these original property names. The local aliases
+// let SWC shorten repeated calls while keeping the original method receiver.
+const [
+  DRAW_ADD_COLOR_STOP, DRAW_BEGIN_PATH, DRAW_BRING_TO_TOP, DRAW_CLEAR,
+  DRAW_CONTAINER, DRAW_FILL_CIRCLE, DRAW_FILL_POINTS, DRAW_FILL_RECT,
+  DRAW_FILL_ROUNDED_RECT, DRAW_FILL_STYLE, DRAW_GLOBAL_COMPOSITE_OPERATION, DRAW_GRAPHICS,
+  DRAW_LINE_BETWEEN, DRAW_LINE_STYLE, DRAW_RECTANGLE, DRAW_SET_ALPHA,
+  DRAW_SET_ANGLE, DRAW_SET_BLEND_MODE, DRAW_SET_COLOR, DRAW_SET_ORIGIN,
+  DRAW_SET_POSITION, DRAW_SET_ROTATION, DRAW_SET_SCALE, DRAW_SET_TEXT,
+  DRAW_SET_TEXTURE, DRAW_SET_TILE_POSITION, DRAW_SET_TINT, DRAW_SET_VISIBLE,
+  DRAW_STROKE_CIRCLE, AUDIO_CONNECT, AUDIO_CREATE_BUFFER_SOURCE, AUDIO_CREATE_GAIN,
+  AUDIO_CREATE_OSCILLATOR, AUDIO_CURRENT_TIME, AUDIO_EXPONENTIAL_RAMP_TO_VALUE_AT_TIME, AUDIO_FREQUENCY,
+  AUDIO_GAIN, AUDIO_SET_TARGET_AT_TIME, AUDIO_SET_VALUE_AT_TIME, AUDIO_START,
+  AUDIO_VALUE, KEY_ASSIGN, KEY_BLOCKED, KEY_CAMERAS,
+  KEY_FOR_EACH, KEY_PUSH, KEY_RANDOM, KEY_RESTED,
+  KEY_TILE_SPRITE, KEY_TO_LOWER_CASE, COLOR_000, COLOR_C9B6FF,
+  COLOR_FFD400, COLOR_FFF, COLOR_RGBA_0_0_0_25, COLOR_RGBA_0_0_0_55,
+  STATE_APPROACH, STATE_CALL, STATE_CODER, STATE_FRONT,
+  STATE_MENTORA, STATE_OFFICE, STATE_PITCH, STATE_PITCHER,
+  STATE_PLAY, STATE_SLEEP, STATE_SLEEPER, TEXT_BIQUAD_FILTER,
+  TEXT_CENTER, TEXT_LO_ALUMBRASTE_DEMASIADO, TEXT_OSCILLATOR, TEXT_PLATANUS_HACK_26,
+] = arcadeData.sharedStrings;
 
 const W = 800, H = 600, M = Math, PI = M.PI;
 const SAVE_KEY = 'fnap26-progress';
@@ -118,8 +65,8 @@ const anyPr = () => ['1', '2', '3', '4', '5', '6', 'S'].some(pr);
 // =====================================================================
 // SPRITES (PCSEF, 24x24, PC-66 palette): one pose per character
 // =====================================================================
-const P_PAL=["#6e2100","#deac92","#fefdfe","#000000","#ab8169","#24222a","#f7bb1b","#d11717","#254c93","#d3cde7","#333d8d","#a4dbff","#08b8ea","#390800","#8d00f9","#4200a5","#c1b087","#a41c1c","#4e4b5b","#83fe6b","#aba4c1","#019000","#f6629d","#9f5611"];
-const SPR={"pitcher":"~~8.7A9.7.9A8.7.2A7B8.7.1A1B1C1D2B1C1D1B8.7.1A1B1C1D2B1C1D2B7.7.1E9B7.7.1E7D1B8.8.1B3C>8.1E5D1B9.9.1E3B9.2.7.3F4G2F8.6.4F1G1H2G3F7.^6.4F4G3F7.6.2B2F4G1F2B7.8.1F5I1F9.8.7I9.8.3I1.3I9.^^8.3J1.4J8.~","sleeper":"~~5.2C3.4K9.1.5.2C9K8.7.9K8.7.9C8.7.9B8.7.2B2D2B2D1B8.7.5B>7.1E3B2D3B8.8.1E2B2D2B9.9.1E3B9.2.7.2L1M2L1M2L9.6.3L1M2L1M6L2B3.^6.3L1M2L1M2L9.^7.2L1M2L1M1L9.1.^7.3L1.3L9.1.^7.3M1.3M9.1.7.3B1.4B9.~","mentora":"~5.3N9.7.5.9N1N9.6.9N1N8.6.3N7B8.6.2N4F1B4F7.6.2N1F2C1D1F2C1D1F7.6.2N1B3F1B3F2B6.6.2N1E2B3H2B8.7.2N1E5B9.9.1E3B9.2.7.2O1P2C1P2O9.6.3O1P2C1P1O4Q6.6.3O1P2O1P1O1Q2C1Q6.6.8O1B2C1Q6.6.8O4Q6.7.7O9.1.7.7F9.1.7.8F9.8.2B2.2B9.1.^^8.2H2.3H9.~","chef":"8.7C9.7.9C8.^8.1C1J1C1J1C1J1C9.8.7C9.8.7B9.8.1B2D2B2D9.8.1B1C1D2B1C1D1B8.8.4B>8.1E7D8.9.1E5B9.9.5H9.1.7.4C1H4C8.6.3C1D3C1D3C7.6.9C2C7.6.3C1D3C1D3C7.6.2B7C2B7.8.2C1R4C9.8.1C2R4C9.8.3S1.3S9.^^8.3D1.4D8.~","coder":"~~8.7S9.7.1S7F1S8.6.1S9F1S7.6.1S2F6B2S7.6.2F1B2T1D1B2T1D1F7.^6.2F1E7B1F7.6.3F1E4D1B1F8.7.3F1E3B2F8.8.7F9.7.4F1S4F8.6.5F1S3F5U4.6.5F1S2F1B1U3V1U4.6.5F1S2F1B1U1V1T1V1U4.6.9F5U4.7.7F9.1.7.7S9.1.7.3S1.3S9.1.^^7.3G1.4G9.~","fe":"~8.7P9.7.9P8.6.1U9P1U7.5.2U2P5B2P2U6.5.2U1P1B1C1D2B1C1D1P2U6.^6.1U1P7B1P8.7.1P1E2B2H2B1P8.7.2P1E4B2P8.8.1P1.1E2B1.1P9.7.8W9.6.5W1C4W8.^6.9W1W8.6.2B6W2B8.7.8W9.7.8I9.7.3I2.3I9.^^^7.3C2.4C8.~","be":"~8.7V9.7.9V8.7.1V1T1V1T1V1T1V1T1V8.7.9B8.7.1B1C1D3B1C1D1B8.7.1B1C1D3B1C1D2B7.7.9B8.7.3X3D3X8.7.9X8.8.7X9.6.9R2R7.5.2R1D2R1D2R1D4R6.5.9R4R6.5.2R1D2R1D2R1D4R6.5.9R4R6.5.2B9R2B6.6.9S2S7.7.3S3.3S8.^^^7.3D3.4D7.~"};
+const P_PAL = arcadeData.palette;
+const SPR = arcadeData.sprites;
 // Every character is 24 pixels wide. A digit gives a run length, ~ emits an
 // empty row, ^ repeats the previous row, and > mirrors the current half-row.
 function parseCSEF(s) {
@@ -144,7 +91,7 @@ function parseCSEF(s) {
   if (p.length) r[KEY_PUSH](p);
   return r;
 }
-const ROLES = Object.keys(SPR);
+const ROLES = Object.keys(SPR).filter((r) => r != 'chef');
 
 // =====================================================================
 // AUDIO (pure WebAudio synthesis)
@@ -296,42 +243,14 @@ const sfxGroan = () => { tone(46, 2.6, 's', 0.1, 38); noise(2.6, 0.05, 'l', 160,
 // =====================================================================
 const CTRL = 13; // your office: three entrances, no camera
 // [name, cam, w, d, map rect, floor A, floor B, wall, tile, camera [x,y,z, look x,y,z, focal], exits, spots]
-const ROOMS = [
-  ['SALA DE CÓDIGO', '1A', 700, 500, [110, 0, 80, 36], '#3c4048', '#34373e', '#26303a', 100, [350, 490, 185, 350, 160, 95, 500], [[3, 'S', 350]], [[350, 380]]],
-  ['SALA DE PITCH', '1C', 700, 600, [215, 2, 85, 42], '#5a1a22', '#4a1219', '#2a2230', 70, [660, 580, 210, 330, 160, 70, 430], [[3, 'S', 120]], [[200, 260], [480, 250]]],
-  ['COCINA', '6', 600, 500, [0, 2, 85, 42], '#c9c9c0', '#3a3a3a', '#6e6a5c', 80, [20, 490, 240, 380, 150, 50, 430], [[3, 'E', 250]], [[300, 200], [420, 330]]],
-  ['COMEDOR', '1B', 1000, 700, [60, 52, 180, 52], '#5c5a58', '#4a4846', '#3a3438', 100, [980, 20, 240, 430, 470, 0, 400], [[0, 'N', 250], [1, 'N', 750], [2, 'W', 200], [4, 'E', 200], [7, 'S', 150], [12, 'S', 500], [9, 'S', 850]], [[300, 280], [600, 420], [450, 560], [760, 320]]],
-  ['BAÑOS', '7', 520, 440, [248, 60, 52, 36], '#d8dcdc', '#9aa2a4', '#5a6a6e', 52, [500, 420, 225, 200, 130, 30, 430], [[3, 'W', 300]], [[150, 320], [380, 230]]],
-  ['SALA DE SIESTA', '5', 600, 500, [0, 114, 56, 46], '#1f2c4a', '#24335a', '#1c1c2c', 100, [570, 30, 200, 230, 300, 0, 430], [[7, 'E', 250]], [[300, 300], [180, 400]]],
-  ['BODEGA', '3', 300, 300, [0, 170, 50, 36], '#4a3f30', '#3a3226', '#2e2a24', 60, [270, 280, 200, 60, 60, 60, 380], [[7, 'E', 150]], [[150, 200]]],
-  ['PASILLO OESTE', '2A', 260, 900, [64, 112, 22, 102], '#2e3034', '#24262a', '#3a3f4a', 65, [130, 880, 200, 130, 80, 70, 460], [[3, 'N', 130], [5, 'W', 250], [6, 'W', 600], [8, 'S', 130]], [[130, 300], [130, 560]]],
-  ['ESQUINA OESTE', '2B', 300, 300, [64, 216, 46, 24], '#2a2c30', '#202226', '#343a44', 75, [30, 30, 220, 230, 190, 50, 420], [[7, 'N', 150], [CTRL, 'E', 150]], [[120, 130]]],
-  ['PASILLO ESTE', '4A', 260, 900, [214, 112, 22, 102], '#2e3034', '#24262a', '#3a3f4a', 65, [130, 20, 220, 130, 820, 30, 460], [[3, 'N', 130], [11, 'E', 400], [10, 'S', 130]], [[130, 300], [130, 560]]],
-  ['ESQUINA ESTE', '4B', 300, 300, [190, 216, 46, 24], '#2a2c30', '#202226', '#343a44', 75, [270, 30, 220, 70, 190, 50, 420], [[9, 'N', 150], [CTRL, 'W', 150]], [[180, 130]]],
-  ['LOBBY', '8', 700, 500, [244, 128, 56, 48], '#5c5a58', '#666462', '#3e4a40', 100, [670, 470, 200, 300, 160, 60, 430], [[9, 'W', 250]], [[300, 200], [450, 300], [200, 330]]],
-  ['PASILLO CENTRAL', '9', 260, 700, [139, 112, 22, 84], '#26282c', '#1e2024', '#33363e', 65, [130, 20, 220, 130, 640, 30, 460], [[3, 'N', 130], [CTRL, 'S', 130]], [[130, 220], [130, 400]]],
-];
+const ROOMS = arcadeData.rooms;
 // Screen neighbors, independent of the corridors enemies use to travel.
-const CAMERA_LINKS = [
-  { L:2, R:1, D:3 },        // 1A
-  { L:0, D:4 },             // 1C
-  { R:0, D:3 },             // 6
-  { L:2, R:4, U:0, D:12 },  // 1B
-  { L:3, U:1, D:11 },       // 7
-  { R:7, U:2, D:6 },        // 5
-  { R:7, U:5, D:8 },        // 3
-  { L:5, R:12, U:3, D:8 },  // 2A
-  { L:6, R:10, U:7 },       // 2B
-  { L:12, R:11, U:3, D:10 },// 4A
-  { L:8, R:11, U:9 },       // 4B
-  { L:9, U:4, D:10 },       // 8
-  { L:7, R:9, U:3, D:8 },   // 9
-];
-const OFFICE_MAP = [118, 200, 64, 40];
+const CAMERA_LINKS = arcadeData.cameraLinks;
+const OFFICE_MAP = arcadeData.officeMap;
 // how much light each room has of its own on camera (without your flashlight):
 // the code room's laptops, the projector, the kitchen... and the rooms right
 // next to you are pitch black: there you have to light it to see who's coming
-const AMB = [0.42, 0.54, 0.36, 0.3, 0.3, 0.2, 0.16, 0.2, 0.06, 0.2, 0.06, 0.32, 0.06];
+const AMB = arcadeData.roomLight;
 const NB = ROOMS.map((R) => R[10].map((x) => x[0]));
 NB[CTRL] = [8, 12, 10];
 const CDOOR = { W: { adj: 8 }, N: { adj: 12 }, E: { adj: 10 } };
@@ -359,8 +278,8 @@ function bfs(a, b, blk) {
 }
 const HOP = ROOMS.map((_, r) => bfs(r, CTRL, new Set()).length - 1).concat(0); // rooms away from your office
 const mapC = (r) => { const m = r == CTRL ? OFFICE_MAP : ROOMS[r][4]; return [m[0] + m[2] / 2, m[1] + m[3] / 2]; };
-const PITCH_HOME = [350, 130], SLEEP_HOME = [220, 250], CHEF_HOME = [150, 120], SEATS = { fe: 180, coder: 350, be: 520 };
-const CHEF_POS = [CHEF_HOME, [300, 250], [520, 250]];
+const PITCH_HOME = [350, 130], SLEEP_HOME = [220, 250], SEATS = { fe: 180, coder: 350, be: 520 };
+const KITCHEN_CHEF = { r: 2, x: 150, y: 120, fx: 1 }; // fixed camera prop, outside the AI and audio loops
 // the blind spot right outside each of your doors (no camera sees it)
 const blindPt = (d) => exitPt(CDOOR[d].adj, CTRL);
 const blindDoor = (e) => ADOOR.find((d) => e.r == CDOOR[d].adj && dist(e.x, e.y, ...blindPt(d)) < 110);
@@ -372,23 +291,10 @@ const blindDoor = (e) => ADOOR.find((d) => e.r == CDOOR[d].adj && dist(e.x, e.y,
 // 2, 3 and 4 AM, so every night gets worse towards the morning.
 // Seconds per hour, base drain, sleep time, first wake hour, pitch patience,
 // required flashes, movement levels, and power multiplier.
-const FINAL_NIGHT_POWER_USE = 99 / 110;
-const NIGHTS = [
-  [22, .10, 110, 2, 0, 0, 7, 0, 0, 10, 1.45],
-  [170 / 6, .10, 115, 2, 0, 0, 7, 6, 0, 10, 1.22],
-  [205 / 6, .11, 115, 2.2, 48, 2, 8, 7, 10, 11, 1.06],
-  [230 / 6, .11, 112, 1.6, 43, 3, 9, 8, 11, 12, .98],
-  [40, .12, 110, 2.45, 38, 3, 10, 9, 12, 13, .82 * FINAL_NIGHT_POWER_USE],
-];
+const NIGHTS = arcadeData.nights;
 const LV = { fe: 6, be: 7, pitcher: 8, sleeper: 9 };
 const FINAL_NIGHT_START = { coder: 15, fe: 34, mentora: 54, pitchDrain: 36, be: 92 };
-const CALLS = [
-  'RAFA|¿Aló? ¿Aló?|¿Tú eres el del aviso del diario? ¿El nuevo guardia? Perfecto. Soy Rafa, uno de los organizadores de Platanus Hack.|La hackathon terminó el domingo. Los ganadores, Nacho y yo vamos camino a San Francisco. Solo tienes que cuidar el edificio hasta que volvamos.|Es un trabajo tranquilo. Te sientas en la sala de vigilancia, revisas de vez en cuando, y a las seis te vas a tu casa.|...|Ehm... Hay un detalle. No todos los participantes se fueron a su casa.|Algunos no quisieron irse. Llevan días sin dormir y no están... del todo bien.|El equipo que perdió sigue codeando. Levanta la tableta con B3 para empezar. Si alumbras la sala de código con B1, verás a los tres en sus puestos.|Si el de la izquierda se levanta y se te acerca, cierra la puerta. No intentes razonar con él.|Y si escuchas a alguien respirando cerca, despacito, como dormido... no lo despiertes. Por nada del mundo. Ni un ruido.|La luz del edificio es limitada, así que no la malgastes. Y hay café. Te va a hacer falta.|Ya tengo que subir al avión. Mañana te llamo. Suerte.',
-  'RAFA|¿Aló? ¡Sobreviviste! Bueno, claro que sí, si era tranquilo.|Nosotros ya estamos en San Francisco. Todo carísimo, pero bonito.|...|Te cuento algo... El año pasado también contratamos a un guardia.|Duró dos noches. Lo último que dijo por la radio fue "me están dando feedback". Nunca entendimos qué quiso decir.|¿Te acuerdas de la silla vacía? Hoy también se va a levantar Backend. Frontend viene por la izquierda y Backend por la derecha.|Síguelos por las cámaras. Revisa la esquina izquierda (2B) y la derecha (4B) antes de cerrar una puerta. Si a esta hora alguien te dice que le falta un puro commit, no le creas.|¡Ups! Ya viene el Waymo. Chao.',
-  'RAFA|Hola, hola. Acá en San Francisco hace un frío terrible. Nadie nos avisó.|Oye... ¿sigue ahí el cabro que no ha terminado su presentación? Lleva en la misma diapositiva desde el viernes.|Le da terror el silencio entre diapositivas. En la cámara de pitch, mantén B2 para pasárselas. Si nadie lo pesca, se pone nervioso y sale a buscar público.|Si viene hacia ti... luz en la cara. Varios destellos, como en un escenario.|Pero antes de alumbrar a alguien, asegúrate de quién es. Si son ronquidos, apaga la luz y deja quietas las puertas, la tableta y el café.|...|Otra cosa. Revisé las grabaciones del lunes. Había alguien en la bodega. Pero el lunes el edificio estaba cerrado.|Seguro es un error del sistema.|Seguro...|Tenemos demo con unos inversionistas. ¡Mañana te llamo!',
-  'RAFA|Hola... perdona la hora. Acá es de día y allá es de noche, me confundo.|Oye... ¿la mentora sigue ahí?|Nadie le pidió feedback en todo el fin de semana. Nadie. Eso a una mentora le hace mal.|Si la oyes preguntar por alguien, busca la sala que parpadea en morado. Ahí hay un altavoz. Abre esa cámara y pulsa B2 para llamarla a esa sala.|Anda buscando a quién darle feedback. Con que crea que alguien levantó la mano, parte para allá.|Si ya la tienes afuera, escucha de qué lado viene y cierra esa puerta.|...|El chef sigue en la cocina contando las porciones del bajón. La tableta lo frena mientras sigue ahí. Si ves la cocina vacía o escuchas que viene corriendo, baja la tableta y cierra la puerta izquierda.|Oye, ¿te puedo pedir un favor?|No le cuentes a nadie de esto. Platanus tiene una reputación que cuidar.|...|Gracias.',
-  'NACHO|¿Aló? Soy Nacho. Rafa se quedó dormido, le tomé el teléfono.|...|Él no te iba a decir esto, pero creo que tienes derecho a saber.|El guardia del año pasado no renunció. Entró a su quinta noche... y no supimos más de él.|Y hay un muchacho que se está colgando de la luz del edificio. Si la batería se va muy rápido, es su culpa.|Puedes cortarle el enchufe manteniendo B2 en la sala de código. Va a venir a reclamar a una de tus puertas. Sé rápido y ciérrala.|Mañana devolvemos el edificio, suerte!|Ah… y una cosa más—',
-].map((s) => s.split('|'));
+const CALLS = arcadeData.calls.map((s) => s.split('|'));
 
 // =====================================================================
 // GAME STATE
@@ -412,28 +318,7 @@ class HorrorPipeline extends Phaser.Renderer.WebGL.Pipelines.PostFXPipeline {
       // share the grain, aberration, vignette and drowsy warp; the cameras add a
       // cheap old CCTV: low resolution, tracking wobble, a rolling band, washed
       // out dingy colour, and darkness unless you light it.
-      fragShader: `precision mediump float;
-uniform sampler2D uMainSampler;uniform float uT,unv,uno,uab,udk,uwp,ulit,uamb,uof;varying vec2 outTexCoord;
-float R(vec2 c){return fract(sin(dot(c,vec2(12.9898,78.233)))*43758.5453);}
-void main(){vec2 uv=outTexCoord;vec2 cc=uv-.5;
-uv=.5+cc*(1.+dot(cc,cc)*(.06+.1*unv));
-uv.y=.5+(uv.y-.5)*(1.-uof*.5*cc.x*cc.x);
-uv.x+=uwp*.004*sin(uv.y*40.+uT*9.);
-float rb=fract(uv.y*.7+uT*.11),bd=smoothstep(.0,.05,rb)*smoothstep(.12,.07,rb);
-uv.x+=unv*(.0012*sin(uv.y*230.+uT*40.)+bd*.007*(R(vec2(floor(uv.y*120.),floor(uT*24.)))-.5));
-vec2 q=mix(uv,(floor(uv*vec2(320.,240.))+.5)/vec2(320.,240.),unv);
-float a=.0008+min(uab,1.5)*.0035+unv*.0025;
-vec4 c=texture2D(uMainSampler,q);c.r=texture2D(uMainSampler,q+vec2(a,0.)).r;c.b=texture2D(uMainSampler,q-vec2(a,0.)).b;
-float l=dot(c.rgb,vec3(.3,.59,.11));
-float sp=1.-smoothstep(.12,.78,length(cc*vec2(1.25,1.)));
-vec3 k=mix(vec3(l),c.rgb,.32)*vec3(1.,.9,.74)*mix(uamb,.5+.85*sp,ulit);
-k=pow(k,vec3(1.18))+vec3(.012,.01,.008)+bd*.05;
-c.rgb=mix(c.rgb,k,unv);
-c.rgb+=(R(floor(uv*vec2(320.,240.))+fract(uT)*91.)-.5)*(.05+uno+unv*.07);
-c.rgb*=1.-.13*(sin(uv.y*900.)*.5+.5)*(.35+unv*.6);
-c.rgb*=clamp(1.-dot(cc,cc)*(1.1+udk*2.4+unv*.8),0.,1.);
-if(uv.x<0.||uv.x>1.||uv.y<0.||uv.y>1.)c.rgb=vec3(0.);
-gl_FragColor=vec4(c.rgb,1.);}`,
+      fragShader: arcadeData.shader,
     });
   }
   onPreRender() {
@@ -459,9 +344,10 @@ const spriteTex = (key, rows) => canvasTex(key, rows[0].length, rows.length, (c)
   if (color != null) { c[DRAW_FILL_STYLE] = color; c[DRAW_FILL_RECT](x, y, 1, 1); }
 })));
 function buildSprites() {
-  for (const role of ROLES) {
+  for (const role in SPR) {
     const rows = parseCSEF(SPR[role]);
     spriteTex(role + '0', rows);
+    if (role == 'chef') continue;
     let top = 0; while (rows[top].every((c) => c == '.')) top++;
     spriteTex(role + 'H', rows.slice(top, top + 14)); // the face in CCTV hallucinations
   }
@@ -564,50 +450,20 @@ function shell(c, R) {
     poly(c, to == CTRL ? '#a22' : '#0c6', wq(R, s, o - 22, o + 22, 178, 196)); // exit sign (red: your office)
   }
 }
-function hallPosters(c, R, side, positions, color, accent, accentColor) {
-  for (const y of positions) poly(c, color, wq(R, side, y, y + 70, 90, 180));
-  poly(c, accentColor, wq(R, side == 'W' ? 'E' : 'W', accent, accent + 70, 90, 180));
-}
-// props of each room (camera-dependent, so they live with the room)
-const PROPS = [
-  // 1A CÓDIGO: the team's corner, banner and a whiteboard full of diagrams (the desk is foreground)
-  (c, R) => { poly(c, '#ddd', wq(R, 'N', 70, 300, 95, 200)); poly(c, '#246', wq(R, 'N', 90, 280, 150, 154)); wtext(c, R, 'N', 500, 175, 'SHIP IT', 30, '#9cf'); boxes(c, [[600, 20, 80, 60, 160, '#222', '#333', '#111']]); },
-  // 1C PITCH: stage and projector screen
-  (c, R) => { poly(c, '#111', wq(R, 'N', 195, 505, 100, 210)); wtext(c, R, 'N', 110, 175, 'DEMO DAY', 24, '#ffe'); boxes(c, [[80, 0, 540, 100, 30, '#16161b', '#2b2b33', '#101014'], [520, 50, 40, 40, 80, '#665', '#998', '#554']]); },
-  // 6 COCINA: counters, stove, fridge and island
-  (c, R) => { wtext(c, R, 'N', 300, 170, 'BAJÓN 24/7', 26, '#eee'); boxes(c, [[0, 0, 380, 70, 90, '#8d8778', '#b5b0a0', '#6d6758'], [470, 0, 110, 80, 200, '#d8d8d8', '#eee', '#aaa'], [210, 300, 170, 70, 80, '#8d8778', '#b5b0a0', '#6d6758']]); poly(c, '#222', [[100, 10, 91], [240, 10, 91], [240, 60, 91], [100, 60, 91]]); },
-  // 1B COMEDOR: long tables and benches, banner
-  (c, R) => { wtext(c, R, 'N', 500, 180, TEXT_PLATANUS_HACK_26, 30, COLOR_FFD400); boxes(c, [150, 450, 750].flatMap((x) => [180, 420].flatMap((y) => [[x - 100, y - 40, 200, 80, 72, '#8a6a4a', '#a8845e', '#6a4a2a'], [x - 100, y - 80, 200, 26, 40, '#5a3a2a', '#6a4a3a', '#4a2a1a'], [x - 100, y + 54, 200, 26, 40, '#5a3a2a', '#6a4a3a', '#4a2a1a']]))); },
-  // 7 BAÑOS: sinks, mirror and stalls
-  (c, R) => {
-    poly(c, '#9bb', wq(R, 'N', 30, 200, 110, 190)); poly(c, '#cde', wq(R, 'N', 40, 190, 118, 182)); // mirror
-    boxes(c, [[30, 0, 170, 50, 85, '#ddd', '#eee', '#bbb'], ...[240, 330, 420].map((x) => [x, 0, 80, 120, 170, '#7a8a8e', '#9aaaae', '#5a6a6e'])]); // sinks, stalls
-    for (const x of [240, 330, 420]) poly(c, '#8c9ca0', [[x + 10, 120, 12], [x + 70, 120, 12], [x + 70, 120, 150], [x + 10, 120, 150]]); // stall doors
-    wtext(c, R, 'N', 380, 200, 'WC', 22, '#bcc');
-  },
-  // 5 SIESTA: mats, beanbags, his red beanbag
-  (c, R) => { wtext(c, R, 'N', 300, 160, 'SILENCIO', 26, '#88a'); for (let i = 0; i < 5; i++) poly(c, '#344a7a', [[60 + i * 100, 120, 1], [140 + i * 100, 120, 1], [140 + i * 100, 200, 1], [60 + i * 100, 200, 1]]); boxes(c, [[170, 230, 110, 70, 30, '#c43', '#d54', '#a32'], [420, 330, 90, 80, 40, '#3a6', '#4b7', '#295'], [80, 380, 90, 80, 40, '#c6c', '#d7d', '#a4a']]); },
-  // 3 BODEGA: storage shelves
-  (c, R) => { boxes(c, [[0, 0, 300, 50, 200, '#3a3020', '#4a4030', '#2a2010'], [0, 60, 50, 240, 200, '#3a3020', '#4a4030', '#2a2010']]); },
-  // 2A PASILLO OESTE: posters along the walls
-  (c, R) => { hallPosters(c, R, 'E', [120, 420, 760], '#c33', 380, '#36c'); wtext(c, R, 'N', 130, 200, 'COMEDOR', 18, '#9aa'); },
-  // 2B ESQUINA OESTE: water cooler next to your door
-  (c, R) => { boxes(c, [[20, 230, 50, 50, 120, '#bcd', '#def', '#9ab']]); wtext(c, R, 'E', 150, 215, 'CONTROL', 18, '#a22'); },
-  // 4A PASILLO ESTE: posters
-  (c, R) => hallPosters(c, R, 'W', [200, 560], '#3a3', 620, '#c90'),
-  // 4B ESQUINA ESTE: trash can and a forgotten chair
-  (c, R) => { boxes(c, [[230, 230, 40, 40, 60, '#555', '#666', '#444'], [60, 220, 50, 50, 45, '#334', '#445', '#223']]); wtext(c, R, 'W', 150, 215, 'CONTROL', 18, '#a22'); },
-  // 8 LOBBY: banner and glass entrance
-  (c, R) => { wtext(c, R, 'N', 350, 180, 'PLATANUS HACK 26 · SANTIAGO', 26, COLOR_FFD400); poly(c, '#6ab', wq(R, 'E', 150, 350, 0, 200)); },
-  // 9 PASILLO CENTRAL: straight down to your office
-  (c, R) => { wtext(c, R, 'S', 130, 200, 'SEGURIDAD', 18, '#a22'); for (const y of [200, 450]) poly(c, '#556', wq(R, 'W', y, y + 60, 100, 170)); },
-];
+// Room art is a list of operations in draw order for each camera.
+const ROOM_ART = arcadeData.roomArt;
 // things in front of the people standing in a room (drawn over them)
 const FG = { 0: (c) => boxes(c, [[60, 240, 580, 60, 78, '#6d5a42', '#8c7558', '#4d3a22'], ...Object.values(SEATS).map((x) => [x - 38, 250, 76, 5, 26, '#9aa', '#bcc', '#788', 78])]) };
 function buildRooms() {
   ROOMS[KEY_FOR_EACH]((R, r) => {
     setCam(R[9]);
-    canvasTex('room' + r, CAMW, H, (c) => { shell(c, R); PROPS[r](c, R); });
+    canvasTex('room' + r, CAMW, H, (c) => { shell(c, R);
+      // Operations carry the original arguments. Text also needs the room.
+      for (const [op, ...args] of ROOM_ART[r]) {
+        if (op === 0) poly(c, ...args);
+        else if (op === 1) boxes(c, ...args);
+        else wtext(c, R, ...args);
+      } });
     if (FG[r]) canvasTex('room' + r + 'f', CAMW, H, FG[r]);
   });
 }
@@ -796,7 +652,7 @@ function create() {
   fgImg = img(rC, 'room0f', 0, 0, 0, 0);
   dynG = add(rC, S.add[DRAW_GRAPHICS]());
   projTxt = txt(rC, 0, 0, '', 18, '#111');
-  for (const r of ROLES) eImg[r] = img(rC, r + '0', 0, 0, 0.5, 1);
+  for (const r in SPR) eImg[r] = img(rC, r + '0', 0, 0, 0.5, 1);
   lensImg = img(rC, 'mentora0', 0, 0, 0.5, 0.2)[DRAW_SET_VISIBLE](false);
   emG = add(rC, S.add[DRAW_GRAPHICS]());
   askG = add(rC, S.add[DRAW_GRAPHICS]());
@@ -899,8 +755,8 @@ const writeSave = () => storage().set(SAVE_KEY, { night: saved.night }).catch(()
 function screen(m) { ringStop(); if (AC) buzzG[AUDIO_GAIN][AUDIO_VALUE] = fanG[AUDIO_GAIN][AUDIO_VALUE] = 0; litA = 0; mode = m; modeT = 0; wC[DRAW_SET_VISIBLE](false); hideHud(); clearScreen(); }
 function goTitle() {
   screen('title');
-  // the whole cast lined up, each one half hidden behind the next
-  uTitleBan = [3, 1, 5, 0, 6, 2, 4].map((i, k) => ({ i, k })).sort((a, b) => M.abs(b.k - 3) - M.abs(a.k - 3)).map(({ i, k }) => sAdd(S.add.image(100 + k * 100, 660 - M.abs(k - 3) * 16, ROLES[i] + '0')[DRAW_SET_SCALE](16 - M.abs(k - 3) * 0.9)[DRAW_SET_ORIGIN](0.5, 1)));
+  // Leave the leftmost slot empty so the Pitcher stays centered.
+  uTitleBan = [1, 4, 0, 5, 2, 3].map((i, k) => ({ i, k: k + 1 })).sort((a, b) => M.abs(b.k - 3) - M.abs(a.k - 3)).map(({ i, k }) => sAdd(S.add.image(100 + k * 100, 660 - M.abs(k - 3) * 16, ROLES[i] + '0')[DRAW_SET_SCALE](16 - M.abs(k - 3) * 0.9)[DRAW_SET_ORIGIN](0.5, 1)));
   uTitleStat = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0));
   uT1 = sText(40, 26, 'Five Nights\nat Platanus', 52, '#eee', 0, 0, { lineSpacing: -6, stroke: COLOR_000, strokeThickness: 6 });
   sText(42, 160, 'La hackathon terminó. Ellos no.', 14, '#889', 0, 0.5);
@@ -921,16 +777,7 @@ function titleUpdate() {
   if (pr('S') || pr('1')) { sfxClick(); if (menuNight == 1) goPaper(0); else goCall(menuNight); }
 }
 // Newspaper: intro (0) or ending (1). It spins in and slams onto the table.
-const PAPERS = [
-  ['DOMINGO 22', '¡GANADORES VIAJAN A SAN FRANCISCO!', 'Platanus Hack 26 cierra tras 36 horas de código',
-    'SANTIAGO. — Tras 36 horas de código, siestas y completos, los ganadores de Platanus Hack 26 viajan a San Francisco con Rafa y Nacho. Algunos participantes habrían seguido dentro tras el cierre. La organización habla de rumores.',
-    'RECINTO CERRADO', 'El edificio cierra por cinco noches. Los vecinos reportan luces y teclados de madrugada.',
-    'CLASIFICADOS', 'Se busca guardia de 12 a 6 AM. Café ilimitado. No salgas de la sala de vigilancia. Llama a Rafa.'],
-  ['SÁBADO 28', 'HACKATHON CONCLUYE SIN INCIDENTES', 'El recinto fue devuelto tras cinco noches de guardia',
-    'SANTIAGO. — El guardia pidió el café más grande que tuvieran. Desde entonces duerme con la luz prendida. La organización asegura que los participantes rezagados descansan. Nadie los ha visto. Rafa y Nacho prefirieron no comentar las grabaciones.',
-    'VECINOS INSISTEN', 'Aún se oyen pasos, teclados y alguien pidiendo la siguiente diapositiva.',
-    'PLATANUS HACK 27', 'Las inscripciones abren en marzo. Ya se busca guardia nocturno.'],
-];
+const PAPERS = arcadeData.newspapers;
 function goPaper(end) {
   screen('paper'); uPaperEnd = end;
   const [date, headline, subhead, story, briefTitle, brief, noticeTitle, notice] = PAPERS[end];
@@ -1061,7 +908,6 @@ function startNight(n) {
     pitcher: mkE(STATE_PITCHER, 1, PITCH_HOME, STATE_PITCH, { slide: 1, bar: 1 }),
     sleeper: mkE(STATE_SLEEPER, 5, SLEEP_HOME, STATE_SLEEP, { wakeAt: rnd(wakeH, wakeH + 1) * hl }),
     mentora: mkE(STATE_MENTORA, 9, [130, 300], 'REST', { t: n == 5 ? FINAL_NIGHT_START.mentora : hl / 2, target: -1, visits: 0, side: 'E' }),
-    chef: mkE('chef', 2, CHEF_HOME, 'COOK', { p: 0, bang: 4, t: n == 4 ? 24 : 30 }),
     coder: mkE(STATE_CODER, 0, [350, 170], 'TYPE', { plugT: FINAL_NIGHT_START.coder }),
     fe: mkE('fe', 0, [SEATS.fe, 170], 'SEAT', { t: [2, 21, 55, 45, FINAL_NIGHT_START.fe][n - 1] }),
     be: mkE('be', 0, [SEATS.be, 170], 'SEAT', { t: 0 }),
@@ -1116,7 +962,7 @@ function playUpdate(dt) {
   }
   updateBlink(dt);
   revealDoorway();
-  aiPitcher(dt); aiSleeper(dt); aiMentora(dt); aiCoder(dt); aiChef(dt); aiTeam(E.fe, 'W', dt);
+  aiPitcher(dt); aiSleeper(dt); aiMentora(dt); aiCoder(dt); aiTeam(E.fe, 'W', dt);
   if (mode == STATE_PLAY) aiTeam(E.be, 'E', dt);
   if (mode != STATE_PLAY) return;
   updateDoom(dt);
@@ -1585,40 +1431,6 @@ function aiMentora(dt) {
   }
 }
 
-// The Chef counts portions while the tablet is down, then charges the west shutter.
-function aiChef(dt) {
-  if (night < 4) return;
-  const c = E.chef;
-  if (c.st == 'COOK') {
-    if (view != STATE_OFFICE || (c.t -= dt) > 0) return;
-    if (++c.p < CHEF_POS.length) {
-      [c.x, c.y] = CHEF_POS[c.p]; c.shake = c.p * .35;
-      c.t = night == 4 ? 18 : 15;
-    } else {
-      c.st = 'RUN'; c.t = c.snd = c.step = 0;
-      setMsg('¡EL CHEF CORRE HACIA LA IZQUIERDA!', 3);
-    }
-  } else if (c.st == 'RUN') {
-    const t = (c.t += dt);
-    if ((c.step -= dt) <= 0) { c.step = .24; sfxStep(lerp(.7, 2.4, t / 4.2)); }
-    if (t < .8) Object[KEY_ASSIGN](c, { r: 3, x: lerp(130, 250, t / .8), y: 280 });
-    else if (t < 3.4) Object[KEY_ASSIGN](c, { r: 7, x: 130, y: lerp(60, 760, (t - .8) / 2.6) });
-    else if (t < 4.2) {
-      const [x, y] = blindPt('W'), k = (t - 3.4) / .8;
-      Object[KEY_ASSIGN](c, { r: 8, x: lerp(150, x, k), y: lerp(40, y, k) });
-    } else if (doorBlocks('W')) {
-      power -= c.bang; c.bang = M.min(10, c.bang + 3);
-      makeNoise(.3); sfxKnock(); setMsg('*¡BAM!*  −ENERGÍA', 1.6);
-      c.st = 'BACK'; c.ot = 1.5;
-    } else if (!doomed) {
-      c.kd = 'W'; doom('chef', c);
-    }
-  } else if (c.st == 'BACK' && (c.ot -= dt) <= 0) {
-    c.ot = 1.5;
-    if (stepTo(c, 2, CHEF_HOME)) Object[KEY_ASSIGN](c, { st: 'COOK', p: 0, t: 18, shake: 0 });
-  }
-}
-
 // THE CODER (FNAF1 Freddy at the power-out): plugs his rig into your power on
 // the last night. Cut the cord and he comes to complain at one of your doors.
 function coderAngry() {
@@ -1710,9 +1522,6 @@ function audioCues(dt) {
       if (!mentoraOn) e.snd = 5;
       else if (st == STATE_APPROACH && !e.kd) { sfxStep(v * 1.6); tone(2400, 0.03, 'q', 0.04 * v); e.snd = 0.2; } // fast heels
       else { sfxMurmur(v * 0.7); e.snd = rnd(2.5, 4.5); }
-    } else if (k == 'chef') {
-      if (st == 'COOK') { noise(0.4, 0.05 * v, 'b', 2500, 0, 0, 2); e.snd = rnd(1, 2); } // sizzling
-      else e.snd = 1; // gone quiet: he is out
     } else if (k != STATE_CODER) { if (st == 'SEAT') sfxType(v * 0.4); e.snd = st == 'SEAT' ? rnd(0.4, 1) : 1; } // the team
     else if (st == 'TYPE') { sfxType(v * 0.6); e.snd = rnd(0.3, 0.8); }
     else e.snd = 1;
@@ -1771,15 +1580,17 @@ function renderCam(r) {
   }
   // people in the shot, far to near
   const order = [];
-  for (const k in E) {
-    const e = E[k], im = eImg[k], q = (k != STATE_MENTORA || mentoraOn) && e.r == r && !blindDoor(e) && P(e.x, e.y, 0);
+  for (const k in eImg) {
+    const chef = k == 'chef';
+    const e = chef ? KITCHEN_CHEF : E[k], im = eImg[k];
+    const q = (k != STATE_MENTORA || mentoraOn) && e.r == r && !blindDoor(e) && P(e.x, e.y, 0);
     if (!q) continue;
     const [sx, sy, s] = q, sc = 7 * s, lying = k == STATE_SLEEPER && e.st == STATE_SLEEP;
     const unplugged = k == STATE_CODER && e.st == 'WAIT';
     const sh = unplugged ? 1.8 * sc * M.sin(e.anim * 95) : e.shake ? e.shake * sc * rnd(-1, 1) : 0;
     const tilt = unplugged ? .10 * M.sin(e.anim * 77) : 0;
     im[DRAW_SET_VISIBLE](true)[DRAW_SET_SCALE](sc).setFlipX(e.fx < 0)[DRAW_SET_ROTATION](lying ? -PI / 2 : tilt)[DRAW_SET_ORIGIN](0.5, lying ? 0.5 : 1)[DRAW_SET_POSITION](sx + sh, sy - (lying ? 10 * sc : 0));
-    im[DRAW_SET_TINT]((k == 'chef' && night < 4) || (k == STATE_CODER && !coderOn) ? 0x888888 : 0xffffff);
+    im[DRAW_SET_TINT](chef || (k == STATE_CODER && !coderOn) ? 0x888888 : 0xffffff);
     im.depth = -cs(e.x, e.y, 0)[2]; im.hx = sx; im.hy = sy - (lying ? 6 : 19) * sc; im.sc = sc;
     order[KEY_PUSH](im);
   }
@@ -1963,10 +1774,6 @@ function renderHud(dt) {
     } else if (camR == 0 && plug >= 0) {
       prompt(0, 240, 120, cutH > 0 ? 'CORTANDO...' : 'MANTÉN B2 · CORTAR SU ENCHUFE', '#ff8888');
       gr[DRAW_FILL_STYLE](0xff8888)[DRAW_FILL_RECT](190, 134, 100 * cutH / 1.2, 5);
-    } else if (camR == 2 && night >= 4) {
-      const c = E.chef;
-      if (c.st == 'COOK') prompt(0, 220, 120, 'PORCIONES · ' + (c.p + 1) + '/3', c.p == 2 ? COLOR_FFD400 : COLOR_FFF);
-      else if (c.st == 'RUN') prompt(0, 220, 120, '¡COCINA VACÍA! · PUERTA IZQUIERDA', '#ff5555');
     }
   }
   const sl = E.sleeper;
@@ -2027,19 +1834,9 @@ function renderHud(dt) {
 // LOSE / WIN
 // =====================================================================
 // [sprite, scream, what went wrong]
-const LOSE = {
-  pitcher: [STATE_PITCHER, '¡¿PREGUNTAS?!', 'En el pasillo, encandílalo varias veces.'],
-  sleeper: [STATE_SLEEPER, '¡¿QUÉ HORA ES?!', 'Nunca despiertes a un sonámbulo.'],
-  chef: ['chef', '¡A COMER!', 'Si el chef viene corriendo, cierra la puerta izquierda.'],
-  fe: ['fe', '¡REVISA MI PULL REQUEST!', 'Revisa tu puerta izquierda con la luz.'],
-  be: ['be', '¡FALTA UN COMMIT!', 'Revisa tu puerta derecha con la luz.'],
-  coder: [STATE_CODER, '¡¿QUIÉN ME CORTÓ LA LUZ?!', 'Cuando lo desenchufas, viene a reclamar.'],
-  mentora: [STATE_MENTORA, '¡TENGO UN FEEDBACK!', 'Busca la cámara morada y pulsa B2 para llamarla por altavoz. Si llega a tu puerta, ciérrala.'],
-  sleep: ['banana', '¡DESPIERTA!', 'Te quedaste dormido. Toma café.'],
-  power: ['banana', '¡APAGÓN!', 'Se acabó la batería. Usa las puertas y las luces solo cuando las necesites.'],
-};
+const LOSE = arcadeData.losses;
 // pitch of each one's scream
-const SCRP = { pitcher: 1.25, sleeper: 0.8, mentora: 1.35, chef: 0.75, coder: 1, fe: 1.15, be: 0.9, banana: 0.62 };
+const SCRP = arcadeData.scarePitch;
 function lose(why, hint, side) {
   if (mode != STATE_PLAY) return;
   if (FX) S[KEY_CAMERAS].main.hasPostPipeline = false;
