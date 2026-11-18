@@ -121,6 +121,7 @@ function noise(dur, vol, ft, f, pan, f2, dl, q) {
   s.connect(fl); fl.connect(g); s.start(t, rnd(0, 1.5)); s.stop(t + dur + 0.05);
 }
 // sound effects (synthesized)
+const sfxChair = (v, p) => { noise(0.5, 0.25 * v, 'b', 900, p, 300, 0, 5); noise(0.3, 0.18 * v, 'b', 1400, p, 700, 0.35, 6); };
 const sfxStep = (v, p, dl) => { noise(0.07, 0.09 * v, 'l', 300, p, 0, dl); tone(70, 0.06, 's', 0.06 * v, p, 0, dl); };
 const sfxBlip = (v, p, f) => tone(f || rnd(260, 520), 0.06, 'q', 0.05 * v, p);
 const sfxBabble = (v, p, base) => { for (let i = 0; i < 5; i++) if (M.random() < 0.8) tone((base || 300) * rnd(0.8, 1.5), 0.05, 'q', 0.045 * v, p, 0, i * 0.075); };
@@ -241,7 +242,7 @@ const blindDoor = (e) => ADOOR.find((d) => e.r == CDOOR[d].adj && dist(e.x, e.y,
 // =====================================================================
 // [hl, grace, pitchOn, patience, pitchFast, wakeHour, drain, cookEvery, mentoraOn, coderEvery, mentoraSpeed, sleepRate]
 const NIGHTS = [
-  [30, 2.4, 0, 0, 180, 1.5, 0.12, 0, 0, 0, 55, 100],
+  [22, 2.4, 0, 0, 180, 1.5, 0.12, 0, 0, 0, 55, 100],
   [34, 2.2, 1, 55, 195, 1.5, 0.12, 0, 0, 0, 60, 105],
   [38, 2.0, 1, 48, 210, 1.5, 0.13, 0, 1, 0, 64, 105],
   [42, 1.8, 1, 42, 225, 1.2, 0.13, 34, 1, 0, 68, 100],
@@ -801,8 +802,8 @@ function startNight(n) {
     chef: mkE('chef', 2, CHEF_HOME, 'COOK', { p: 0, bang: 4 }),
     coder: mkE('coder', 0, [350, 170], 'TYPE', { plugT: coderOn ? rnd(8, 14) : 1e9 }),
     // the rest of the team: they get up at some point of the night (backend from night 2)
-    fe: mkE('fe', 0, [180, 170], 'SEAT', { t: hl * rnd(0.6, 1.4) * (1.6 - n * 0.25) }),
-    be: mkE('be', 0, [520, 170], 'SEAT', { t: n > 1 ? hl * rnd(0.6, 1.4) * (1.7 - n * 0.25) : 1e9 }),
+    fe: mkE('fe', 0, [180, 170], 'SEAT', { t: hl * (n > 1 ? rnd(0.6, 1.4) * (1.6 - n * 0.25) : rnd(0.3, 0.5)) }),
+    be: mkE('be', 0, [520, 170], 'SEAT', { t: hl * (n > 1 ? rnd(0.6, 1.4) * (1.7 - n * 0.25) : rnd(2.2, 2.8)) }),
   };
   mode = 'play'; modeT = 0;
   wC.setVisible(true); uHud.setVisible(true);
@@ -810,7 +811,7 @@ function startNight(n) {
   setMsg('', 0);
 }
 const hourOf = (t) => (t / hl) | 0;
-const clockStr = (t) => (hourOf(t) || 12) + ':' + String(((t % hl) / hl * 60) | 0).padStart(2, '0') + ' AM';
+const clockStr = (t) => (hourOf(t) || 12) + ' AM'; // hours only, like FNAF
 
 // ---- thoughts ----
 function think(s, once, dur) {
@@ -975,6 +976,7 @@ function go(e, r, x, y, sp, dt, blk) {
   e.mv = 1;
   if ((e.tr = (e.tr || 0) + sp * dt) >= dist(e.x, e.y, ex, ey) + dist(ix, iy, e.ns[1], e.ns[2])) {
     glitch(e.r); glitch(n);
+    const v = [1, 0.8, 0.45, 0.25, 0.14][HOP[n]] ?? 0.08; sfxStep(v, panOf(e)); sfxStep(v * 0.8, panOf(e), 0.3); // footsteps you can track
     e.fx = e.ns[1] > ix ? 1 : -1; e.r = n; e.x = e.ns[1]; e.y = e.ns[2]; e.tr = 0; e.ns = null;
   }
   return 0;
@@ -1157,7 +1159,7 @@ function aiTeam(e, side, dt) {
   e.anim += dt;
   if (e.st == 'SEAT') {
     go(e, 0, SEATS[e.role], 170, 50, dt);
-    if ((e.t -= dt) <= 0) { e.st = 'ROAM'; e.mt = 0; }
+    if ((e.t -= dt) <= 0) { e.st = 'ROAM'; e.mt = 0; sfxChair(audible(e), panOf(e)); } // a chair scrapes
   } else if (e.st == 'ROAM') {
     if (e.goal) { if (go(e, ...e.goal, 75, dt, blocked(1)) == 1) { e.goal = null; e.mv = 0; } return; }
     if ((e.mt -= dt) > 0) return;
@@ -1528,7 +1530,7 @@ function goLose() {
   sRect(0);
   uLStat = sAdd(S.add.tileSprite(0, 0, W, H, 'noise').setOrigin(0).setAlpha(0.08));
   sText(400, 170, 'PERDISTE', 64, '#d22', 0.5, 0.5, { stroke: '#000', strokeThickness: 6 });
-  sText(400, 236, 'Eran las ' + clockStr(loseT) + ' · NOCHE ' + night, 18, '#aaa');
+  sText(400, 236, clockStr(loseT) + ' · NOCHE ' + night, 18, '#aaa');
   sAdd(S.add.image(400, 440, LOSE[lostTo][0] + '0').setScale(6).setOrigin(0.5, 1).setTint(0x220000));
   sText(400, 472, LOSE[lostTo][2], 15, '#888', 0.5, 0.5, { fontStyle: 'italic bold' });
   uLPress = sText(400, 540, 'START · REINTENTAR NOCHE ' + night, 16);
