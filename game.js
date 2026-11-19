@@ -1817,7 +1817,7 @@ function renderOffice() {
     let sx = PCX, sy = 476, sc = 10, rot = 0;
     if (bd != 'N') {
       const west = bd == 'W';
-      sc = 15; sx = west ? 94 : PW - 94; sy = wBot(sx) + 4;
+      sc = 13.2; sx = west ? 94 : PW - 94; sy = wBot(sx) + 4;
       rot = (west ? 1 : -1) * (.2 + M.sin(now * 1.3) * .02);
     }
     im[DRAW_SET_VISIBLE](true)[DRAW_SET_SCALE](sc)[DRAW_SET_ROTATION](rot)[DRAW_SET_POSITION](sx + (e.shake ? (M[KEY_RANDOM]() - 0.5) * e.shake * 10 : 0), sy)
