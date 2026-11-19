@@ -383,7 +383,20 @@ function buildFxTex() {
     return [255, v * 255];
   });
   pix('noise', 200, 150, () => [M[KEY_RANDOM]() * 255, 255]);
-
+  // Only the middle of the portrait catches light. Fade its lower edge into black.
+  canvasTex('lossShade', W, H, (c) => {
+    const halo = c.createRadialGradient(W / 2, 400, 25, W / 2, 400, 270);
+    halo[DRAW_ADD_COLOR_STOP](0, 'rgba(0,0,0,.45)');
+    halo[DRAW_ADD_COLOR_STOP](0.55, 'rgba(0,0,0,.64)');
+    halo[DRAW_ADD_COLOR_STOP](1, '#000');
+    c[DRAW_FILL_STYLE] = halo;
+    c[DRAW_FILL_RECT](0, 0, W, H);
+    const fade = c.createLinearGradient(0, 469, 0, H);
+    fade[DRAW_ADD_COLOR_STOP](0, 'rgba(0,0,0,0)');
+    fade[DRAW_ADD_COLOR_STOP](1, '#000');
+    c[DRAW_FILL_STYLE] = fade;
+    c[DRAW_FILL_RECT](0, 469, W, H - 469);
+  });
 }
 
 // ---- Camera shots: every room is a small 3D box seen from its own camera
@@ -688,6 +701,8 @@ function create() {
 // =====================================================================
 // UI
 // =====================================================================
+const CAMERA_SELECTED_COLOR = 0x789936;
+const CAMERA_SELECTED_TEXT = '#' + CAMERA_SELECTED_COLOR.toString(16);
 function buildUI() {
   const h = (uHud = add(uC, S.add[DRAW_CONTAINER]()));
   const T = (x, y, s, sz, col, ox, oy, extra) => txt(h, x, y, s, sz, col, ox, oy, extra);
@@ -768,6 +783,8 @@ function writeSave() {
 function screen(m) { ringStop(); if (AC) buzzG[AUDIO_GAIN][AUDIO_VALUE] = fanG[AUDIO_GAIN][AUDIO_VALUE] = 0; litA = 0; mode = m; modeT = 0; wC[DRAW_SET_VISIBLE](false); hideHud(); clearScreen(); }
 let titleChoice = 0;
 const TITLE_INSET = 52;
+const plainMenuRow = (y, label = '') => sText(W - TITLE_INSET, y, label, 22, COLOR_FFF, 1, 0.5, { stroke: COLOR_000, strokeThickness: 5 });
+const plainMenuControls = () => sText(W - TITLE_INSET, 148, '↑ / ↓  ELEGIR    B1 / START', 12, '#aaa1ad', 1, 0);
 function goTitle(choice = saved.night > 1 ? 1 : 0) {
   screen('title');
   titleChoice = choice;
@@ -779,10 +796,9 @@ function goTitle(choice = saved.night > 1 ? 1 : 0) {
   uTitleStat = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0));
   uT1 = sText(TITLE_INSET, 38, 'Five Nights\nat Platanus', 52, '#eee', 0, 0, { lineSpacing: -6, stroke: COLOR_000, strokeThickness: 6 });
   sText(TITLE_INSET + 2, 172, 'La hackathon terminó. Ellos no.', 14, '#889', 0, 0.5);
-  const titleRow = (y) => sText(W - TITLE_INSET, y, '', 22, COLOR_FFF, 1, 0.5, { stroke: COLOR_000, strokeThickness: 5 });
-  uTNew = titleRow(72);
-  uTMenu = titleRow(115);
-  sText(W - TITLE_INSET, 148, '↑ / ↓  ELEGIR    B1 / START', 12, '#aaa1ad', 1, 0);
+  uTNew = plainMenuRow(72);
+  uTMenu = plainMenuRow(115);
+  plainMenuControls();
   drawTitleChoices();
 }
 function drawTitleChoices() {
@@ -836,16 +852,7 @@ function beginNewGame() {
   goPaper(0);
 }
 
-// Pause leaves the night in place. Both menus use the title's dark static
-// and a lit marker like the shutter control panel.
 let paused = false, nightChoices = null, pauseGain = 0.8;
-function showNightChoices() {
-  showChoiceMenu({
-    heading: paused ? 'PAUSA' : 'FIN DEL TURNO', context: 'NOCHE ' + night, clock: clockStr(paused ? now : loseT),
-    detail: paused ? 'BATERÍA ' + M.ceil(power) + '%   ·   SUEÑO ' + M.ceil(sueno) + '%' : lostHint,
-    choices: ['CONTINUAR', 'MENÚ PRINCIPAL'], confirm: confirmNightChoice,
-  });
-}
 function showChoiceMenu({ heading, context, clock, detail, choices, confirm }) {
   sRect(0x09090d)[DRAW_SET_ALPHA](paused ? 0.95 : 1);
   const grain = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0)[DRAW_SET_ALPHA](0.09));
@@ -863,24 +870,30 @@ function showChoiceMenu({ heading, context, clock, detail, choices, confirm }) {
   for (let i = 0; i < choices.length; i++) {
     const y = 329 + i * 76;
     const button = sAdd(S.add[DRAW_RECTANGLE](72, y, 656, 60, 0x101017)[DRAW_SET_ORIGIN](0));
-    button.setInteractive({ useHandCursor: true });
-    button.on('pointerover', () => { if (nightChoices == menu) selectNightChoice(i); });
-    button.on('pointerdown', () => { if (nightChoices == menu) activateMenuChoice(i); });
     const marker = sText(95, y + 30, '▸', 28, '#ff9290', 0, 0.5);
     const label = sText(132, y + 30, choices[i], 23, '#c4b5bf', 0, 0.5);
-    menu.rows[KEY_PUSH]({ button, marker, label });
+    addChoiceRow(menu, button, label, marker);
   }
   sText(72, 548, '↑ / ↓  ELEGIR     B1 / START  CONFIRMAR', 15, '#b5a6b0', 0, 0);
   selectNightChoice(0);
+}
+function addChoiceRow(menu, button, label = button, marker) {
+  const i = menu.rows.length;
+  button.setInteractive({ useHandCursor: true });
+  button.on('pointerover', () => { if (nightChoices == menu) selectNightChoice(i); });
+  button.on('pointerdown', () => { if (nightChoices == menu) activateMenuChoice(i); });
+  menu.rows[KEY_PUSH]({ button, marker, label });
 }
 function selectNightChoice(choice) {
   if (nightChoices.selected == choice) return;
   nightChoices.selected = choice;
   nightChoices.rows[KEY_FOR_EACH](({ button, marker, label }, i) => {
     const active = i == choice;
-    button.setFillStyle(active ? 0x24171f : 0x101017).setStrokeStyle(1, active ? 0xe48685 : 0x44404b);
-    marker[DRAW_SET_VISIBLE](active);
-    label[DRAW_SET_COLOR](active ? '#fff5f4' : '#c4b5bf');
+    if (marker) {
+      button.setFillStyle(active ? 0x24171f : 0x101017).setStrokeStyle(1, active ? 0xe48685 : 0x44404b);
+      marker[DRAW_SET_VISIBLE](active);
+      label[DRAW_SET_COLOR](active ? '#fff5f4' : '#c4b5bf');
+    } else label[DRAW_SET_COLOR](active ? CAMERA_SELECTED_TEXT : '#aaa1ad');
   });
 }
 function pauseNight() {
@@ -889,7 +902,11 @@ function pauseNight() {
     pauseGain = master[AUDIO_GAIN][AUDIO_VALUE];
     master[AUDIO_GAIN][AUDIO_VALUE] = 0;
   }
-  showNightChoices();
+  showChoiceMenu({
+    heading: 'PAUSA', context: 'NOCHE ' + night, clock: clockStr(now),
+    detail: 'BATERÍA ' + M.ceil(power) + '%   ·   SUEÑO ' + M.ceil(sueno) + '%',
+    choices: ['CONTINUAR', 'MENÚ PRINCIPAL'], confirm: confirmNightChoice,
+  });
 }
 function confirmNightChoice(choice, confirmB1) {
   // A B1 confirmation should not turn on the flashlight or start coffee.
@@ -1914,7 +1931,7 @@ function renderHud(dt) {
     for (let i = 0; i <= CTRL; i++) {
       const [x, y, w, h] = (i == CTRL ? OFFICE_MAP : ROOMS[i][4]).map((v, j) => v * K + (j ? j < 2 ? MY : 0 : MX));
       const selected = i == camR, speaker = m.st == STATE_CALL && i == m.target;
-      const fill = speaker ? (tick(4) ? 0x68468c : 0x392747) : selected ? 0x789936 : i == CTRL ? 0x2a2a2a : 0x161a16;
+      const fill = speaker ? (tick(4) ? 0x68468c : 0x392747) : selected ? CAMERA_SELECTED_COLOR : i == CTRL ? 0x2a2a2a : 0x161a16;
       gr[DRAW_FILL_STYLE](fill)[DRAW_FILL_RECT](x, y, w, h)
         [DRAW_LINE_STYLE](selected ? 2 : 1.5, selected && speaker ? 0x9cb55a : 0xd1d3c6).strokeRect(x, y, w, h);
       uMapT[i][DRAW_SET_POSITION](x + w / 2, y + h / 2)[DRAW_SET_COLOR](speaker ? '#f4dfff' : selected ? '#0e1500' : '#eceee3')
@@ -2079,7 +2096,22 @@ function screamUpdate() {
 }
 function goLose() {
   screen('lose');
-  showNightChoices();
+  sRect(0);
+  const role = LOSE[lostTo][0], banana = role == 'banana';
+  const face = img(uScreen, role + (banana ? '0' : 'H'), W / 2 + (banana ? 32 : 0), 278, 0.5, 0)
+    [DRAW_SET_SCALE](22)[DRAW_SET_TINT](0x938698);
+  if (banana) face.setCrop(0, 0, 24, 14);
+  img(uScreen, 'lossShade', 0, 0, 0, 0);
+  const grain = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0)[DRAW_SET_ALPHA](0.07));
+
+  sText(TITLE_INSET, 38, 'PERDISTE', 52, '#eee', 0, 0, { stroke: COLOR_000, strokeThickness: 6 });
+  sText(TITLE_INSET + 2, 116, 'NOCHE ' + night + ' · ' + clockStr(loseT), 14, '#aaa1ad', 0, 0);
+  sText(TITLE_INSET + 2, 153, lostHint, 17, '#cbc2cc', 0, 0, { fontStyle: 'normal', wordWrap: { width: 450 }, lineSpacing: 4 });
+  plainMenuControls();
+  const menu = nightChoices = { grain, rows: [], selected: -1, confirm: confirmNightChoice };
+  addChoiceRow(menu, plainMenuRow(72, 'REINTENTAR'));
+  addChoiceRow(menu, plainMenuRow(115, 'MENÚ PRINCIPAL'));
+  selectNightChoice(0);
 }
 function winNight() {
   screen('win'); uWDone = 0;
