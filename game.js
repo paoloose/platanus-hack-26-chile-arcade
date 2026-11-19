@@ -97,7 +97,7 @@ const ROLES = Object.keys(SPR).filter((r) => r != 'chef');
 // =====================================================================
 // AUDIO (pure WebAudio synthesis)
 // =====================================================================
-let AC = null, master, effectsGain, muffle, noiseBuf, ambG, droneG, droneF, buzzG, fanG;
+let AC = null, master, effectsGain, menuOutput, muffle, noiseBuf, ambG, droneG, droneF, buzzG, fanG;
 // short codes for oscillator / filter types
 const TY = { s: 'sine', q: 'square', w: 'sawtooth', t: 'triangle', l: 'lowpass', b: 'bandpass', h: 'highpass' };
 function initAudio() {
@@ -105,7 +105,7 @@ function initAudio() {
   try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
   const node = (k, type, f, to) => { const n = AC['create' + k](); if (type) n.type = TY[type]; if (f) n[AUDIO_FREQUENCY][AUDIO_VALUE] = f; n[AUDIO_CONNECT](to); return n; };
   const gain = (v, to) => { const g = AC[AUDIO_CREATE_GAIN](); g[AUDIO_GAIN][AUDIO_VALUE] = v; g[AUDIO_CONNECT](to); return g; };
-  const comp = AC.createDynamicsCompressor();
+  const comp = menuOutput = AC.createDynamicsCompressor();
   comp.threshold[AUDIO_VALUE] = -16; comp.ratio[AUDIO_VALUE] = 5; comp[AUDIO_CONNECT](AC.destination);
   muffle = node(TEXT_BIQUAD_FILTER, 'l', 9000, comp);
   master = gain(0.8, muffle);
@@ -133,16 +133,16 @@ function initAudio() {
   const bn = AC[AUDIO_CREATE_BUFFER_SOURCE](); bn.buffer = noiseBuf; bn.loop = true; bn.playbackRate[AUDIO_VALUE] = 0.5;
   bn[AUDIO_CONNECT](node(TEXT_BIQUAD_FILTER, 'h', 5000, gain(0.4, buzzG))); bn[AUDIO_START]();
 }
-function out() {
+function out(to = effectsGain) {
   const g = AC[AUDIO_CREATE_GAIN](); g[AUDIO_GAIN][AUDIO_VALUE] = 0;
-  g[AUDIO_CONNECT](effectsGain);
+  g[AUDIO_CONNECT](to);
   return g;
 }
 function env(g, t, vol, dur, a) { g[AUDIO_GAIN][AUDIO_SET_VALUE_AT_TIME](0.0001, t); g[AUDIO_GAIN][AUDIO_EXPONENTIAL_RAMP_TO_VALUE_AT_TIME](vol, t + a); g[AUDIO_GAIN][AUDIO_EXPONENTIAL_RAMP_TO_VALUE_AT_TIME](0.0001, t + dur); }
 // tone(freq, dur, type, vol, freqEnd, delay)
-function tone(f, dur, type, vol, f2, dl) {
+function tone(f, dur, type, vol, f2, dl, to) {
   if (!AC || vol <= 0.002) return;
-  const t = AC[AUDIO_CURRENT_TIME] + (dl || 0), o = AC[AUDIO_CREATE_OSCILLATOR](), g = out();
+  const t = AC[AUDIO_CURRENT_TIME] + (dl || 0), o = AC[AUDIO_CREATE_OSCILLATOR](), g = out(to);
   o.type = TY[type || 'q'];
   o[AUDIO_FREQUENCY][AUDIO_SET_VALUE_AT_TIME](f, t);
   if (f2) o[AUDIO_FREQUENCY][AUDIO_EXPONENTIAL_RAMP_TO_VALUE_AT_TIME](M.max(20, f2), t + dur);
@@ -164,6 +164,10 @@ function noise(dur, vol, ft, f, f2, dl, q) {
 const sfxChair = (v) => { noise(0.5, 0.25 * v, 'b', 900, 300, 0, 5); noise(0.3, 0.18 * v, 'b', 1400, 700, 0.35, 6); };
 const sfxStep = (v, dl) => { noise(0.07, 0.09 * v, 'l', 300, 0, dl); tone(70, 0.06, 's', 0.06 * v, 0, dl); };
 const sfxBlip = (v, f) => tone(f || rnd(260, 520), 0.06, 'q', 0.05 * v);
+// Menu cues go straight to the compressor so the paused game can stay muted.
+const sfxMenu = (confirm) => confirm
+  ? tone(580, 0.075, 't', 0.034, 780, 0, menuOutput)
+  : tone(440, 0.045, 't', 0.022, 0, 0, menuOutput);
 const sfxBabble = (v, base) => { for (let i = 0; i < 5; i++) if (M[KEY_RANDOM]() < 0.8) tone((base || 300) * rnd(0.8, 1.5), 0.05, 'q', 0.045 * v, 0, i * 0.075); };
 const sfxSnore = (v) => { noise(1.1, 0.16 * v, 'b', 220, 650, 0, 4); noise(0.9, 0.12 * v, 'b', 600, 200, 1.25, 4); };
 const sfxMurmur = (v) => { for (let i = 0; i < 4; i++) tone(rnd(170, 240), 0.14, 't', 0.07 * v, 0, i * 0.16); };
@@ -811,17 +815,18 @@ function titleUpdate() {
   uTitleBan[KEY_FOR_EACH]((im) => im[DRAW_SET_TINT](im == tw ? 0xff8080 : M[KEY_RANDOM]() < 0.02 ? 0x303030 : 0x8a8a8a)[DRAW_SET_ANGLE](im == tw ? rnd(-6, 6) : im.angle * 0.9));
   uTitleStat[DRAW_SET_TILE_POSITION](rnd(0, 200), rnd(0, 150))[DRAW_SET_ALPHA](tw ? 0.25 : rnd(0.06, 0.12));
   uT1[DRAW_SET_ALPHA](M[KEY_RANDOM]() < 0.03 ? 0.3 : 1);
-  if (pr('U') || pr('D')) { titleChoice = 1 - titleChoice; sfxBlip(1, 410); }
+  const lastChoice = titleChoice, lastNight = menuNight;
+  if (pr('U') || pr('D')) titleChoice = 1 - titleChoice;
   const step = Number(pr('R')) - Number(pr('L'));
   if (step) {
     titleChoice = 1;
     menuNight = clamp(menuNight + step, 1, saved.night);
-    sfxBlip(1, step < 0 ? 400 : 500);
   }
+  if (titleChoice != lastChoice || menuNight != lastNight) sfxMenu();
   drawTitleChoices();
   if (pr('S') || pr('1')) {
     const selectedNight = titleChoice ? menuNight : 1;
-    sfxClick();
+    sfxMenu(true);
     if (selectedNight == 1) goPaper(0);
     else goCall(selectedNight);
   }
@@ -833,17 +838,18 @@ function showNightChoices(first, grain) {
   const menu = nightChoices = { grain, rows, selected: -1 };
   rows[KEY_FOR_EACH]((label, i) => {
     label.setInteractive({ useHandCursor: true });
-    label.on('pointerover', () => { if (nightChoices == menu) selectNightChoice(i); });
+    label.on('pointerover', () => { if (nightChoices == menu) selectNightChoice(i, true); });
     label.on('pointerdown', () => { if (nightChoices == menu) activateMenuChoice(i); });
   });
   selectNightChoice(0);
 }
-function selectNightChoice(choice) {
+function selectNightChoice(choice, playSound) {
   if (nightChoices.selected == choice) return;
   nightChoices.selected = choice;
   nightChoices.rows[KEY_FOR_EACH]((label, i) => {
     label[DRAW_SET_COLOR](i == choice ? CAMERA_SELECTED_TEXT : '#aaa1ad');
   });
+  if (playSound) sfxMenu();
 }
 function pauseNight() {
   paused = true;
@@ -857,6 +863,7 @@ function pauseNight() {
 }
 function activateMenuChoice(choice, confirmB1) {
   nightChoices = null;
+  sfxMenu(true);
   // A B1 confirmation should not turn on the flashlight or start coffee.
   if (!choice && confirmB1) ignoreMenuB1 = true;
   if (paused) {
@@ -874,7 +881,6 @@ function activateMenuChoice(choice, confirmB1) {
       return;
     }
   }
-  sfxClick();
   if (choice) {
     menuNight = M.min(saved.night, night);
     goTitle();
@@ -883,10 +889,7 @@ function activateMenuChoice(choice, confirmB1) {
 function nightChoicesUpdate(dt) {
   const grain = nightChoices.grain;
   if (grain) grain[DRAW_SET_TILE_POSITION](grain.tilePositionX + 18 * dt, grain.tilePositionY + 11 * dt);
-  if (pr('U') || pr('D')) {
-    selectNightChoice(1 - nightChoices.selected);
-    if (!paused) sfxBlip(1, 410);
-  }
+  if (pr('U') || pr('D')) selectNightChoice(1 - nightChoices.selected, true);
   if (pr('S') || pr('1')) activateMenuChoice(nightChoices.selected, pr('1'));
 }
 
