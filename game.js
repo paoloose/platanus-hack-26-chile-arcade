@@ -2186,17 +2186,54 @@ function goLose() {
   sText(TITLE_INSET + 2, 153, lostHint, 17, '#cbc2cc', 0, 0, { fontStyle: 'normal', wordWrap: { width: 450 }, lineSpacing: 4 });
   showNightChoices('REINTENTAR', grain);
 }
+const WIN_CLOCK_W = 204, WIN_CLOCK_ROW = 112, WIN_CLOCK_Y = 218;
+function buildWinClock() {
+  if (S.textures.exists('winClock')) return;
+  canvasTex('winClock', WIN_CLOCK_W, WIN_CLOCK_ROW * 2, (c) => {
+    // Bits run clockwise from the top segment, with the middle segment last.
+    const segments = [[6, 0, 42], [54, 6, 38, 1], [54, 46, 38, 1], [6, 80, 42], [8, 46, 38, 1], [8, 6, 38, 1], [6, 40, 42]];
+    const digit = (x, mask) => {
+      segments[KEY_FOR_EACH](([sx, y, length, vertical], bit) => {
+        if (!(mask & (1 << bit))) return;
+        c.save(); c.translate(x + sx, y);
+        if (vertical) c.rotate(PI / 2);
+        c[DRAW_BEGIN_PATH](); c.moveTo(0, 4); c.lineTo(4, 0); c.lineTo(length - 4, 0);
+        c.lineTo(length, 4); c.lineTo(length - 4, 8); c.lineTo(4, 8); c.closePath(); c.fill();
+        c.restore();
+      });
+    };
+    c[DRAW_FILL_STYLE] = '#f4ecd7'; c.shadowColor = '#ffe5a86b'; c.shadowBlur = 6;
+    // The final reading sits above the old one so the whole strip rolls down.
+    for (const [row, hour, minuteA, minuteB] of [[0, 0x7d, 0x3f, 0x3f], [1, 0x6d, 0x6d, 0x6f]]) {
+      c.save(); c.translate(0, row * WIN_CLOCK_ROW + 12);
+      digit(0, hour); digit(83, minuteA); digit(146, minuteB);
+      c[DRAW_FILL_RECT](65, 24, 8, 8); c[DRAW_FILL_RECT](65, 56, 8, 8);
+      c.restore();
+    }
+  });
+}
+function rollWinClock(offset) {
+  // Phaser draws a crop at its source offset, so move the strip to hold the slot still.
+  uW1.y = WIN_CLOCK_Y - offset;
+  uW1.setCrop(0, offset, WIN_CLOCK_W, WIN_CLOCK_ROW);
+}
 function winNight() {
   screen('win'); uWDone = 0;
   if (AC) { ambG[AUDIO_GAIN][AUDIO_SET_TARGET_AT_TIME](0, AC[AUDIO_CURRENT_TIME], 0.1); droneG[AUDIO_GAIN][AUDIO_SET_TARGET_AT_TIME](0, AC[AUDIO_CURRENT_TIME], 0.1); }
   sRect(0);
-  uW1 = sText(400, 270, '5:59 AM', 60);
-  uW2 = sText(400, 340, '', 22, COLOR_FFD400);
+  buildWinClock();
+  uW1 = img(uScreen, 'winClock', 270, WIN_CLOCK_Y, 0, 0);
+  rollWinClock(WIN_CLOCK_ROW);
+  sText(488, 306, 'AM', 32, '#f4ecd7', 0, 1);
+  uW2 = sText(400, 356, '', 22, COLOR_FFD400);
   if (night < 5) { saved.night = menuNight = M.max(saved.night, night + 1); writeSave(); }
 }
 function winUpdate() {
-  if (modeT > 1.6 && !uWDone) { uWDone = 1; uW1[DRAW_SET_TEXT]('6:00 AM'); uW2[DRAW_SET_TEXT]('NOCHE ' + night + ' SUPERADA'); sfxSix(); S[KEY_CAMERAS].main.flash(300, 255, 255, 255); }
-  if (modeT < 1.6) uW1[DRAW_SET_TEXT](M[KEY_RANDOM]() < 0.15 ? '6:00 AM' : '5:59 AM');
+  if (!uWDone && modeT >= 1) {
+    const t = clamp((modeT - 1) / 0.6, 0, 1), ease = t * t * (3 - 2 * t);
+    rollWinClock(M.round((1 - ease) * WIN_CLOCK_ROW));
+    if (t == 1) { uWDone = 1; uW2[DRAW_SET_TEXT]('NOCHE ' + night + ' SUPERADA'); sfxSix(); S[KEY_CAMERAS].main.flash(300, 255, 255, 255); }
+  }
   if (modeT > 4 && (anyPr() || modeT > 8)) { if (night >= 5) goPaper(1); else goCall(night + 1); }
 }
 })();
