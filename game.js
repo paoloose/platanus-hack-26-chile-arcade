@@ -1242,16 +1242,20 @@ const doorClosed = (d) => doorP[d] > 0.5;
 const doorBlocks = (d) => SIDES.includes(d) && (doors[d] || doorClosed(d));
 
 // ---- Resources ----
+// Extra percentage points per second for each active device, even on Night 5.
+const DEVICE_POWER_PENALTY = 0.4;
 function updateResources(dt, briefing) {
   for (const d of SIDES) doorP[d] = clamp(doorP[d] + (doors[d] ? dt : -dt) / 0.45, 0, 1);
   if (cof == 1 && (cofT -= dt) <= 0) { cof = 2; tone(880, 0.25, 's', 0.12); } // ding
   if (drink > 0 && (drink -= dt) <= 0) { sueno = M.max(0, sueno - 60); setMsg('☕  -SUEÑO', 1.2); }
   if (!blackout) {
     // FNAF-style power: doors, door light, cameras and the coder's extension cord all drain
-    let u = drain + (doorP.W > 0) * 0.2 + (doorP.E > 0) * 0.2 + light * 0.32 + camLit * 0.2 + (view == 'cams') * 0.1 + (cof == 1) * 0.15;
+    const cameraOn = view == 'cams', flashlightOn = light || camLit;
+    let u = drain + (doorP.W > 0) * 0.2 + (doorP.E > 0) * 0.2 + light * 0.32 + camLit * 0.2 + cameraOn * 0.1 + (cof == 1) * 0.15;
     if (plug >= 0) u += night >= 5 ? 0.5 : 0.4;
-    usage = 1 + (doorP.W > 0) + (doorP.E > 0) + (light || camLit) + (view == 'cams') + (cof == 1) + (plug >= 0); // one bar per device
-    if (!briefing && (power -= u * NN[10] * dt) <= 0) powerOut();
+    usage = 1 + (doorP.W > 0) + (doorP.E > 0) + flashlightOn + cameraOn + (cof == 1) + (plug >= 0); // one bar per device
+    const penalty = DEVICE_POWER_PENALTY * (flashlightOn + cameraOn);
+    if (!briefing && (power -= (u * NN[10] + penalty) * dt) <= 0) powerOut();
   }
   if (briefing || blackout) return;
   sueno += dt * 100 / sueRate;
