@@ -167,7 +167,7 @@ const sfxBlip = (v, f) => tone(f || rnd(260, 520), 0.06, 'q', 0.05 * v);
 // Menu cues go straight to the compressor so the paused game can stay muted.
 const sfxMenu = (confirm) => confirm
   ? tone(580, 0.075, 't', 0.034, 780, 0, menuOutput)
-  : tone(440, 0.045, 't', 0.022, 0, 0, menuOutput);
+  : tone(640, 0.06, 't', 0.055, 510, 0, menuOutput);
 const sfxBabble = (v, base) => { for (let i = 0; i < 5; i++) if (M[KEY_RANDOM]() < 0.8) tone((base || 300) * rnd(0.8, 1.5), 0.05, 'q', 0.045 * v, 0, i * 0.075); };
 const sfxSnore = (v) => { noise(1.1, 0.16 * v, 'b', 220, 650, 0, 4); noise(0.9, 0.12 * v, 'b', 600, 200, 1.25, 4); };
 const sfxMurmur = (v) => { for (let i = 0; i < 4; i++) tone(rnd(170, 240), 0.14, 't', 0.07 * v, 0, i * 0.16); };
