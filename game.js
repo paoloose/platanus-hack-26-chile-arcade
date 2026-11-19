@@ -784,7 +784,6 @@ function screen(m) { ringStop(); if (AC) buzzG[AUDIO_GAIN][AUDIO_VALUE] = fanG[A
 let titleChoice = 0;
 const TITLE_INSET = 52;
 const plainMenuRow = (y, label = '') => sText(W - TITLE_INSET, y, label, 22, COLOR_FFF, 1, 0.5, { stroke: COLOR_000, strokeThickness: 5 });
-const plainMenuControls = () => sText(W - TITLE_INSET, 148, '↑ / ↓  ELEGIR    B1 / START', 12, '#aaa1ad', 1, 0);
 function goTitle(choice = saved.night > 1 ? 1 : 0) {
   screen('title');
   titleChoice = choice;
@@ -798,14 +797,11 @@ function goTitle(choice = saved.night > 1 ? 1 : 0) {
   sText(TITLE_INSET + 2, 172, 'La hackathon terminó. Ellos no.', 14, '#889', 0, 0.5);
   uTNew = plainMenuRow(72);
   uTMenu = plainMenuRow(115);
-  plainMenuControls();
   drawTitleChoices();
 }
 function drawTitleChoices() {
-  const pulse = 0.82 + M.sin(modeT * 4) * 0.18;
   const titleRow = (row, i, label) => {
-    const active = titleChoice == i;
-    row[DRAW_SET_TEXT]((active ? '▸ ' : '') + label)[DRAW_SET_COLOR](active ? '#fff1f1' : '#aaa1ad')[DRAW_SET_ALPHA](active ? pulse : 1);
+    row[DRAW_SET_TEXT](label)[DRAW_SET_COLOR](titleChoice == i ? CAMERA_SELECTED_TEXT : '#aaa1ad');
   };
   titleRow(uTNew, 0, 'JUEGO NUEVO');
   titleRow(uTMenu, 1, saved.night > 1 ? '◄ NOCHE ' + menuNight + ' ►' : 'NOCHE 1');
@@ -2111,7 +2107,6 @@ function goLose() {
   sText(TITLE_INSET, 38, 'PERDISTE', 52, '#eee', 0, 0, { stroke: COLOR_000, strokeThickness: 6 });
   sText(TITLE_INSET + 2, 116, 'NOCHE ' + night + ' · ' + clockStr(loseT), 14, '#aaa1ad', 0, 0);
   sText(TITLE_INSET + 2, 153, lostHint, 17, '#cbc2cc', 0, 0, { fontStyle: 'normal', wordWrap: { width: 450 }, lineSpacing: 4 });
-  plainMenuControls();
   const menu = nightChoices = { grain, rows: [], selected: -1, confirm: confirmNightChoice };
   addChoiceRow(menu, plainMenuRow(72, 'REINTENTAR'));
   addChoiceRow(menu, plainMenuRow(115, 'MENÚ PRINCIPAL'));
