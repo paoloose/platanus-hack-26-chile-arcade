@@ -494,7 +494,7 @@ const OPANEL = { W: [206, 236], N: [692, 250], E: [954, 236] };
 // where each thing is across the room (focus = the nearest one to where you look)
 // Pan stops are measured in office pixels. The counter spans the right-center bay.
 const COFFEE_START = 219, COFFEE_END = 349;
-const COFFEE_X = 865, BREW = 5, SIP = 1.8, FAN = [470, 384], CLOCK = [770, 152], DESK_PX = 0.14, CRT = [300, 722];
+const COFFEE_X = 765, BREW = 5, SIP = 1.8, FAN = [470, 384], CLOCK = [770, 152], DESK_PX = 0.14, CRT_X = 300;
 function buildOffice() {
   // These drawing helpers run once to bake the office textures. Keeping them
   // local lets SWC reuse shorter names without touching the live renderer.
@@ -562,19 +562,17 @@ function buildOffice() {
     // the button plates (the buttons themselves light up live)
     for (const d of ADOOR) { const [px, py] = OPANEL[d], h = d == 'N' ? 60 : 110; cR(c, '#121316', px - 6, py - 6, 52, h + 12); cR(c, '#474b53', px, py, 40, h); cR(c, '#5d626b', px, py, 40, 3); }
   }
-  // The desk has its own parallax layer with the CRTs, fan, keyboard, phone and coffee maker.
+  // The desk has its own parallax layer with the CRT, fan, keyboard, phone and coffee maker.
   function drawDesk(c) {
     quad(c, '#3d3024', [[300, 440], [900, 440], [990, 540], [210, 540]]);
     for (const t of [0.18, 0.4, 0.62, 0.84]) cL(c, 'rgba(0,0,0,.2)', 2, [[lerp(300, 210, t), 440 + 100 * t], [lerp(900, 990, t), 440 + 100 * t]], 1);
     cR(c, '#5a4634', 300, 438, 600, 4);
     cR(c, cG(c, 0, 540, 0, H, '#2b2119', '#0c0907'), 210, 540, 780, H - 540); cR(c, '#4c3b2c', 210, 538, 780, 4);
-    // two boxy CRT monitors with bezels and dark glass
-    for (const mx of CRT) {
-      quad(c, '#16171a', [[mx + 16, 346], [mx + 112, 346], [mx + 102, 328], [mx + 26, 328]]);
-      cR(c, '#1d1e22', mx, 346, 128, 94); cR(c, '#2a2c31', mx, 346, 128, 4);
-      cR(c, '#0b1014', mx + 10, 356, 108, 70); cR(c, '#131a20', mx + 10, 356, 108, 3);
-      cR(c, '#3c2', mx + 114, 430, 5, 4); cR(c, '#121214', mx + 40, 440, 48, 6);
-    }
+    // The CRT occupies the left side of the desk.
+    quad(c, '#16171a', [[CRT_X + 16, 346], [CRT_X + 112, 346], [CRT_X + 102, 328], [CRT_X + 26, 328]]);
+    cR(c, '#1d1e22', CRT_X, 346, 128, 94); cR(c, '#2a2c31', CRT_X, 346, 128, 4);
+    cR(c, '#0b1014', CRT_X + 10, 356, 108, 70); cR(c, '#131a20', CRT_X + 10, 356, 108, 3);
+    cR(c, '#3c2', CRT_X + 114, 430, 5, 4); cR(c, '#121214', CRT_X + 40, 440, 48, 6);
     // the keyboard and red phone
     quad(c, '#18181a', [[520, 470], [680, 470], [688, 500], [512, 500]]);
     for (let i = 0; i < 28; i++) cR(c, '#2e2e31', 522 + (i % 14) * 11.2, 474 + (i > 13) * 12, 9, 9);
@@ -1769,12 +1767,15 @@ function renderOffice() {
   const hr = hourOf(now), fr = (now % hl) / hl, ha = ((hr + fr) / 12) * PI * 2 - PI / 2, ma = fr * PI * 2 - PI / 2;
   oTop[DRAW_LINE_STYLE](5, 0x111111)[DRAW_LINE_BETWEEN](CLOCK[0], CLOCK[1], CLOCK[0] + M.cos(ha) * 20, CLOCK[1] + M.sin(ha) * 20)[DRAW_LINE_STYLE](3, 0x111111)[DRAW_LINE_BETWEEN](CLOCK[0], CLOCK[1], CLOCK[0] + M.cos(ma) * 30, CLOCK[1] + M.sin(ma) * 30);
   // ---- the desk ----
-  // the fan (it stops when the power goes), the monitors, the coffee maker
+  // the fan (it stops when the power goes), the monitor, the coffee maker
   fanS = lerp(fanS, blackout ? 0 : 24, 0.02); fanA += fanS / 60;
   oDG[DRAW_FILL_STYLE](0x3a3a3e)[DRAW_FILL_CIRCLE](FAN[0], FAN[1], 34)[DRAW_FILL_STYLE](0x6a6d74);
   for (let i = 0; i < 3; i++) { const a = fanA + i * 2.094; oDG.fillTriangle(FAN[0], FAN[1], FAN[0] + M.cos(a) * 32, FAN[1] + M.sin(a) * 32, FAN[0] + M.cos(a + 0.7) * 32, FAN[1] + M.sin(a + 0.7) * 32); }
   oDG[DRAW_FILL_STYLE](0x111111)[DRAW_FILL_CIRCLE](FAN[0], FAN[1], 6)[DRAW_LINE_STYLE](2, 0x222226)[DRAW_STROKE_CIRCLE](FAN[0], FAN[1], 34);
-  if (!blackout) for (const mx of CRT) { oDG[DRAW_FILL_STYLE](0x2a5a90, 0.185)[DRAW_FILL_RECT](mx + 10, 356, 108, 70); for (let i = 0; i < 4; i++) oDG[DRAW_FILL_STYLE](0x9ab, 0.12)[DRAW_FILL_RECT](mx + 14, 358 + ((now * 40 + i * 17) % 66), 100, 2); }
+  if (!blackout) {
+    oDG[DRAW_FILL_STYLE](0x2a5a90, 0.185)[DRAW_FILL_RECT](CRT_X + 10, 356, 108, 70);
+    for (let i = 0; i < 4; i++) oDG[DRAW_FILL_STYLE](0x9ab, 0.12)[DRAW_FILL_RECT](CRT_X + 14, 358 + ((now * 40 + i * 17) % 66), 100, 2);
+  }
   const fill = cof == 1 ? 1 - cofT / BREW : cof / 2;
   oDG[DRAW_FILL_STYLE]([0x331111, 0xff3322, 0x33ff55][cof])[DRAW_FILL_RECT](COFFEE_X + 16, 412, 6, 6);
   if (drink <= 0) oDG[DRAW_FILL_STYLE](0xe8e2c8)[DRAW_FILL_RECT](COFFEE_X - 12, 448, 24, 22)[DRAW_FILL_STYLE](0x5a3416)[DRAW_FILL_RECT](COFFEE_X - 10, 468 - 18 * fill, 20, 18 * fill);
