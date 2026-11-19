@@ -990,7 +990,7 @@ function paperUpdate() {
 function goCall(n) {
   screen('call'); uCardN = n;
   const [nm, ...ln] = CALLS[n - 1];
-  phone = { nm, ln, i: -1, ch: 0, hold: 0, skip: 0 };
+  phone = { nm, ln, i: -1, ch: 0, hold: 0, skip: 0, lift: 0 };
   sRect(0x060508);
   sAdd(S.add[DRAW_RECTANGLE](0, 430, W, 170, 0x1c130c)[DRAW_SET_ORIGIN](0)); // the desk
   sAdd(S.add[DRAW_RECTANGLE](0, 430, W, 6, 0x2c2016)[DRAW_SET_ORIGIN](0));
@@ -1004,6 +1004,7 @@ function goCall(n) {
   g[DRAW_FILL_STYLE](0x8e1414)[DRAW_FILL_CIRCLE](0, -26, 14)[DRAW_FILL_STYLE](0xe6dcc4)[DRAW_FILL_CIRCLE](0, -26, 5);
   g[DRAW_FILL_STYLE](0x2a0606); for (let i = 0; i < 4; i++) g[DRAW_FILL_RECT](96, -34 + i * 9, 34, 4); // speaker grille
   cord[DRAW_LINE_STYLE](5, 0x5a0a0a); for (let i = 0; i < 9; i++) cord[DRAW_STROKE_CIRCLE](150 + i * 14, 30 + M.sin(i) * 3, 9); // coiled cord
+  phone.liftCord = add(uPhone, S.add[DRAW_GRAPHICS]());
   uHandset = add(uPhone, S.add[DRAW_CONTAINER](0, -86));
   const handset = add(uHandset, S.add[DRAW_GRAPHICS]());
   handset[DRAW_FILL_STYLE](0x7a1010);
@@ -1017,6 +1018,24 @@ function goCall(n) {
   uCallTxt = sText(400, 92, '', 20, '#ece6d8', 0.5, 0, { wordWrap: { width: 660 }, align: TEXT_CENTER, lineSpacing: 7, fontStyle: 'bold' });
   uCallHint = sText(400, 575, '', 16, '#b9a99a', 0.5, 0.5, { fontFamily: 'sans-serif', stroke: COLOR_000, strokeThickness: 3 });
 }
+function moveCallHandset(c, dt) {
+  const lift = clamp(c.lift + (c.i < c.ln.length ? dt : -dt) / 0.24, 0, 1);
+  if (lift == c.lift) return;
+  c.lift = lift;
+  const k = lift * lift * (3 - 2 * lift), angle = -0.22 * k;
+  const x = 94 * k, y = -86 - 76 * k;
+  uHandset[DRAW_SET_POSITION](x, y)[DRAW_SET_ROTATION](angle);
+  const cable = c.liftCord[DRAW_CLEAR]()[DRAW_SET_ALPHA](k);
+  if (!lift) return;
+  const endX = x + 148 * M.cos(angle), endY = y + 148 * M.sin(angle) + 10;
+  // The coil stays on the desk while the loose end follows the receiver.
+  cable[DRAW_LINE_STYLE](5, 0x5a0a0a)[DRAW_BEGIN_PATH]().moveTo(262, 32);
+  for (let i = 1; i <= 16; i++) {
+    const t = i / 16, slack = M.sin(PI * t) * k;
+    cable.lineTo(lerp(262, endX, t) + 37 * slack, lerp(32, endY, t) + 35 * slack);
+  }
+  cable.strokePath();
+}
 function callUpdate(dt) {
   const c = phone, ringing = c.i < 0;
   if (ringing) {
@@ -1028,6 +1047,7 @@ function callUpdate(dt) {
     if (modeT > 0.5 && (pr('1') || pr('S'))) { ringStop(); c.i = 0; sfxClick(); uHandset.setY(-86)[DRAW_SET_ANGLE](0); uCallName[DRAW_SET_TEXT]('☎ ' + c.nm + ' · ALTAVOZ'); }
     return;
   }
+  moveCallHandset(c, dt);
   if (c.i >= c.ln.length) {
     // Give the disconnected line a beat before the night begins.
     if ((c.hold += dt) > (uCardN == 5 ? 1.6 : 0.6)) goCard(uCardN);
