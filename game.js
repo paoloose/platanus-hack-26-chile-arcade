@@ -767,18 +767,22 @@ function writeSave() {
 // =====================================================================
 function screen(m) { ringStop(); if (AC) buzzG[AUDIO_GAIN][AUDIO_VALUE] = fanG[AUDIO_GAIN][AUDIO_VALUE] = 0; litA = 0; mode = m; modeT = 0; wC[DRAW_SET_VISIBLE](false); hideHud(); clearScreen(); }
 let titleChoice = 0;
+const TITLE_INSET = 52;
 function goTitle(choice = saved.night > 1 ? 1 : 0) {
   screen('title');
   titleChoice = choice;
-  // Leave the leftmost slot empty so the Pitcher stays centered.
-  uTitleBan = [1, 4, 0, 5, 2, 3].map((i, k) => ({ i, k: k + 1 })).sort((a, b) => M.abs(b.k - 3) - M.abs(a.k - 3)).map(({ i, k }) => sAdd(S.add.image(100 + k * 100, 660 - M.abs(k - 3) * 16, ROLES[i] + '0')[DRAW_SET_SCALE](16 - M.abs(k - 3) * 0.9)[DRAW_SET_ORIGIN](0.5, 1)));
+  // Balance the two outer edges while keeping the Pitcher at the center.
+  const lineup = [[1, 150], [4, 250], [0, 400], [5, 485], [2, 565], [3, 650]];
+  uTitleBan = lineup.map(([i, x], k) => ({ i, x, depth: M.abs(k - 2) }))
+    .sort((a, b) => b.depth - a.depth)
+    .map(({ i, x, depth }) => sAdd(S.add.image(x, 660 - depth * 16, ROLES[i] + '0')[DRAW_SET_SCALE](16 - depth * 0.9)[DRAW_SET_ORIGIN](0.5, 1)));
   uTitleStat = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0));
-  uT1 = sText(40, 26, 'Five Nights\nat Platanus', 52, '#eee', 0, 0, { lineSpacing: -6, stroke: COLOR_000, strokeThickness: 6 });
-  sText(42, 160, 'La hackathon terminó. Ellos no.', 14, '#889', 0, 0.5);
-  const titleRow = (y) => sText(760, y, '', 22, COLOR_FFF, 1, 0.5, { stroke: COLOR_000, strokeThickness: 5 });
-  uTNew = titleRow(60);
-  uTMenu = titleRow(103);
-  sText(760, 136, '↑ / ↓  ELEGIR    B1 / START', 12, '#aaa1ad', 1, 0);
+  uT1 = sText(TITLE_INSET, 38, 'Five Nights\nat Platanus', 52, '#eee', 0, 0, { lineSpacing: -6, stroke: COLOR_000, strokeThickness: 6 });
+  sText(TITLE_INSET + 2, 172, 'La hackathon terminó. Ellos no.', 14, '#889', 0, 0.5);
+  const titleRow = (y) => sText(W - TITLE_INSET, y, '', 22, COLOR_FFF, 1, 0.5, { stroke: COLOR_000, strokeThickness: 5 });
+  uTNew = titleRow(72);
+  uTMenu = titleRow(115);
+  sText(W - TITLE_INSET, 148, '↑ / ↓  ELEGIR    B1 / START', 12, '#aaa1ad', 1, 0);
   drawTitleChoices();
 }
 function drawTitleChoices() {
