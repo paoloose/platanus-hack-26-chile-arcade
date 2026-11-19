@@ -952,7 +952,7 @@ function goCall(n) {
   add(uHandset, S.add[DRAW_GRAPHICS]())[DRAW_FILL_STYLE](0x7a1010)[DRAW_FILL_ROUNDED_RECT](-150, -12, 300, 30, 14)[DRAW_FILL_STYLE](0x8e1414)[DRAW_FILL_ROUNDED_RECT](-170, -2, 76, 36, 14)[DRAW_FILL_ROUNDED_RECT](94, -2, 76, 36, 14);
   uCallName = sText(400, 52, '¡RIIIING!', 22, COLOR_FFD400);
   uCallTxt = sText(400, 92, '', 20, '#ece6d8', 0.5, 0, { wordWrap: { width: 660 }, align: TEXT_CENTER, lineSpacing: 7, fontStyle: 'bold' });
-  uCallHint = sText(400, 575, '', 16, '#f5e8d7', 0.5, 0.5, { fontFamily: 'sans-serif', stroke: COLOR_000, strokeThickness: 3 });
+  uCallHint = sText(400, 575, '', 16, '#b9a99a', 0.5, 0.5, { fontFamily: 'sans-serif', stroke: COLOR_000, strokeThickness: 3 });
 }
 function callUpdate(dt) {
   const c = phone, ringing = c.i < 0;
