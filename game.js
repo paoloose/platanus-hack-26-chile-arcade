@@ -58,7 +58,8 @@ const CABINET_KEYS = {
 const KEY2ACT = {};
 for (const [code, keys] of Object.entries(CABINET_KEYS)) for (const k of keys) KEY2ACT[k.length == 1 ? k[KEY_TO_LOWER_CASE]() : k] = code.startsWith('START') ? 'S' : code.slice(3);
 const held = {}, pressed = {};
-const hd = (a) => !!held[a];
+let ignoreMenuB1 = false;
+const hd = (a) => !!held[a] && (a != '1' || !ignoreMenuB1);
 const pr = (a) => !!pressed[a];
 const anyPr = () => ['1', '2', '3', '4', '5', '6', 'S'].some(pr);
 
@@ -631,9 +632,9 @@ let wC, rC, oC, uC, uiCam;
 let bgImg, fgImg, dynG, emG, projTxt, askG, askTxt, lensImg, oBg, oG, oBeam, oDim, oLamp, oTop, oMask, oDesk, deskImg, oDG, fanS = 0, fanA = 0;
 const eImg = {}, oImg = {};
 // UI objects (u*) live in the uC layer, which the post-FX camera ignores
-let uC1, uC2, uCallName, uCallTxt, uHandset, uCallHint, uCam, uCamBar, uCardN, uG, uHour, uHud, uLPress, uLStat, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uW1, uW2, uWDone, uWarn;
+let uC1, uC2, uCallName, uCallTxt, uHandset, uCallHint, uCam, uCamBar, uCardN, uG, uHour, uHud, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uW1, uW2, uWDone, uWarn;
 let zR, zO, uZ, oBan, dozeHB, litA = 0, scrSide, scrPre; // the sleeper's z's (or !! when angry) · falling asleep
-let uLearn;
+let uLearn, uPauseHint;
 const TS = (sz, col, extra) => Object[KEY_ASSIGN]({ fontFamily: 'monospace', fontSize: sz + 'px', color: col || COLOR_FFF, fontStyle: 'bold' }, extra);
 const add = (c, o) => { c.add(o); return o; };
 const img = (c, k, x, y, ox, oy) => add(c, S.add.image(x, y, k)[DRAW_SET_ORIGIN](ox ?? 0.5, oy ?? 0.5));
@@ -644,7 +645,11 @@ function create() {
   buildSprites(); buildFxTex(); buildRooms(); buildOffice();
   const act = (e) => KEY2ACT[e.key.length == 1 ? e.key[KEY_TO_LOWER_CASE]() : e.key];
   addEventListener('keydown', (e) => { const a = act(e); initAudio(); if (a) { if (!held[a]) pressed[a] = 1; held[a] = 1; } });
-  addEventListener('keyup', (e) => { const a = act(e); if (a) held[a] = 0; });
+  addEventListener('keyup', (e) => {
+    const a = act(e);
+    if (a) held[a] = 0;
+    if (a == '1') ignoreMenuB1 = false;
+  });
 
   wC = S.add[DRAW_CONTAINER](); rC = add(wC, S.add[DRAW_CONTAINER]()); oC = add(wC, S.add[DRAW_CONTAINER]()); uC = S.add[DRAW_CONTAINER]();
   // camera feed
@@ -704,6 +709,7 @@ function buildUI() {
   // FNAF corners: the time top right, power and usage bottom left
   uHour = T(776, 16, '', 30, COLOR_FFF, 1, 0);
   uNight = T(776, 52, '', 14, '#aab', 1, 0);
+  uPauseHint = T(776, 74, 'START · PAUSA', 11, '#bbb1bd', 1, 0);
   uSue = T(24, 474, '', 12, COLOR_C9B6FF, 0, 0);
   uPow = T(24, 512, '', 16, COLOR_FFF, 0, 0);
   uCam = [T(40, 34, '', 20, '#e8e0d0', 0, 0), T(40, 82, '● REC', 14, '#ff4444', 0, 0), T(40, 60, '', 13, '#b8b0a0', 0, 0), T(560, 568, 'STICK: CÁMARA · B1: LINTERNA · B4: ANTERIOR · B3: BAJAR', 10, '#b8b0a0')];
@@ -776,6 +782,92 @@ function titleUpdate() {
   uTMenu[DRAW_SET_ALPHA](0.6 + M.sin(modeT * 4) * 0.4);
   if (pr('S') || pr('1')) { sfxClick(); if (menuNight == 1) goPaper(0); else goCall(menuNight); }
 }
+
+// Pause leaves the night in place. Both menus use the title's dark static
+// and a lit marker like the shutter control panel.
+let paused = false, nightChoices = null, pauseGain = 0.8;
+function showNightChoices() {
+  sRect(0x09090d)[DRAW_SET_ALPHA](paused ? 0.95 : 1);
+  const grain = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0)[DRAW_SET_ALPHA](0.09));
+  const rule = sAdd(S.add[DRAW_GRAPHICS]());
+  rule[DRAW_FILL_STYLE](0xf07c7c)[DRAW_FILL_RECT](72, 63, 8, 13);
+  rule[DRAW_LINE_STYLE](1, 0x5b4951)[DRAW_LINE_BETWEEN](72, 197, 728, 197);
+
+  sText(93, 61, 'NOCHE ' + night, 16, '#d0c3cc', 0, 0);
+  sText(728, 61, clockStr(paused ? now : loseT), 16, '#d0c3cc', 1, 0);
+  sText(68, 100, paused ? 'PAUSA' : 'FIN DEL TURNO', 64, '#f1eaed', 0, 0, { stroke: COLOR_000, strokeThickness: 5 });
+  const detail = paused ? 'BATERÍA ' + M.ceil(power) + '%   ·   SUEÑO ' + M.ceil(sueno) + '%' : lostHint;
+  sText(72, 228, detail, 19, '#d0c3cc', 0, 0, { fontStyle: 'normal', wordWrap: { width: 656 }, lineSpacing: 6 });
+
+  const menu = { grain, rows: [], selected: -1 };
+  nightChoices = menu;
+  const choices = ['CONTINUAR', 'MENÚ PRINCIPAL'];
+  for (let i = 0; i < choices.length; i++) {
+    const y = 329 + i * 76;
+    const button = sAdd(S.add[DRAW_RECTANGLE](72, y, 656, 60, 0x101017)[DRAW_SET_ORIGIN](0));
+    button.setInteractive({ useHandCursor: true });
+    button.on('pointerover', () => { if (nightChoices == menu) selectNightChoice(i); });
+    button.on('pointerdown', () => { if (nightChoices == menu) confirmNightChoice(i); });
+    const marker = sText(95, y + 30, '▸', 28, '#ff9290', 0, 0.5);
+    const label = sText(132, y + 30, choices[i], 23, '#c4b5bf', 0, 0.5);
+    menu.rows[KEY_PUSH]({ button, marker, label });
+  }
+  sText(72, 548, '↑ / ↓  ELEGIR     B1 / START  CONFIRMAR', 15, '#b5a6b0', 0, 0);
+  selectNightChoice(0);
+}
+function selectNightChoice(choice) {
+  if (nightChoices.selected == choice) return;
+  nightChoices.selected = choice;
+  nightChoices.rows[KEY_FOR_EACH](({ button, marker, label }, i) => {
+    const active = i == choice;
+    button.setFillStyle(active ? 0x24171f : 0x101017).setStrokeStyle(1, active ? 0xe48685 : 0x44404b);
+    marker[DRAW_SET_VISIBLE](active);
+    label[DRAW_SET_COLOR](active ? '#fff5f4' : '#c4b5bf');
+  });
+}
+function pauseNight() {
+  paused = true;
+  if (AC) {
+    pauseGain = master[AUDIO_GAIN][AUDIO_VALUE];
+    master[AUDIO_GAIN][AUDIO_VALUE] = 0;
+  }
+  showNightChoices();
+}
+function confirmNightChoice(choice, confirmB1) {
+  nightChoices = null;
+  // A B1 confirmation should not turn on the flashlight or start coffee.
+  if (!choice && confirmB1) ignoreMenuB1 = true;
+  if (paused) {
+    paused = false;
+    if (AC) {
+      if (choice) {
+        const t = AC[AUDIO_CURRENT_TIME];
+        ambG[AUDIO_GAIN][AUDIO_SET_TARGET_AT_TIME](0, t, 0.08);
+        droneG[AUDIO_GAIN][AUDIO_SET_TARGET_AT_TIME](0, t, 0.08);
+      }
+      master[AUDIO_GAIN][AUDIO_VALUE] = pauseGain;
+    }
+    if (!choice) {
+      clearScreen();
+      return;
+    }
+  }
+  sfxClick();
+  if (choice) {
+    menuNight = M.min(saved.night, night);
+    goTitle();
+  } else goCard(night);
+}
+function nightChoicesUpdate(dt) {
+  const grain = nightChoices.grain;
+  grain[DRAW_SET_TILE_POSITION](grain.tilePositionX + 18 * dt, grain.tilePositionY + 11 * dt);
+  if (pr('U') || pr('D')) {
+    selectNightChoice(1 - nightChoices.selected);
+    if (!paused) sfxBlip(1, 410);
+  }
+  if (pr('S') || pr('1')) confirmNightChoice(nightChoices.selected, pr('1'));
+}
+
 // Newspaper: intro (0) or ending (1). It spins in and slams onto the table.
 const PAPERS = arcadeData.newspapers;
 function goPaper(end) {
@@ -914,7 +1006,7 @@ function startNight(n) {
   };
   mode = STATE_PLAY; modeT = 0;
   wC[DRAW_SET_VISIBLE](true); uHud[DRAW_SET_VISIBLE](true);
-  for (const o of [uPow, uHour, uNight, uSue, uMsg]) o[DRAW_SET_VISIBLE](true);
+  for (const o of [uPow, uHour, uNight, uSue, uMsg, uPauseHint]) o[DRAW_SET_VISIBLE](true);
   if (AC) {
     master[AUDIO_GAIN][AUDIO_VALUE] = .8;
     ambG[AUDIO_GAIN][AUDIO_SET_TARGET_AT_TIME](1, AC[AUDIO_CURRENT_TIME], 0.5);
@@ -935,10 +1027,14 @@ function think(s, once, dur) {
 // =====================================================================
 function update(time, delta) {
   const dt = M.min(0.05, delta / 1000);
-  modeT += dt;
-  if (FX) { FX.t += dt; if (mode != STATE_PLAY && mode != 'scream') Object[KEY_ASSIGN](FX, { nv: 0, lit: 0, of: +(mode == 'doze'), no: mode == 'title' ? 0.06 : 0.02, ab: 0.2, dk: 0.2, wp: 0 }); }
-  if (mode == STATE_PLAY) { playUpdate(dt); }
-  else ({ doze: dozeUpdate, title: titleUpdate, paper: paperUpdate, call: callUpdate, card: cardUpdate, scream: screamUpdate, lose: loseUpdate, win: winUpdate })[mode](dt);
+  if (paused) nightChoicesUpdate(dt);
+  else if (mode == STATE_PLAY && pr('S')) pauseNight();
+  else {
+    modeT += dt;
+    if (FX) { FX.t += dt; if (mode != STATE_PLAY && mode != 'scream') Object[KEY_ASSIGN](FX, { nv: 0, lit: 0, of: +(mode == 'doze'), no: mode == 'title' ? 0.06 : 0.02, ab: 0.2, dk: 0.2, wp: 0 }); }
+    if (mode == STATE_PLAY) playUpdate(dt);
+    else ({ doze: dozeUpdate, title: titleUpdate, paper: paperUpdate, call: callUpdate, card: cardUpdate, scream: screamUpdate, lose: nightChoicesUpdate, win: winUpdate })[mode](dt);
+  }
   for (const k in pressed) pressed[k] = 0;
 }
 function playUpdate(dt) {
@@ -1703,7 +1799,7 @@ function hideHud() {
   uScr[DRAW_SET_VISIBLE](false); uScrT[DRAW_SET_TEXT]('');
 }
 // hide the HUD text but keep the eyelids and the static (scares, falling asleep)
-function hudOff() { for (const o of [uPow, uHour, uNight, uSue, uCamBar, uWarn, uMsg, uTab, uMug, uTh, uLearn, ...uPr, ...uCam, ...uMapT]) o[DRAW_SET_VISIBLE](false); uG[DRAW_CLEAR](); }
+function hudOff() { for (const o of [uPow, uHour, uNight, uSue, uCamBar, uWarn, uMsg, uTab, uMug, uTh, uLearn, uPauseHint, ...uPr, ...uCam, ...uMapT]) o[DRAW_SET_VISIBLE](false); uG[DRAW_CLEAR](); }
 function prompt(i, x, y, s, col, a) { uPr[i][DRAW_SET_VISIBLE](true)[DRAW_SET_TEXT](s)[DRAW_SET_POSITION](clamp(x, 80, 720), clamp(y, 20, 560))[DRAW_SET_COLOR](col || COLOR_FFF)[DRAW_SET_ALPHA](a ?? 1); }
 function drawTablet(progress) {
   const k = progress * progress * (3 - 2 * progress);
@@ -1918,18 +2014,7 @@ function screamUpdate() {
 }
 function goLose() {
   screen('lose');
-  sRect(0);
-  uLStat = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0)[DRAW_SET_ALPHA](0.08));
-  sText(400, 170, 'PERDISTE', 64, '#d22', 0.5, 0.5, { stroke: COLOR_000, strokeThickness: 6 });
-  sText(400, 236, clockStr(loseT) + ' · NOCHE ' + night, 18, '#aaa');
-  sAdd(S.add.image(400, 440, LOSE[lostTo][0] + '0')[DRAW_SET_SCALE](6)[DRAW_SET_ORIGIN](0.5, 1)[DRAW_SET_TINT](0x220000));
-  sText(400, 472, lostHint, 15, '#aaa', 0.5, 0.5, { fontStyle: 'italic bold', align: TEXT_CENTER, wordWrap: { width: 620 } });
-  uLPress = sText(400, 540, 'START · REINTENTAR NOCHE ' + night, 16);
-}
-function loseUpdate() {
-  uLStat[DRAW_SET_TILE_POSITION](rnd(0, 200), rnd(0, 150));
-  uLPress[DRAW_SET_ALPHA](modeT > 1.2 ? 0.5 + M.sin(modeT * 4) * 0.5 : 0);
-  if (modeT > 1.2 && (pr('S') || pr('1'))) { sfxClick(); goCard(night); }
+  showNightChoices();
 }
 function winNight() {
   screen('win'); uWDone = 0;
