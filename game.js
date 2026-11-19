@@ -651,7 +651,7 @@ const eImg = {}, oImg = {};
 // UI objects (u*) live in the uC layer, which the post-FX camera ignores
 let uC1, uC2, uCallName, uCallTxt, uHandset, uCallHint, uCam, uCamBar, uCardN, uG, uHour, uHud, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTNew, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uW1, uW2, uWDone, uWarn;
 let zR, zO, uZ, oBan, dozeHB, litA = 0, scrSide, scrPre; // the sleeper's z's (or !! when angry) · falling asleep
-let uLearn, uPauseHint;
+let uLearn;
 const TS = (sz, col, extra) => Object[KEY_ASSIGN]({ fontFamily: 'monospace', fontSize: sz + 'px', color: col || COLOR_FFF, fontStyle: 'bold' }, extra);
 const add = (c, o) => { c.add(o); return o; };
 const img = (c, k, x, y, ox, oy) => add(c, S.add.image(x, y, k)[DRAW_SET_ORIGIN](ox ?? 0.5, oy ?? 0.5));
@@ -730,7 +730,6 @@ function buildUI() {
   // FNAF corners: the time top right, power and usage bottom left
   uHour = T(W - HUD_INSET, 24, '', 30, COLOR_FFF, 1, 0);
   uNight = T(W - HUD_INSET, 60, '', 14, '#aab', 1, 0);
-  uPauseHint = T(W - HUD_INSET, 82, 'START · PAUSA', 11, '#bbb1bd', 1, 0);
   uSue = T(HUD_INSET, HUD_BATTERY_Y - 38, '', 12, COLOR_C9B6FF, 0, 0);
   uPow = T(HUD_INSET, HUD_BATTERY_Y, '', 16, COLOR_FFF, 0, 0);
   uCam = [T(40, 34, '', 20, '#e8e0d0', 0, 0), T(40, 82, '● REC', 14, '#ff4444', 0, 0), T(40, 60, '', 13, '#b8b0a0', 0, 0), T(560, 568, 'STICK: CÁMARA · B1: LINTERNA · B4: ANTERIOR · B3: BAJAR', 10, '#b8b0a0')];
@@ -870,7 +869,7 @@ function pauseNight() {
     master[AUDIO_GAIN][AUDIO_VALUE] = 0;
   }
   // The translucent menu shares this corner with the clock and its labels.
-  for (const label of [uHour, uNight, uPauseHint]) label[DRAW_SET_VISIBLE](false);
+  for (const label of [uHour, uNight]) label[DRAW_SET_VISIBLE](false);
   sRect(0)[DRAW_SET_ALPHA](0.65);
   plainMenuHeading('PAUSA');
   showNightChoices('CONTINUAR');
@@ -891,7 +890,7 @@ function activateMenuChoice(choice, confirmB1) {
       master[AUDIO_GAIN][AUDIO_VALUE] = pauseGain;
     }
     if (!choice) {
-      for (const label of [uHour, uNight, uPauseHint]) label[DRAW_SET_VISIBLE](true);
+      for (const label of [uHour, uNight]) label[DRAW_SET_VISIBLE](true);
       clearScreen();
       return;
     }
@@ -1096,7 +1095,7 @@ function startNight(n) {
   };
   mode = STATE_PLAY; modeT = 0;
   wC[DRAW_SET_VISIBLE](true); uHud[DRAW_SET_VISIBLE](true);
-  for (const o of [uPow, uHour, uNight, uSue, uMsg, uPauseHint]) o[DRAW_SET_VISIBLE](true);
+  for (const o of [uPow, uHour, uNight, uSue, uMsg]) o[DRAW_SET_VISIBLE](true);
   if (AC) {
     master[AUDIO_GAIN][AUDIO_VALUE] = .8;
     ambG[AUDIO_GAIN][AUDIO_SET_TARGET_AT_TIME](1, AC[AUDIO_CURRENT_TIME], 0.5);
@@ -1898,7 +1897,7 @@ function hideHud() {
   uScr[DRAW_SET_VISIBLE](false); uScrT[DRAW_SET_TEXT]('');
 }
 // hide the HUD text but keep the eyelids and the static (scares, falling asleep)
-function hudOff() { for (const o of [uPow, uHour, uNight, uSue, uCamBar, uWarn, uMsg, uTab, uMug, uTh, uLearn, uPauseHint, ...uPr, ...uCam, ...uMapT]) o[DRAW_SET_VISIBLE](false); uG[DRAW_CLEAR](); }
+function hudOff() { for (const o of [uPow, uHour, uNight, uSue, uCamBar, uWarn, uMsg, uTab, uMug, uTh, uLearn, ...uPr, ...uCam, ...uMapT]) o[DRAW_SET_VISIBLE](false); uG[DRAW_CLEAR](); }
 function prompt(i, x, y, s, col, a) { uPr[i][DRAW_SET_VISIBLE](true)[DRAW_SET_TEXT](s)[DRAW_SET_POSITION](clamp(x, 80, 720), clamp(y, 20, 560))[DRAW_SET_COLOR](col || COLOR_FFF)[DRAW_SET_ALPHA](a ?? 1); }
 function drawTablet(progress) {
   const k = progress * progress * (3 - 2 * progress);
