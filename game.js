@@ -695,7 +695,7 @@ function create() {
   mc.ignore(uC); uiCam.ignore(wC);
   if (S.game.renderer.type == Phaser.WEBGL) { mc.setPostPipeline('Horror'); FX = { t: 0 }; }
   goTitle();
-  loadSave();
+  saveWrites = loadSave();
 }
 
 // =====================================================================
@@ -753,7 +753,7 @@ const sRect = (col) => sAdd(S.add[DRAW_RECTANGLE](0, 0, W, H, col)[DRAW_SET_ORIG
 // =====================================================================
 // SAVE
 // =====================================================================
-let saveReady = false, pendingNewGame = false, saveWrites = Promise.resolve();
+let saveWrites = Promise.resolve();
 function storage() {
   return window.platanusArcadeStorage || {
     async get(k) { try { const v = localStorage.getItem(k); return v == null ? { found: false } : { found: true, value: JSON.parse(v) }; } catch (e) { return { found: false }; } },
@@ -763,17 +763,15 @@ function storage() {
 async function loadSave() {
   try {
     const r = await storage().get(SAVE_KEY);
-    if (r && r.found && r[AUDIO_VALUE] && typeof r[AUDIO_VALUE].night == 'number') saved.night = menuNight = clamp(r[AUDIO_VALUE].night | 0, 1, 5);
+    if (r && r.found && r[AUDIO_VALUE] && typeof r[AUDIO_VALUE].night == 'number') {
+      saved.night = menuNight = M.max(saved.night, clamp(r[AUDIO_VALUE].night | 0, 1, 5));
+    }
   } catch (e) { }
-  saveReady = true;
-  if (mode != 'title') return;
-  if (pendingNewGame) activateTitleChoice(0, menuNight);
-  else goTitle();
+  if (mode == 'title') drawTitleChoices();
 }
 function writeSave() {
-  const progress = { night: saved.night };
-  // Keep a confirmed reset behind any earlier unlock that is still saving.
-  saveWrites = saveWrites.then(() => storage().set(SAVE_KEY, progress)).catch(() => { });
+  // Merge the initial save before persisting any newly earned unlocks.
+  saveWrites = saveWrites.then(() => storage().set(SAVE_KEY, { night: saved.night })).catch(() => { });
   return saveWrites;
 }
 
@@ -784,9 +782,9 @@ function screen(m) { ringStop(); if (AC) buzzG[AUDIO_GAIN][AUDIO_VALUE] = fanG[A
 let titleChoice = 0;
 const TITLE_INSET = 52;
 const plainMenuRow = (y, label = '') => sText(W - TITLE_INSET, y, label, 22, COLOR_FFF, 1, 0.5, { stroke: COLOR_000, strokeThickness: 5 });
-function goTitle(choice = saved.night > 1 ? 1 : 0) {
+function goTitle() {
   screen('title');
-  titleChoice = choice;
+  titleChoice = 0;
   // Balance the two outer edges while keeping the Pitcher at the center.
   const lineup = [[1, 150], [4, 250], [0, 400], [5, 485], [2, 565], [3, 650]];
   uTitleBan = lineup.map(([i, x], k) => ({ i, x, depth: M.abs(k - 2) }))
@@ -820,32 +818,12 @@ function titleUpdate() {
     sfxBlip(1, step < 0 ? 400 : 500);
   }
   drawTitleChoices();
-  if (pr('S') || pr('1')) activateTitleChoice(titleChoice, menuNight);
-}
-function activateTitleChoice(choice, selectedNight) {
-  // Wait for the unlocks before deciding whether a new game needs confirmation.
-  if (!saveReady && !choice) { pendingNewGame = true; return; }
-  pendingNewGame = false;
-  sfxClick();
-  if (choice) {
+  if (pr('S') || pr('1')) {
+    const selectedNight = titleChoice ? menuNight : 1;
+    sfxClick();
     if (selectedNight == 1) goPaper(0);
     else goCall(selectedNight);
-  } else if (saved.night > 1) {
-    screen('newgame');
-    showChoiceMenu({
-      heading: '¿JUEGO NUEVO?',
-      context: 'NOCHE DESBLOQUEADA · ' + saved.night,
-      detail: 'Volverás a la noche 1 y se reiniciarán las noches desbloqueadas.',
-      choices: ['CANCELAR', 'EMPEZAR DE NUEVO'],
-      confirm: (start) => { sfxClick(); if (start) beginNewGame(); else goTitle(0); },
-    });
-  } else beginNewGame();
-}
-function beginNewGame() {
-  const hadProgress = saved.night > 1;
-  saved.night = menuNight = 1;
-  if (hadProgress) writeSave();
-  goPaper(0);
+  }
 }
 
 let paused = false, nightChoices = null, pauseGain = 0.8;
@@ -1108,7 +1086,7 @@ function update(time, delta) {
     modeT += dt;
     if (FX) { FX.t += dt; if (mode != STATE_PLAY && mode != 'scream') Object[KEY_ASSIGN](FX, { nv: 0, lit: 0, of: +(mode == 'doze'), no: mode == 'title' ? 0.06 : 0.02, ab: 0.2, dk: 0.2, wp: 0 }); }
     if (mode == STATE_PLAY) playUpdate(dt);
-    else ({ doze: dozeUpdate, title: titleUpdate, paper: paperUpdate, call: callUpdate, card: cardUpdate, scream: screamUpdate, lose: nightChoicesUpdate, newgame: nightChoicesUpdate, win: winUpdate })[mode](dt);
+    else ({ doze: dozeUpdate, title: titleUpdate, paper: paperUpdate, call: callUpdate, card: cardUpdate, scream: screamUpdate, lose: nightChoicesUpdate, win: winUpdate })[mode](dt);
   }
   for (const k in pressed) pressed[k] = 0;
 }
