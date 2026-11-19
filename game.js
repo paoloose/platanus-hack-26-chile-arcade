@@ -100,13 +100,15 @@ const ROLES = Object.keys(SPR).filter((r) => r != 'chef');
 let AC = null, master, effectsGain, menuOutput, muffle, noiseBuf, ambG, droneG, droneF, buzzG, fanG;
 // short codes for oscillator / filter types
 const TY = { s: 'sine', q: 'square', w: 'sawtooth', t: 'triangle', l: 'lowpass', b: 'bandpass', h: 'highpass' };
+const GLOBAL_VOLUME = 1.05;
 function initAudio() {
   if (AC) { if (AC.state != 'running') AC.resume(); return; }
   try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { return; }
   const node = (k, type, f, to) => { const n = AC['create' + k](); if (type) n.type = TY[type]; if (f) n[AUDIO_FREQUENCY][AUDIO_VALUE] = f; n[AUDIO_CONNECT](to); return n; };
   const gain = (v, to) => { const g = AC[AUDIO_CREATE_GAIN](); g[AUDIO_GAIN][AUDIO_VALUE] = v; g[AUDIO_CONNECT](to); return g; };
   const comp = menuOutput = AC.createDynamicsCompressor();
-  comp.threshold[AUDIO_VALUE] = -16; comp.ratio[AUDIO_VALUE] = 5; comp[AUDIO_CONNECT](AC.destination);
+  comp.threshold[AUDIO_VALUE] = -16; comp.ratio[AUDIO_VALUE] = 5;
+  comp[AUDIO_CONNECT](gain(GLOBAL_VOLUME, AC.destination));
   muffle = node(TEXT_BIQUAD_FILTER, 'l', 9000, comp);
   master = gain(0.8, muffle);
   effectsGain = gain(M.SQRT1_2, master);
