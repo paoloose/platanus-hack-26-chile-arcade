@@ -988,81 +988,8 @@ function paperUpdate() {
 }
 // The call: a red desk phone alone in the dark. It rings, the speaker turns
 // on, and the voice comes out of it line by line. B1 next line, hold START hangs up.
-function buildCallPhone() {
-  if (S.textures.exists('callPhone')) return;
-  const gradient = (c, top, bottom, ...colors) => {
-    const shade = c.createLinearGradient(0, top, 0, bottom);
-    colors[KEY_FOR_EACH]((color, i) => shade[DRAW_ADD_COLOR_STOP](i / (colors.length - 1), color));
-    return shade;
-  };
-  const rounded = (c, x, y, w, h, radius, color) => {
-    c[DRAW_FILL_STYLE] = color;
-    c[DRAW_BEGIN_PATH](); c.roundRect(x, y, w, h, radius); c.fill();
-  };
-  const oval = (c, x, y, rx, ry, color) => {
-    c[DRAW_FILL_STYLE] = color;
-    c[DRAW_BEGIN_PATH](); c.ellipse(x, y, rx, ry, 0, 0, PI * 2); c.fill();
-  };
-
-  canvasTex('callPhone', 464, 164, (c) => {
-    c.translate(200, 94);
-    oval(c, 0, 42, 181, 21, gradient(c, 25, 63, '#0009', '#0000'));
-    c.lineCap = 'round'; c.lineJoin = 'round';
-    c[DRAW_BEGIN_PATH](); c.moveTo(136, 33);
-    for (let i = 1; i <= 108; i++) {
-      const a = i * 0.48;
-      c.lineTo(136 + i + M.cos(a) * 4, 34 + M.sin(a) * 8 - i * i / 2200);
-    }
-    c.lineWidth = 5; c.strokeStyle = '#190b0d'; c.stroke();
-    c.lineWidth = 2; c.strokeStyle = gradient(c, 23, 40, '#824339', '#2c1315'); c.stroke();
-
-    rounded(c, -163, -41, 326, 92, 23, gradient(c, -41, 51, '#943321', '#62161a', '#2e0b10'));
-    rounded(c, -152, -65, 304, 92, 21, gradient(c, -65, 27, '#b25440', '#872e26', '#591318'));
-    rounded(c, -143, -59, 286, 7, 3, '#ffb57539');
-    rounded(c, -148, 32, 296, 3, 2, '#331013');
-    for (const x of [-112, 112]) rounded(c, x - 20, -66, 40, 19, 6, gradient(c, -66, -47, '#50342e', '#251719'));
-
-    c.save(); c.translate(0, -17); c.scale(1, 0.86);
-    oval(c, 0, 4, 57, 57, '#390f11');
-    oval(c, 0, 0, 55, 55, gradient(c, -55, 55, '#e6c69b', '#655447', '#ab8e6f'));
-    oval(c, 0, 0, 51, 51, gradient(c, -51, 51, '#a99b81', '#d7c5a1', '#716050'));
-    c.font = 'bold 10px monospace'; c.textAlign = TEXT_CENTER; c.textBaseline = 'middle';
-    for (let i = 0; i < 10; i++) {
-      const a = -2.1 + i * 0.48, x = M.cos(a) * 37, y = M.sin(a) * 37;
-      oval(c, x, y, 8, 8, '#463a32');
-      oval(c, x, y + 1, 6, 6, '#dcca9f');
-      c[DRAW_FILL_STYLE] = '#382b26'; c.fillText((i + 1) % 10, x, y + 1);
-    }
-    oval(c, 0, 0, 20, 20, '#79594b'); oval(c, 0, 0, 17, 17, '#dfc7a3');
-    rounded(c, 38, 17, 13, 5, 2, '#e6c08c');
-    c.restore();
-    for (let i = 0; i < 4; i++) rounded(c, 93, -27 + i * 8, 35, 4, 2, '#3a1518');
-  });
-
-  canvasTex('callHandset', 356, 68, (c) => {
-    c.translate(178, 32);
-    c[DRAW_BEGIN_PATH](); c.moveTo(-169, -8);
-    c.bezierCurveTo(-162, -26, -144, -28, -117, -20);
-    c.bezierCurveTo(-60, -6, 60, -6, 117, -20);
-    c.bezierCurveTo(144, -28, 162, -26, 169, -8);
-    c.bezierCurveTo(177, 16, 163, 31, 139, 28);
-    c.bezierCurveTo(125, 27, 112, 19, 102, 16);
-    c.bezierCurveTo(48, 8, -48, 8, -102, 16);
-    c.bezierCurveTo(-112, 19, -125, 27, -139, 28);
-    c.bezierCurveTo(-163, 31, -177, 16, -169, -8); c.closePath();
-    c[DRAW_FILL_STYLE] = gradient(c, -25, 28, '#dc7659', '#8d2c23', '#2c0c11'); c.fill();
-    c.lineWidth = 2; c.strokeStyle = '#391015'; c.stroke();
-    for (const x of [-143, 143]) {
-      oval(c, x, 9, 22, 15, gradient(c, -6, 24, '#a74135', '#541820'));
-      for (let i = -1; i <= 1; i++) rounded(c, x + i * 7 - 1, 8, 3, 9, 1, '#43141a');
-    }
-    c[DRAW_BEGIN_PATH](); c.moveTo(-101, -12); c.quadraticCurveTo(0, 2, 101, -12);
-    c.lineWidth = 3; c.strokeStyle = '#f5a88265'; c.stroke();
-  });
-}
 function goCall(n) {
   screen('call'); uCardN = n;
-  buildCallPhone();
   const [nm, ...ln] = CALLS[n - 1];
   phone = { nm, ln, i: -1, ch: 0, hold: 0, skip: 0 };
   sRect(0x060508);
@@ -1070,8 +997,23 @@ function goCall(n) {
   sAdd(S.add[DRAW_RECTANGLE](0, 430, W, 6, 0x2c2016)[DRAW_SET_ORIGIN](0));
   sAdd(S.add.image(400, -40, 'cone')[DRAW_SET_ORIGIN](0, 0.5)[DRAW_SET_BLEND_MODE](1)[DRAW_SET_ROTATION](PI / 2)[DRAW_SET_SCALE](2.6, 2.2)[DRAW_SET_TINT](0xffe2a0)[DRAW_SET_ALPHA](0.18)); // desk lamp
   const uPhone = sAdd(S.add[DRAW_CONTAINER](400, 470));
-  img(uPhone, 'callPhone', -200, -94, 0, 0);
-  uHandset = img(uPhone, 'callHandset', 0, -86, 0.5, 32 / 68);
+  const g = add(uPhone, S.add[DRAW_GRAPHICS]()), cord = add(uPhone, S.add[DRAW_GRAPHICS]());
+  g[DRAW_FILL_STYLE](0x000000, 0.4).fillEllipse(0, 34, 360, 40); // shadow
+  g[DRAW_FILL_STYLE](0x6a0c0c)[DRAW_FILL_ROUNDED_RECT](-150, -46, 300, 84, 24)[DRAW_FILL_STYLE](0x8e1414)[DRAW_FILL_ROUNDED_RECT](-136, -62, 272, 64, 25); // body
+  g[DRAW_FILL_STYLE](0xe6dcc4)[DRAW_FILL_CIRCLE](0, -26, 44)[DRAW_FILL_STYLE](0x1a1a1a);
+  for (let i = 0; i < 10; i++) { const a = -2.2 + i * 0.47; g[DRAW_FILL_CIRCLE](M.cos(a) * 31, -26 + M.sin(a) * 31, 6); } // rotary dial
+  g[DRAW_FILL_STYLE](0x8e1414)[DRAW_FILL_CIRCLE](0, -26, 14)[DRAW_FILL_STYLE](0xe6dcc4)[DRAW_FILL_CIRCLE](0, -26, 5);
+  g[DRAW_FILL_STYLE](0x2a0606); for (let i = 0; i < 4; i++) g[DRAW_FILL_RECT](96, -34 + i * 9, 34, 4); // speaker grille
+  cord[DRAW_LINE_STYLE](5, 0x5a0a0a); for (let i = 0; i < 9; i++) cord[DRAW_STROKE_CIRCLE](150 + i * 14, 30 + M.sin(i) * 3, 9); // coiled cord
+  uHandset = add(uPhone, S.add[DRAW_CONTAINER](0, -86));
+  const handset = add(uHandset, S.add[DRAW_GRAPHICS]());
+  handset[DRAW_FILL_STYLE](0x7a1010);
+  // Four-pixel steps give the grip a bend in the original pixel-art style.
+  for (let x = -114; x < 114; x += 6) {
+    const bend = 8 - 4 * M.round((x + 3) ** 2 / 11250);
+    handset[DRAW_FILL_RECT](x, bend - 14, 6, 22);
+  }
+  handset[DRAW_FILL_STYLE](0x8e1414)[DRAW_FILL_ROUNDED_RECT](-170, -7, 76, 41, 17)[DRAW_FILL_ROUNDED_RECT](94, -7, 76, 41, 17);
   uCallName = sText(400, 52, '¡RIIIING!', 22, COLOR_FFD400);
   uCallTxt = sText(400, 92, '', 20, '#ece6d8', 0.5, 0, { wordWrap: { width: 660 }, align: TEXT_CENTER, lineSpacing: 7, fontStyle: 'bold' });
   uCallHint = sText(400, 575, '', 16, '#b9a99a', 0.5, 0.5, { fontFamily: 'sans-serif', stroke: COLOR_000, strokeThickness: 3 });
