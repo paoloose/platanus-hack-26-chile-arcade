@@ -857,7 +857,7 @@ function pauseNight() {
     pauseGain = master[AUDIO_GAIN][AUDIO_VALUE];
     master[AUDIO_GAIN][AUDIO_VALUE] = 0;
   }
-  sRect(0);
+  sRect(0)[DRAW_SET_ALPHA](0.65);
   plainMenuHeading('PAUSA');
   showNightChoices('CONTINUAR');
 }
