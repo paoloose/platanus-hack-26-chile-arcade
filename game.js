@@ -781,6 +781,7 @@ function writeSave() {
 function screen(m) { ringStop(); if (AC) buzzG[AUDIO_GAIN][AUDIO_VALUE] = fanG[AUDIO_GAIN][AUDIO_VALUE] = 0; litA = 0; mode = m; modeT = 0; wC[DRAW_SET_VISIBLE](false); hideHud(); clearScreen(); }
 let titleChoice = 0;
 const TITLE_INSET = 52;
+const plainMenuHeading = (label) => sText(TITLE_INSET, 38, label, 52, '#eee', 0, 0, { stroke: COLOR_000, strokeThickness: 6 });
 const plainMenuRow = (y, label = '') => sText(W - TITLE_INSET, y, label, 22, COLOR_FFF, 1, 0.5, { stroke: COLOR_000, strokeThickness: 5 });
 function goTitle() {
   screen('title');
@@ -827,47 +828,21 @@ function titleUpdate() {
 }
 
 let paused = false, nightChoices = null, pauseGain = 0.8;
-function showChoiceMenu({ heading, context, clock, detail, choices, confirm }) {
-  sRect(0x09090d)[DRAW_SET_ALPHA](paused ? 0.95 : 1);
-  const grain = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0)[DRAW_SET_ALPHA](0.09));
-  const rule = sAdd(S.add[DRAW_GRAPHICS]());
-  rule[DRAW_FILL_STYLE](0xf07c7c)[DRAW_FILL_RECT](72, 63, 8, 13);
-  rule[DRAW_LINE_STYLE](1, 0x5b4951)[DRAW_LINE_BETWEEN](72, 197, 728, 197);
-
-  sText(93, 61, context, 16, '#d0c3cc', 0, 0);
-  if (clock) sText(728, 61, clock, 16, '#d0c3cc', 1, 0);
-  sText(68, 100, heading, 64, '#f1eaed', 0, 0, { stroke: COLOR_000, strokeThickness: 5 });
-  sText(72, 228, detail, 19, '#d0c3cc', 0, 0, { fontStyle: 'normal', wordWrap: { width: 656 }, lineSpacing: 6 });
-
-  const menu = { grain, rows: [], selected: -1, confirm };
-  nightChoices = menu;
-  for (let i = 0; i < choices.length; i++) {
-    const y = 329 + i * 76;
-    const button = sAdd(S.add[DRAW_RECTANGLE](72, y, 656, 60, 0x101017)[DRAW_SET_ORIGIN](0));
-    const marker = sText(95, y + 30, '▸', 28, '#ff9290', 0, 0.5);
-    const label = sText(132, y + 30, choices[i], 23, '#c4b5bf', 0, 0.5);
-    addChoiceRow(menu, button, label, marker);
-  }
-  sText(72, 548, '↑ / ↓  ELEGIR     B1 / START  CONFIRMAR', 15, '#b5a6b0', 0, 0);
+function showNightChoices(first, grain) {
+  const rows = [plainMenuRow(72, first), plainMenuRow(115, 'MENÚ PRINCIPAL')];
+  const menu = nightChoices = { grain, rows, selected: -1 };
+  rows[KEY_FOR_EACH]((label, i) => {
+    label.setInteractive({ useHandCursor: true });
+    label.on('pointerover', () => { if (nightChoices == menu) selectNightChoice(i); });
+    label.on('pointerdown', () => { if (nightChoices == menu) activateMenuChoice(i); });
+  });
   selectNightChoice(0);
-}
-function addChoiceRow(menu, button, label = button, marker) {
-  const i = menu.rows.length;
-  button.setInteractive({ useHandCursor: true });
-  button.on('pointerover', () => { if (nightChoices == menu) selectNightChoice(i); });
-  button.on('pointerdown', () => { if (nightChoices == menu) activateMenuChoice(i); });
-  menu.rows[KEY_PUSH]({ button, marker, label });
 }
 function selectNightChoice(choice) {
   if (nightChoices.selected == choice) return;
   nightChoices.selected = choice;
-  nightChoices.rows[KEY_FOR_EACH](({ button, marker, label }, i) => {
-    const active = i == choice;
-    if (marker) {
-      button.setFillStyle(active ? 0x24171f : 0x101017).setStrokeStyle(1, active ? 0xe48685 : 0x44404b);
-      marker[DRAW_SET_VISIBLE](active);
-      label[DRAW_SET_COLOR](active ? '#fff5f4' : '#c4b5bf');
-    } else label[DRAW_SET_COLOR](active ? CAMERA_SELECTED_TEXT : '#aaa1ad');
+  nightChoices.rows[KEY_FOR_EACH]((label, i) => {
+    label[DRAW_SET_COLOR](i == choice ? CAMERA_SELECTED_TEXT : '#aaa1ad');
   });
 }
 function pauseNight() {
@@ -876,13 +851,12 @@ function pauseNight() {
     pauseGain = master[AUDIO_GAIN][AUDIO_VALUE];
     master[AUDIO_GAIN][AUDIO_VALUE] = 0;
   }
-  showChoiceMenu({
-    heading: 'PAUSA', context: 'NOCHE ' + night, clock: clockStr(now),
-    detail: 'BATERÍA ' + M.ceil(power) + '%   ·   SUEÑO ' + M.ceil(sueno) + '%',
-    choices: ['CONTINUAR', 'MENÚ PRINCIPAL'], confirm: confirmNightChoice,
-  });
+  sRect(0);
+  plainMenuHeading('PAUSA');
+  showNightChoices('CONTINUAR');
 }
-function confirmNightChoice(choice, confirmB1) {
+function activateMenuChoice(choice, confirmB1) {
+  nightChoices = null;
   // A B1 confirmation should not turn on the flashlight or start coffee.
   if (!choice && confirmB1) ignoreMenuB1 = true;
   if (paused) {
@@ -906,14 +880,9 @@ function confirmNightChoice(choice, confirmB1) {
     goTitle();
   } else goCard(night);
 }
-function activateMenuChoice(choice, confirmB1) {
-  const { confirm } = nightChoices;
-  nightChoices = null;
-  confirm(choice, confirmB1);
-}
 function nightChoicesUpdate(dt) {
   const grain = nightChoices.grain;
-  grain[DRAW_SET_TILE_POSITION](grain.tilePositionX + 18 * dt, grain.tilePositionY + 11 * dt);
+  if (grain) grain[DRAW_SET_TILE_POSITION](grain.tilePositionX + 18 * dt, grain.tilePositionY + 11 * dt);
   if (pr('U') || pr('D')) {
     selectNightChoice(1 - nightChoices.selected);
     if (!paused) sfxBlip(1, 410);
@@ -2084,13 +2053,10 @@ function goLose() {
   img(uScreen, 'lossShade', 0, 0, 0, 0);
   const grain = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0)[DRAW_SET_ALPHA](0.07));
 
-  sText(TITLE_INSET, 38, 'PERDISTE', 52, '#eee', 0, 0, { stroke: COLOR_000, strokeThickness: 6 });
+  plainMenuHeading('PERDISTE');
   sText(TITLE_INSET + 2, 116, 'NOCHE ' + night + ' · ' + clockStr(loseT), 14, '#aaa1ad', 0, 0);
   sText(TITLE_INSET + 2, 153, lostHint, 17, '#cbc2cc', 0, 0, { fontStyle: 'normal', wordWrap: { width: 450 }, lineSpacing: 4 });
-  const menu = nightChoices = { grain, rows: [], selected: -1, confirm: confirmNightChoice };
-  addChoiceRow(menu, plainMenuRow(72, 'REINTENTAR'));
-  addChoiceRow(menu, plainMenuRow(115, 'MENÚ PRINCIPAL'));
-  selectNightChoice(0);
+  showNightChoices('REINTENTAR', grain);
 }
 function winNight() {
   screen('win'); uWDone = 0;
