@@ -707,6 +707,7 @@ function create() {
 // =====================================================================
 const CAMERA_SELECTED_COLOR = 0x789936;
 const CAMERA_SELECTED_TEXT = '#' + CAMERA_SELECTED_COLOR.toString(16);
+const HUD_INSET = 34, HUD_BATTERY_Y = H - 96;
 function buildUI() {
   const h = (uHud = add(uC, S.add[DRAW_CONTAINER]()));
   const T = (x, y, s, sz, col, ox, oy, extra) => txt(h, x, y, s, sz, col, ox, oy, extra);
@@ -724,11 +725,11 @@ function buildUI() {
   for (let y = 45; y < 565; y += 7) bezel[DRAW_LINE_STYLE](1, 0x263038)[DRAW_LINE_BETWEEN](-375, y, 375, y);
   txt(uTab, -315, 17, 'SEGURIDAD   /   CCTV', 11, '#94a399');
   // FNAF corners: the time top right, power and usage bottom left
-  uHour = T(776, 16, '', 30, COLOR_FFF, 1, 0);
-  uNight = T(776, 52, '', 14, '#aab', 1, 0);
-  uPauseHint = T(776, 74, 'START · PAUSA', 11, '#bbb1bd', 1, 0);
-  uSue = T(24, 474, '', 12, COLOR_C9B6FF, 0, 0);
-  uPow = T(24, 512, '', 16, COLOR_FFF, 0, 0);
+  uHour = T(W - HUD_INSET, 24, '', 30, COLOR_FFF, 1, 0);
+  uNight = T(W - HUD_INSET, 60, '', 14, '#aab', 1, 0);
+  uPauseHint = T(W - HUD_INSET, 82, 'START · PAUSA', 11, '#bbb1bd', 1, 0);
+  uSue = T(HUD_INSET, HUD_BATTERY_Y - 38, '', 12, COLOR_C9B6FF, 0, 0);
+  uPow = T(HUD_INSET, HUD_BATTERY_Y, '', 16, COLOR_FFF, 0, 0);
   uCam = [T(40, 34, '', 20, '#e8e0d0', 0, 0), T(40, 82, '● REC', 14, '#ff4444', 0, 0), T(40, 60, '', 13, '#b8b0a0', 0, 0), T(560, 568, 'STICK: CÁMARA · B1: LINTERNA · B4: ANTERIOR · B3: BAJAR', 10, '#b8b0a0')];
   uMapT = [...ROOMS.map((R) => R[1]), 'TÚ'].map((s) => T(0, 0, s, 9, '#d8d0c0'));
   uPr = [0, 1, 2, 3].map(() => T(0, 0, '', 13, COLOR_FFF, 0.5, 0.5, { backgroundColor: '#000000cc', padding: { x: 6, y: 3 }, align: TEXT_CENTER, wordWrap: { width: 550 } }));
@@ -857,6 +858,8 @@ function pauseNight() {
     pauseGain = master[AUDIO_GAIN][AUDIO_VALUE];
     master[AUDIO_GAIN][AUDIO_VALUE] = 0;
   }
+  // The translucent menu shares this corner with the clock and its labels.
+  for (const label of [uHour, uNight, uPauseHint]) label[DRAW_SET_VISIBLE](false);
   sRect(0)[DRAW_SET_ALPHA](0.65);
   plainMenuHeading('PAUSA');
   showNightChoices('CONTINUAR');
@@ -877,6 +880,7 @@ function activateMenuChoice(choice, confirmB1) {
       master[AUDIO_GAIN][AUDIO_VALUE] = pauseGain;
     }
     if (!choice) {
+      for (const label of [uHour, uNight, uPauseHint]) label[DRAW_SET_VISIBLE](true);
       clearScreen();
       return;
     }
@@ -1866,8 +1870,10 @@ function renderHud(dt) {
   uHour[DRAW_SET_TEXT]((hourOf(now) || 12) + ' AM');
   uNight[DRAW_SET_TEXT]('NOCHE ' + night);
   uPow[DRAW_SET_TEXT]('BATERÍA: ' + M.ceil(power) + '%\nUSO:');
-  if (!blackout) { const u = M.min(usage, 5); for (let i = 0; i < 5; i++) gr[DRAW_FILL_STYLE](i < u ? (i < 2 ? 0x44dd66 : i < 4 ? 0xeecc33 : 0xee4444) : 0x222222)[DRAW_FILL_RECT](70 + i * 20, 536, 16, 14); }
-  gr[DRAW_FILL_STYLE](0x1a1430)[DRAW_FILL_RECT](24, 492, 150, 10)[DRAW_FILL_STYLE](sueno > 70 ? 0xb44dff : 0x7a5cff)[DRAW_FILL_RECT](24, 492, 150 * clamp(sueno / 100, 0, 1), 10);
+  if (!blackout) { const u = M.min(usage, 5); for (let i = 0; i < 5; i++) gr[DRAW_FILL_STYLE](i < u ? (i < 2 ? 0x44dd66 : i < 4 ? 0xeecc33 : 0xee4444) : 0x222222)[DRAW_FILL_RECT](HUD_INSET + 46 + i * 20, HUD_BATTERY_Y + 24, 16, 14); }
+  const sleepY = HUD_BATTERY_Y - 20;
+  gr[DRAW_FILL_STYLE](0x1a1430)[DRAW_FILL_RECT](HUD_INSET, sleepY, 150, 10)
+    [DRAW_FILL_STYLE](sueno > 70 ? 0xb44dff : 0x7a5cff)[DRAW_FILL_RECT](HUD_INSET, sleepY, 150 * clamp(sueno / 100, 0, 1), 10);
   uSue[DRAW_SET_TEXT](sueno > 70 ? 'SUEÑO ¡¡CAFÉ!!' : 'SUEÑO')[DRAW_SET_COLOR](sueno > 70 && M.sin(now * 8) > 0 ? '#ff77ff' : COLOR_C9B6FF);
   drawTablet(va);
   for (const t of [...uCam, ...uMapT]) t[DRAW_SET_VISIBLE](cm);
