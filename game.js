@@ -645,7 +645,7 @@ function buildOffice() {
 // =====================================================================
 // CREATE
 // =====================================================================
-let wC, rC, oC, uC, uiCam;
+let wC, rC, oC, uC, uiCam, titleArt;
 let bgImg, fgImg, dynG, emG, projTxt, askG, askTxt, lensImg, oBg, oG, oBeam, oDim, oLamp, oTop, oMask, oDesk, deskImg, oDG, fanS = 0, fanA = 0;
 const eImg = {}, oImg = {};
 // UI objects (u*) live in the uC layer, which the post-FX camera ignores
@@ -696,9 +696,10 @@ function create() {
   oBan = img(oC, 'banana0', 0, 0, 0.5, 1)[DRAW_SET_VISIBLE](false);
 
   buildUI();
+  titleArt = S.add[DRAW_CONTAINER]();
   const mc = S[KEY_CAMERAS].main;
   uiCam = S[KEY_CAMERAS].add(0, 0, W, H);
-  mc.ignore(uC); uiCam.ignore(wC);
+  mc.ignore(uC); uiCam.ignore([wC, titleArt]);
   if (S.game.renderer.type == Phaser.WEBGL) { mc.setPostPipeline('Horror'); FX = { t: 0 }; }
   goTitle();
   saveWrites = loadSave();
@@ -752,7 +753,10 @@ function buildUI() {
   uScrT = txt(uC, 400, 520, '', 40, COLOR_FFF, 0.5, 0.5, { stroke: COLOR_000, strokeThickness: 8 });
   uScreen = add(uC, S.add[DRAW_CONTAINER]());
 }
-const clearScreen = () => uScreen.removeAll(true);
+function clearScreen() {
+  uScreen.removeAll(true);
+  titleArt.removeAll(true);
+}
 const sAdd = (o, c) => add(c || uScreen, o);
 const sText = (x, y, s, sz, col, ox, oy, extra, c) => txt(c || uScreen, x, y, s, sz, col, ox, oy, extra);
 const sRect = (col) => sAdd(S.add[DRAW_RECTANGLE](0, 0, W, H, col)[DRAW_SET_ORIGIN](0));
@@ -793,12 +797,17 @@ const plainMenuRow = (y, label = '') => sText(W - TITLE_INSET, y, label, 22, COL
 function goTitle() {
   screen('title');
   titleChoice = 0;
+  // Send the cast through the CCTV camera while the labels stay on the UI camera.
+  if (FX) {
+    S[KEY_CAMERAS].main.hasPostPipeline = true;
+    Object[KEY_ASSIGN](FX, { nv: .82, lit: 0, amb: 1.16, of: 0, no: .05, ab: .65, dk: .1, wp: 0 });
+  }
   // Balance the two outer edges while keeping the Pitcher at the center.
   const lineup = [[1, 150], [4, 250], [0, 400], [5, 485], [2, 565], [3, 650]];
   uTitleBan = lineup.map(([i, x], k) => ({ i, x, depth: M.abs(k - 2) }))
     .sort((a, b) => b.depth - a.depth)
-    .map(({ i, x, depth }) => sAdd(S.add.image(x, 660 - depth * 16, ROLES[i] + '0')[DRAW_SET_SCALE](16 - depth * 0.9)[DRAW_SET_ORIGIN](0.5, 1)));
-  uTitleStat = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0));
+    .map(({ i, x, depth }) => img(titleArt, ROLES[i] + '0', x, 660 - depth * 16, 0.5, 1)[DRAW_SET_SCALE](16 - depth * 0.9));
+  uTitleStat = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0), titleArt);
   uT1 = sText(TITLE_INSET, 38, 'Five Nights\nat Platanus', 52, '#eee', 0, 0, { lineSpacing: -6, stroke: COLOR_000, strokeThickness: 6 });
   sText(TITLE_INSET + 2, 172, 'La hackathon terminó. Ellos no.', 14, '#889', 0, 0.5);
   uTNew = plainMenuRow(72);
@@ -1105,7 +1114,7 @@ function update(time, delta) {
   else if (mode == STATE_PLAY && pr('S')) pauseNight();
   else {
     modeT += dt;
-    if (FX) { FX.t += dt; if (mode != STATE_PLAY && mode != 'scream') Object[KEY_ASSIGN](FX, { nv: 0, lit: 0, of: +(mode == 'doze'), no: mode == 'title' ? 0.06 : 0.02, ab: 0.2, dk: 0.2, wp: 0 }); }
+    if (FX) { FX.t += dt; if (mode != STATE_PLAY && mode != 'scream' && mode != 'title') Object[KEY_ASSIGN](FX, { nv: 0, lit: 0, of: +(mode == 'doze'), no: 0.02, ab: 0.2, dk: 0.2, wp: 0 }); }
     if (mode == STATE_PLAY) playUpdate(dt);
     else ({ doze: dozeUpdate, title: titleUpdate, paper: paperUpdate, call: callUpdate, card: cardUpdate, scream: screamUpdate, lose: nightChoicesUpdate, win: winUpdate })[mode](dt);
   }
