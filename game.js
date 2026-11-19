@@ -630,7 +630,7 @@ let wC, rC, oC, uC, uiCam;
 let bgImg, fgImg, dynG, emG, projTxt, askG, askTxt, lensImg, oBg, oG, oBeam, oDim, oLamp, oTop, oMask, oDesk, deskImg, oDG, fanS = 0, fanA = 0;
 const eImg = {}, oImg = {};
 // UI objects (u*) live in the uC layer, which the post-FX camera ignores
-let uC1, uC2, uCallName, uCallTxt, uHandset, uCallHint, uCam, uCamBar, uCardN, uG, uHour, uHud, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uW1, uW2, uWDone, uWarn;
+let uC1, uC2, uCallName, uCallTxt, uHandset, uCallHint, uCam, uCamBar, uCardN, uG, uHour, uHud, uLid, uLid2, uMapT, uMsg, uMug, uNight, uPPress, uPaperEnd, uPow, uPr, uScr, uScrT, uScreen, uStat, uSue, uT1, uTNew, uTMenu, uTab, uTh, uTitleBan, uTitleStat, uW1, uW2, uWDone, uWarn;
 let zR, zO, uZ, oBan, dozeHB, litA = 0, scrSide, scrPre; // the sleeper's z's (or !! when angry) · falling asleep
 let uLearn, uPauseHint;
 const TS = (sz, col, extra) => Object[KEY_ASSIGN]({ fontFamily: 'monospace', fontSize: sz + 'px', color: col || COLOR_FFF, fontStyle: 'bold' }, extra);
@@ -681,8 +681,8 @@ function create() {
   uiCam = S[KEY_CAMERAS].add(0, 0, W, H);
   mc.ignore(uC); uiCam.ignore(wC);
   if (S.game.renderer.type == Phaser.WEBGL) { mc.setPostPipeline('Horror'); FX = { t: 0 }; }
-  loadSave();
   goTitle();
+  loadSave();
 }
 
 // =====================================================================
@@ -738,6 +738,7 @@ const sRect = (col) => sAdd(S.add[DRAW_RECTANGLE](0, 0, W, H, col)[DRAW_SET_ORIG
 // =====================================================================
 // SAVE
 // =====================================================================
+let saveReady = false, pendingNewGame = false, saveWrites = Promise.resolve();
 function storage() {
   return window.platanusArcadeStorage || {
     async get(k) { try { const v = localStorage.getItem(k); return v == null ? { found: false } : { found: true, value: JSON.parse(v) }; } catch (e) { return { found: false }; } },
@@ -748,23 +749,46 @@ async function loadSave() {
   try {
     const r = await storage().get(SAVE_KEY);
     if (r && r.found && r[AUDIO_VALUE] && typeof r[AUDIO_VALUE].night == 'number') saved.night = menuNight = clamp(r[AUDIO_VALUE].night | 0, 1, 5);
-    if (mode == 'title') goTitle();
   } catch (e) { }
+  saveReady = true;
+  if (mode != 'title') return;
+  if (pendingNewGame) activateTitleChoice(0, menuNight);
+  else goTitle();
 }
-const writeSave = () => storage().set(SAVE_KEY, { night: saved.night }).catch(() => { });
+function writeSave() {
+  const progress = { night: saved.night };
+  // Keep a confirmed reset behind any earlier unlock that is still saving.
+  saveWrites = saveWrites.then(() => storage().set(SAVE_KEY, progress)).catch(() => { });
+  return saveWrites;
+}
 
 // =====================================================================
 // SCREENS
 // =====================================================================
 function screen(m) { ringStop(); if (AC) buzzG[AUDIO_GAIN][AUDIO_VALUE] = fanG[AUDIO_GAIN][AUDIO_VALUE] = 0; litA = 0; mode = m; modeT = 0; wC[DRAW_SET_VISIBLE](false); hideHud(); clearScreen(); }
-function goTitle() {
+let titleChoice = 0;
+function goTitle(choice = saved.night > 1 ? 1 : 0) {
   screen('title');
+  titleChoice = choice;
   // Leave the leftmost slot empty so the Pitcher stays centered.
   uTitleBan = [1, 4, 0, 5, 2, 3].map((i, k) => ({ i, k: k + 1 })).sort((a, b) => M.abs(b.k - 3) - M.abs(a.k - 3)).map(({ i, k }) => sAdd(S.add.image(100 + k * 100, 660 - M.abs(k - 3) * 16, ROLES[i] + '0')[DRAW_SET_SCALE](16 - M.abs(k - 3) * 0.9)[DRAW_SET_ORIGIN](0.5, 1)));
   uTitleStat = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0));
   uT1 = sText(40, 26, 'Five Nights\nat Platanus', 52, '#eee', 0, 0, { lineSpacing: -6, stroke: COLOR_000, strokeThickness: 6 });
   sText(42, 160, 'La hackathon terminó. Ellos no.', 14, '#889', 0, 0.5);
-  uTMenu = sText(760, 60, '', 22, COLOR_FFF, 1, 0.5, { stroke: COLOR_000, strokeThickness: 5 });
+  const titleRow = (y) => sText(760, y, '', 22, COLOR_FFF, 1, 0.5, { stroke: COLOR_000, strokeThickness: 5 });
+  uTNew = titleRow(60);
+  uTMenu = titleRow(103);
+  sText(760, 136, '↑ / ↓  ELEGIR    B1 / START', 12, '#aaa1ad', 1, 0);
+  drawTitleChoices();
+}
+function drawTitleChoices() {
+  const pulse = 0.82 + M.sin(modeT * 4) * 0.18;
+  const titleRow = (row, i, label) => {
+    const active = titleChoice == i;
+    row[DRAW_SET_TEXT]((active ? '▸ ' : '') + label)[DRAW_SET_COLOR](active ? '#fff1f1' : '#aaa1ad')[DRAW_SET_ALPHA](active ? pulse : 1);
+  };
+  titleRow(uTNew, 0, 'JUEGO NUEVO');
+  titleRow(uTMenu, 1, saved.night > 1 ? '◄ NOCHE ' + menuNight + ' ►' : 'NOCHE 1');
 }
 function titleUpdate() {
   // the opponent stares out of the static, flickers and twitches now and then
@@ -772,40 +796,72 @@ function titleUpdate() {
   uTitleBan[KEY_FOR_EACH]((im) => im[DRAW_SET_TINT](im == tw ? 0xff8080 : M[KEY_RANDOM]() < 0.02 ? 0x303030 : 0x8a8a8a)[DRAW_SET_ANGLE](im == tw ? rnd(-6, 6) : im.angle * 0.9));
   uTitleStat[DRAW_SET_TILE_POSITION](rnd(0, 200), rnd(0, 150))[DRAW_SET_ALPHA](tw ? 0.25 : rnd(0.06, 0.12));
   uT1[DRAW_SET_ALPHA](M[KEY_RANDOM]() < 0.03 ? 0.3 : 1);
-  if (saved.night > 1) {
-    if (pr('L')) menuNight = M.max(1, menuNight - 1), sfxBlip(1, 400);
-    if (pr('R')) menuNight = M.min(saved.night, menuNight + 1), sfxBlip(1, 500);
-    uTMenu[DRAW_SET_TEXT]('◄ NOCHE ' + menuNight + ' ►  START');
-  } else uTMenu[DRAW_SET_TEXT]('PRESIONA START');
-  uTMenu[DRAW_SET_ALPHA](0.6 + M.sin(modeT * 4) * 0.4);
-  if (pr('S') || pr('1')) { sfxClick(); if (menuNight == 1) goPaper(0); else goCall(menuNight); }
+  if (pr('U') || pr('D')) { titleChoice = 1 - titleChoice; sfxBlip(1, 410); }
+  const step = Number(pr('R')) - Number(pr('L'));
+  if (step) {
+    titleChoice = 1;
+    menuNight = clamp(menuNight + step, 1, saved.night);
+    sfxBlip(1, step < 0 ? 400 : 500);
+  }
+  drawTitleChoices();
+  if (pr('S') || pr('1')) activateTitleChoice(titleChoice, menuNight);
+}
+function activateTitleChoice(choice, selectedNight) {
+  // Wait for the unlocks before deciding whether a new game needs confirmation.
+  if (!saveReady && !choice) { pendingNewGame = true; return; }
+  pendingNewGame = false;
+  sfxClick();
+  if (choice) {
+    if (selectedNight == 1) goPaper(0);
+    else goCall(selectedNight);
+  } else if (saved.night > 1) {
+    screen('newgame');
+    showChoiceMenu({
+      heading: '¿JUEGO NUEVO?',
+      context: 'NOCHE DESBLOQUEADA · ' + saved.night,
+      detail: 'Volverás a la noche 1 y se reiniciarán las noches desbloqueadas.',
+      choices: ['CANCELAR', 'EMPEZAR DE NUEVO'],
+      confirm: (start) => { sfxClick(); if (start) beginNewGame(); else goTitle(0); },
+    });
+  } else beginNewGame();
+}
+function beginNewGame() {
+  const hadProgress = saved.night > 1;
+  saved.night = menuNight = 1;
+  if (hadProgress) writeSave();
+  goPaper(0);
 }
 
 // Pause leaves the night in place. Both menus use the title's dark static
 // and a lit marker like the shutter control panel.
 let paused = false, nightChoices = null, pauseGain = 0.8;
 function showNightChoices() {
+  showChoiceMenu({
+    heading: paused ? 'PAUSA' : 'FIN DEL TURNO', context: 'NOCHE ' + night, clock: clockStr(paused ? now : loseT),
+    detail: paused ? 'BATERÍA ' + M.ceil(power) + '%   ·   SUEÑO ' + M.ceil(sueno) + '%' : lostHint,
+    choices: ['CONTINUAR', 'MENÚ PRINCIPAL'], confirm: confirmNightChoice,
+  });
+}
+function showChoiceMenu({ heading, context, clock, detail, choices, confirm }) {
   sRect(0x09090d)[DRAW_SET_ALPHA](paused ? 0.95 : 1);
   const grain = sAdd(S.add[KEY_TILE_SPRITE](0, 0, W, H, 'noise')[DRAW_SET_ORIGIN](0)[DRAW_SET_ALPHA](0.09));
   const rule = sAdd(S.add[DRAW_GRAPHICS]());
   rule[DRAW_FILL_STYLE](0xf07c7c)[DRAW_FILL_RECT](72, 63, 8, 13);
   rule[DRAW_LINE_STYLE](1, 0x5b4951)[DRAW_LINE_BETWEEN](72, 197, 728, 197);
 
-  sText(93, 61, 'NOCHE ' + night, 16, '#d0c3cc', 0, 0);
-  sText(728, 61, clockStr(paused ? now : loseT), 16, '#d0c3cc', 1, 0);
-  sText(68, 100, paused ? 'PAUSA' : 'FIN DEL TURNO', 64, '#f1eaed', 0, 0, { stroke: COLOR_000, strokeThickness: 5 });
-  const detail = paused ? 'BATERÍA ' + M.ceil(power) + '%   ·   SUEÑO ' + M.ceil(sueno) + '%' : lostHint;
+  sText(93, 61, context, 16, '#d0c3cc', 0, 0);
+  if (clock) sText(728, 61, clock, 16, '#d0c3cc', 1, 0);
+  sText(68, 100, heading, 64, '#f1eaed', 0, 0, { stroke: COLOR_000, strokeThickness: 5 });
   sText(72, 228, detail, 19, '#d0c3cc', 0, 0, { fontStyle: 'normal', wordWrap: { width: 656 }, lineSpacing: 6 });
 
-  const menu = { grain, rows: [], selected: -1 };
+  const menu = { grain, rows: [], selected: -1, confirm };
   nightChoices = menu;
-  const choices = ['CONTINUAR', 'MENÚ PRINCIPAL'];
   for (let i = 0; i < choices.length; i++) {
     const y = 329 + i * 76;
     const button = sAdd(S.add[DRAW_RECTANGLE](72, y, 656, 60, 0x101017)[DRAW_SET_ORIGIN](0));
     button.setInteractive({ useHandCursor: true });
     button.on('pointerover', () => { if (nightChoices == menu) selectNightChoice(i); });
-    button.on('pointerdown', () => { if (nightChoices == menu) confirmNightChoice(i); });
+    button.on('pointerdown', () => { if (nightChoices == menu) activateMenuChoice(i); });
     const marker = sText(95, y + 30, '▸', 28, '#ff9290', 0, 0.5);
     const label = sText(132, y + 30, choices[i], 23, '#c4b5bf', 0, 0.5);
     menu.rows[KEY_PUSH]({ button, marker, label });
@@ -832,7 +888,6 @@ function pauseNight() {
   showNightChoices();
 }
 function confirmNightChoice(choice, confirmB1) {
-  nightChoices = null;
   // A B1 confirmation should not turn on the flashlight or start coffee.
   if (!choice && confirmB1) ignoreMenuB1 = true;
   if (paused) {
@@ -856,6 +911,11 @@ function confirmNightChoice(choice, confirmB1) {
     goTitle();
   } else goCard(night);
 }
+function activateMenuChoice(choice, confirmB1) {
+  const { confirm } = nightChoices;
+  nightChoices = null;
+  confirm(choice, confirmB1);
+}
 function nightChoicesUpdate(dt) {
   const grain = nightChoices.grain;
   grain[DRAW_SET_TILE_POSITION](grain.tilePositionX + 18 * dt, grain.tilePositionY + 11 * dt);
@@ -863,7 +923,7 @@ function nightChoicesUpdate(dt) {
     selectNightChoice(1 - nightChoices.selected);
     if (!paused) sfxBlip(1, 410);
   }
-  if (pr('S') || pr('1')) confirmNightChoice(nightChoices.selected, pr('1'));
+  if (pr('S') || pr('1')) activateMenuChoice(nightChoices.selected, pr('1'));
 }
 
 // Newspaper: intro (0) or ending (1). It spins in and slams onto the table.
@@ -1031,7 +1091,7 @@ function update(time, delta) {
     modeT += dt;
     if (FX) { FX.t += dt; if (mode != STATE_PLAY && mode != 'scream') Object[KEY_ASSIGN](FX, { nv: 0, lit: 0, of: +(mode == 'doze'), no: mode == 'title' ? 0.06 : 0.02, ab: 0.2, dk: 0.2, wp: 0 }); }
     if (mode == STATE_PLAY) playUpdate(dt);
-    else ({ doze: dozeUpdate, title: titleUpdate, paper: paperUpdate, call: callUpdate, card: cardUpdate, scream: screamUpdate, lose: nightChoicesUpdate, win: winUpdate })[mode](dt);
+    else ({ doze: dozeUpdate, title: titleUpdate, paper: paperUpdate, call: callUpdate, card: cardUpdate, scream: screamUpdate, lose: nightChoicesUpdate, newgame: nightChoicesUpdate, win: winUpdate })[mode](dt);
   }
   for (const k in pressed) pressed[k] = 0;
 }
