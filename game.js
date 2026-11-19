@@ -1114,11 +1114,13 @@ function update(time, delta) {
 }
 function playUpdate(dt) {
   // Give a first-time player time to find the tablet.
-  const briefing = night == 1 && !lesson.tabletOpened;
+  const briefing = night == 1 && !lesson.tabletOpened && !blackout;
   if (!briefing || now < 10) now += dt;
   if (now >= nightLen) return winNight();
+  const cameraWasOn = view == 'cams', flashlightWasOn = light || camLit;
   input(dt);
-  updateResources(dt, briefing);
+  const activations = Number(!cameraWasOn && view == 'cams') + Number(!flashlightWasOn && (light || camLit));
+  updateResources(dt, briefing, activations);
   if (mode != STATE_PLAY) return;
   if (blackout) {
     if (now >= cutAt) {
@@ -1238,9 +1240,9 @@ const doorClosed = (d) => doorP[d] > 0.5;
 const doorBlocks = (d) => SIDES.includes(d) && (doors[d] || doorClosed(d));
 
 // ---- Resources ----
-// Extra percentage points per second for each active device, even on Night 5.
+// Battery percentage points charged once when a device goes from off to on.
 const DEVICE_POWER_PENALTY = 0.4;
-function updateResources(dt, briefing) {
+function updateResources(dt, briefing, activations) {
   for (const d of SIDES) doorP[d] = clamp(doorP[d] + (doors[d] ? dt : -dt) / 0.45, 0, 1);
   if (cof == 1 && (cofT -= dt) <= 0) { cof = 2; tone(880, 0.25, 's', 0.12); } // ding
   if (drink > 0 && (drink -= dt) <= 0) { sueno = M.max(0, sueno - 60); setMsg('☕  -SUEÑO', 1.2); }
@@ -1250,8 +1252,8 @@ function updateResources(dt, briefing) {
     let u = drain + (doorP.W > 0) * 0.2 + (doorP.E > 0) * 0.2 + light * 0.32 + camLit * 0.2 + cameraOn * 0.1 + (cof == 1) * 0.15;
     if (plug >= 0) u += night >= 5 ? 0.5 : 0.4;
     usage = 1 + (doorP.W > 0) + (doorP.E > 0) + flashlightOn + cameraOn + (cof == 1) + (plug >= 0); // one bar per device
-    const penalty = DEVICE_POWER_PENALTY * (flashlightOn + cameraOn);
-    if (!briefing && (power -= (u * NN[10] + penalty) * dt) <= 0) powerOut();
+    const drainThisFrame = briefing ? 0 : u * NN[10] * dt;
+    if ((power -= drainThisFrame + DEVICE_POWER_PENALTY * activations) <= 0) powerOut();
   }
   if (briefing || blackout) return;
   sueno += dt * 100 / sueRate;
